@@ -1,3 +1,4 @@
+#define WRAP_READ
 #define NOMINMAX
 #define D3D11_DEBUG_INFO
 
@@ -7,6 +8,7 @@
 #include <d3dx10math.h>
 
 #include <iostream>
+#include <fstream>
 
 #include "math.h"
 #include "matrix.h"
@@ -18,6 +20,8 @@ typedef unsigned int uint;
 
 class Quit {};
 
+std::fstream record;
+
 struct
 {
 	HWND window_handle;
@@ -27,6 +31,7 @@ struct
 	iptr<IDXGISwapChain> swap_chain;
 	iptr<ID3D11RenderTargetView> target;
 	iptr<ID3DX11Effect> effect;
+
 	ID3DX11EffectPass* pass;
 	ID3DX11EffectVectorVariable* var_eye;
 	ID3DX11EffectMatrixVariable* var_view;
@@ -52,8 +57,7 @@ struct
 } g_settings;
 
 struct
-{
-	float yaw;
+{	float yaw;
 	float pitch;
 } g_camera;
 
@@ -78,6 +82,13 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 
 void init()
 {
+	{
+		using std::fstream;
+		record = fstream("C:/replay", fstream::in | fstream::out | fstream::binary);
+		if ( record.fail() ) throw std::exception("record failed");
+		record.exceptions( 0 );
+	}
+
 	{
 	    RAWINPUTDEVICE info[2];
 		info[0].dwFlags = 0;
@@ -318,46 +329,81 @@ void mouse(long dx, long dy)
 	g.view = rot * g.start_view;
 }
 
+void handle_input(byte* bytes)
+{
+	RAWINPUT* raw = (RAWINPUT*)bytes;
+	if ( raw->header.dwType == RIM_TYPEKEYBOARD )
+	{
+		RAWKEYBOARD* data = &raw->data.keyboard;
+		bool up = data->Flags & RI_KEY_BREAK;
+		key( data->VKey, up );
+	}
+	else if ( raw->header.dwType == RIM_TYPEMOUSE )
+	{
+		RAWMOUSE* data = &raw->data.mouse;
+		mouse( data->lLastX, data->lLastY );
+	}
+}
+
 void run()
 {
 	while(true)
 	{
 		{
 			MSG m;
+
 			while (PeekMessage(&m, NULL, 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&m);
 				DispatchMessage(&m); // this calls window procs!
         
+#ifndef WRAP_READ
 				switch( m.message )
 				{
 				case WM_INPUT:
 					uint size;
 					GetRawInputData((HRAWINPUT)m.lParam, 
 						RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
-                   
+                    
 					byte* bytes = new byte[size];
 					GetRawInputData((HRAWINPUT)m.lParam, 
 						RID_INPUT, bytes, &size, sizeof(RAWINPUTHEADER));
 
-					RAWINPUT* raw = (RAWINPUT*)bytes;
-					if ( raw->header.dwType == RIM_TYPEKEYBOARD )
-					{
-						RAWKEYBOARD* data = &raw->data.keyboard;
-						bool up = data->Flags & RI_KEY_BREAK;
-						key( data->VKey, up );
-					}
-					else if ( raw->header.dwType == RIM_TYPEMOUSE )
-					{
-						RAWMOUSE* data = &raw->data.mouse;
-						mouse( data->lLastX, data->lLastY );
-					}
-				
+					char ch = 1;
+					record.write(&ch, 1);
+					ch = char(size);
+					record.write(&ch, 1);
+					record.write((char*)bytes, size);
+
+					handle_input(bytes);
+
 					delete[] bytes;
 					break;
 				}
+#endif
+			}
+#ifndef WRAP_READ
+			char ch = 0;
+			record.write(&ch, 1);
+#endif
+		}
+
+#ifdef WRAP_READ
+		{
+			char more;
+			record.read(&more, 1);
+			while(more==1)
+			{
+				char size;
+				record.read(&size, 1);
+				byte* bytes = new byte[uint(size)];
+				record.read((char*)bytes, size);
+				handle_input(bytes);
+				delete[] bytes;
+				record.read(&more, 1);
 			}
 		}
+#endif
 
 		{
 			const float white[4] = {1.0f, 1.0f, 1.0f, 0.0f};
@@ -377,6 +423,11 @@ void run()
 	}
 }
 
+void exit()
+{
+	record.close();
+}
+
 int main()
 {
 	g_settings.width = 960;
@@ -388,14 +439,16 @@ int main()
 		init();
 		run();
 	}
-	catch(std::exception exception)
+	/*catch(std::exception exception)
 	{
 		std::cout << exception.what();
 		std::getchar();
+		exit();
 		return -1;
-	}
+	}*/
 	catch(Quit) 
 	{
+		exit();
 		return 0;
 	}
 }
