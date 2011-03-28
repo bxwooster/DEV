@@ -7,7 +7,7 @@
 #include "Recorder.h"
 #include "PixelShaderTracy.h"
 
-const bool read = false;
+const bool read = true;
 
 void run()
 {
@@ -15,7 +15,7 @@ void run()
 	PixelShaderTracy tracy(settings);
 
 	DefaultInput input;
-	Recorder recorder;
+	Recorder recorder("C:\\replay");
 
 	if(!read)
 		while(true)
@@ -55,13 +55,13 @@ int main()
 	{
 		run();
 	}
-	catch(std::exception exception)
-	{
-		using namespace std;
-		cout << "Exception:" << endl << exception.what() << endl;
-		getchar();
-		return -1;
-	}
+	//catch(std::exception exception)
+	//{
+	//	using namespace std;
+	//	cout << "Exception:" << endl << exception.what() << endl;
+	//	getchar();
+	//	return -1;
+	//}
 	catch(PixelShaderTracy::Quit) 
 	{
 		return 0;

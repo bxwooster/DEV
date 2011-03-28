@@ -3,7 +3,7 @@
 
 #include <Windows.h>
 
-#include <list>
+#include <vector>
 
 class DefaultInput
 {
@@ -21,7 +21,7 @@ public:
 	};
 
 	Mouse mouse;
-	std::list<Key> keys;
+	std::vector<Key> keys;
 
 	DefaultInput();
 	void flush();

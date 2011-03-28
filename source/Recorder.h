@@ -1,6 +1,7 @@
 #ifndef __Recorder_h__
 #define __Recorder_h__
 
+#include <string>
 #include <fstream>
 
 #include "DefaultInput.h"
@@ -12,7 +13,7 @@ class Recorder
 	fstream file;
 
 public:
-	Recorder();
+	Recorder(std::string path);
 	void write(DefaultInput& input);
 	void read(DefaultInput& input);
 };
