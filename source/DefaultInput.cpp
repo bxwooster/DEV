@@ -1,3 +1,4 @@
+#include "Ok.h"
 #include "DefaultInput.h"
 
 typedef unsigned int uint;
@@ -17,7 +18,7 @@ DefaultInput::DefaultInput()
 	info[1].usUsagePage = 1;
 	info[1].usUsage = 2; //Mouse
     
-	RegisterRawInputDevices( info, 2, sizeof(RAWINPUTDEVICE) );
+	OK_P( RegisterRawInputDevices( info, 2, sizeof(RAWINPUTDEVICE) ) );
 }
 
 void DefaultInput::flush()

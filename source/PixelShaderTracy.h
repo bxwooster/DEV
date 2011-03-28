@@ -6,8 +6,8 @@
 #include <d3d11.h>
 #include <d3dx11effect.h>
 
-#include "iptr.h"
-#include "matrix.h"
+#include "iPtr.h"
+#include "Matrix.h"
 
 #include "DefaultInput.h"
 
@@ -44,18 +44,15 @@ private:
 	iptr<ID3DX11Effect> effect;
 
 	ID3DX11EffectPass* pass;
-	ID3DX11EffectVectorVariable* var_eye;
 	ID3DX11EffectMatrixVariable* var_view;
-	ID3DX11EffectMatrixVariable* var_view_inv;
-	ID3DX11EffectScalarVariable* var_interp0;
-	ID3DX11EffectScalarVariable* var_interp1;
+	ID3DX11EffectScalarVariable* var_interp;
 	ID3DX11EffectScalarVariable* var_fov;
 	ID3DX11EffectScalarVariable* var_aspect;
 	ID3DX11EffectScalarVariable* var_steps;
 
 	Matrix4f start_view;
 	Matrix4f view;
-	float interp0, interp1;
+	float interp;
 	Vector4f eye;
 	int steps;
 

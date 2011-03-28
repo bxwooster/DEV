@@ -1,5 +1,5 @@
-#ifndef __common_macro_h__
-#define __common_macro_h__
+#ifndef __Macro_h__
+#define __Macro_h__
 
 #define __WIDEN(x) L ## x
 #define _WIDEN(x) __WIDEN(x)

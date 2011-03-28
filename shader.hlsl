@@ -1,13 +1,7 @@
 float4x4 view;
-float4x4 view_inv;
-float4 eye;
-
-float interp0;
-float interp1;
-
+float interp;
 float field_of_view;
 float aspect_ratio;
-
 int steps = 128;
 
 RasterizerState rs_default
@@ -29,9 +23,6 @@ float2 uv_to_ray(float2 uv)
 
 float distance_to_surface(float3 world)
 {
-	float sinz = sin( world.z );
-	float cosz = cos( world.z );
-
 	float torus = length(float2(length(world.xy) - 1.0, world.z)) - 0.25;
 	float cube = max(max(abs(world.x), abs(world.y)), abs(world.z)) - 1.0;
 	float sphere = length(world) - sqrt(2.0);
@@ -43,7 +34,7 @@ float distance_to_surface(float3 world)
 	float spheres = (length(frac(world * t + 0.5) - 0.5) - 0.25) / t;
 	float spheres2 = (length(frac(world * t2 + 0.5) - 0.5) - 0.25) / t2;
 
-	return lerp(spheres, cube, interp0);
+	return lerp(spheres, spheres2, interp);
 	//return cube;
 }
 

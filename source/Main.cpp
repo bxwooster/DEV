@@ -9,13 +9,13 @@
 
 void run()
 {
-	const bool write = false;
+	const bool write = true;
 
 	PixelShaderTracy::Settings settings = {480, 480, 0.25};
 	PixelShaderTracy tracy(settings);
 
 	DefaultInput input;
-	Recorder recorder("C:\\replay");
+	Recorder recorder("replay");
 
 	while(true)
 	{
@@ -43,8 +43,9 @@ int main()
 	catch(std::exception exception)
 	{
 		using namespace std;
-		cout << "Exception:" << endl << exception.what() << endl;
-		getchar();
+		//cout << "Exception:" << endl << exception.what() << endl;
+		//getchar();
+		MessageBox( GetConsoleWindow(), exception.what(), "Exception!", 0);
 		return -1;
 	}
 	catch(PixelShaderTracy::Quit) 

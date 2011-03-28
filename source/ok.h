@@ -2,13 +2,26 @@
 #define __common_ok_h__
 
 #include <exception>
+#include <string>
+#include <sstream>
 
-#include "string.h"
-#include "macro.h"
+#include "Macro.h"
+
+namespace common {   
+
+template <class T> 
+inline std::string to_string(const T& obj)
+{
+    std::stringstream stream;
+    stream << obj;
+    return stream.str();
+}
+
+}
 
 #define OK( RESULT ) \
     { \
-        HRESULT h = RESULT; \
+        HRESULT h = (RESULT); \
 		if ( FAILED(h) ) throw std::exception \
 			( ( INFO "\n" #RESULT "\nError code: " + common::to_string(h) ).c_str() ); \
     }
@@ -18,7 +31,7 @@
 
 #define OK_EX( RESULT, MESSAGE ) \
     { \
-        HRESULT h = RESULT; \
+        HRESULT h = (RESULT); \
 		if ( FAILED(h) ) throw std::exception \
 			( ( INFO "\n" #RESULT "\nError code: " + common::to_string(h) + \
 			"\n" + std::string(MESSAGE) ).c_str() ); \

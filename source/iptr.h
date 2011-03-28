@@ -1,5 +1,5 @@
-#ifndef __common_iptr_h__
-#define __common_iptr_h__
+#ifndef __iPtr_h__
+#define __iPtr_h__
 
 namespace common {
 

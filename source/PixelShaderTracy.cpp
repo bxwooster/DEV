@@ -5,13 +5,16 @@
 #include <d3dx11.h>
 #include <d3dx10math.h>
 
-#include "math.h"
-#include "ok.h"
+#include "Ok.h"
 #include "PixelShaderTracy.h"
 
 typedef unsigned int uint;
 
 using namespace common;
+
+#define PI 3.1415926535897932384626433832795
+const float to_radians = (float)(PI / 180.0);
+const float from_radians = (float)(180.0 / PI);
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
@@ -23,11 +26,12 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 			GetWindowRect( handle, &rect );
 			ClipCursor( &rect );
 			return 0;
-
 		case WM_KILLFOCUS:
 			ShowCursor(true);
 			ClipCursor( NULL );
 			return 0;
+		case WM_CLOSE:
+			throw PixelShaderTracy::Quit();
     } 
     return DefWindowProc(handle, msg, w, l);
 }
@@ -48,12 +52,12 @@ void PixelShaderTracy::on_key(int key, bool up)
 			steps++;
 			break;
 		case 33: // Pg Up
-			interp0 += 0.1f;
-			if (interp0 > 1) interp0 = 1;
+			interp += 0.1f;
+			if (interp > 1) interp = 1;
 			break;
 		case 34: // Pg Down
-			interp0 -= 0.1f;
-			if (interp0 < 0) interp0 = 0;
+			interp -= 0.1f;
+			if (interp < 0) interp = 0;
 			break;
 		}
 	}
@@ -92,7 +96,7 @@ PixelShaderTracy::PixelShaderTracy(Settings settings_)
 		OK( D3D11CreateDevice
 			( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D10_CREATE_DEVICE_DEBUG,
 			NULL, 0, D3D11_SDK_VERSION, &device, NULL, &context ) );
-	    
+
 		OK( device->QueryInterface
 			( __uuidof(IDXGIDevice1), (void**)&dxgi_device ) );
     
@@ -155,11 +159,8 @@ PixelShaderTracy::PixelShaderTracy(Settings settings_)
 			code->GetBufferSize(), 0, device, &effect ));
 
 		pass = effect->GetTechniqueByIndex(0)->GetPassByIndex(0);
-		var_eye = effect->GetVariableByName("eye")->AsVector();
 		var_view = effect->GetVariableByName("view")->AsMatrix();
-		var_view_inv = effect->GetVariableByName("view_inv")->AsMatrix();
-		var_interp0 = effect->GetVariableByName("interp0")->AsScalar();
-		var_interp1 = effect->GetVariableByName("interp1")->AsScalar();
+		var_interp = effect->GetVariableByName("interp")->AsScalar();
 		var_fov = effect->GetVariableByName("field_of_view")->AsScalar();
 		var_aspect = effect->GetVariableByName("aspect_ratio")->AsScalar();
 		var_steps = effect->GetVariableByName("steps")->AsScalar();
@@ -238,21 +239,11 @@ PixelShaderTracy::PixelShaderTracy(Settings settings_)
 		context->IASetInputLayout( input_layout );
 	}
 
-	interp0 = interp1 = 0;
-	eye = Vector4f::UnitX() * 5.0;
-	
-	{
-		D3DXVECTOR3 to(0.0, 0.0, 0.0);
-		D3DXVECTOR3 at(-1.0, 0.0, 0.0);
-		D3DXVECTOR3 up(0.0, 0.0, 1.0);
-		D3DXMatrixLookAtRH( (D3DXMATRIX*)(start_view.data()), &to, &at, &up );
-		start_view.transposeInPlace();
-		start_view = Matrix4f::Identity();
-		view = start_view;
-	}
+	interp = 0.0;
+	start_view = Matrix4f::Identity();
 
-	var_fov->SetFloat( 50.0 );
-	var_aspect->SetFloat( float(settings.width) / settings.height );
+	OK( var_fov->SetFloat( 50.0 ) );
+	OK( var_aspect->SetFloat( float(settings.width) / settings.height ) );
 }
 
 void PixelShaderTracy::step(DefaultInput& input)
@@ -274,17 +265,15 @@ void PixelShaderTracy::step(DefaultInput& input)
 		D3DXMatrixRotationYawPitchRoll( reinterpret_cast<D3DXMATRIX*>(rot.data()), 
 		camera.yaw*to_radians, camera.pitch*to_radians, 0.0);
 		rot.transposeInPlace();
-		view = rot * start_view;
+		view = start_view * rot;
 	}
 		
-	var_view->SetRawValue( (void*)view.data(), 0, sizeof(Matrix4f) );
-	var_view_inv->SetRawValue( (void*)view.inverse().data(), 0, sizeof(view) );
-	var_eye->SetRawValue( (void*)eye.data(), 0, sizeof(eye) );
-	var_interp0->SetFloat( interp0 );
-	var_interp1->SetFloat( interp1 );
-	var_steps->SetInt( steps );
+	OK( var_view->SetRawValue( (void*)view.data(), 0, sizeof(Matrix4f) ) );
+	OK( var_interp->SetFloat( interp ) );
+	OK( var_steps->SetInt( steps ) );
 	OK( pass->Apply( 0, context ) );
 
 	context->Draw( 6, 0 );
+
 	OK( swap_chain->Present( 0, 0 ) );
 }

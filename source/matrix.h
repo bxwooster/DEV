@@ -1,7 +1,7 @@
-#ifndef __common_matrix_h__
-#define __common_matrix_h__
+#ifndef __Matrix_h__
+#define __Matrix_h__
 
-#include "ok.h"
+#include "Ok.h"
 
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
 #define ei_assert OK_P
