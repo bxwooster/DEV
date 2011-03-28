@@ -4,7 +4,6 @@
 #include "ok.h"
 
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
-#define NOMINMAX
 #define ei_assert OK_P
 #include <Eigen/Core>
 #include <Eigen/LU> 
