@@ -7,8 +7,9 @@
 #include <string>
 #include <fstream>
 
-struct Input
+class Input
 {
+public:
 	struct Key
 	{
 		int key;
@@ -23,14 +24,15 @@ struct Input
 
 	Mouse mouse;
 	std::vector<Key> keys;
+
+	Input();
 };
 
-class DefaultInput : public Input
+class InputParser
 {
 public:
-	DefaultInput();
-	void flush();
-	void message(MSG msg);
+	InputParser();
+	void parse(MSG msg, Input& input);
 };
 
 class InputPlayer

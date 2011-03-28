@@ -27,14 +27,13 @@ float distance_to_surface(float3 world)
 	float cube = max(max(abs(world.x), abs(world.y)), abs(world.z)) - 1.0;
 	float sphere = length(world) - sqrt(2.0);
 	float cylinder = max(length(world.xy) - 1.0, abs(world.z) - 1.0);
-	float cone = max((0.5 * length(world.xy) + 0.5 * world.z) - 1.0, -world.z);
 
 	float t = 1;
 	float t2 = 0.25;
 	float spheres = (length(frac(world * t + 0.5) - 0.5) - 0.25) / t;
 	float spheres2 = (length(frac(world * t2 + 0.5) - 0.5) - 0.25) / t2;
 
-	return lerp(spheres, spheres2, interp);
+	return lerp(cube, spheres, interp);
 	//return cube;
 }
 

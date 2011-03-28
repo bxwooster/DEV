@@ -13,24 +13,25 @@ void run()
 	PixelShaderTracy::Settings settings = {480, 480, 0.25};
 	PixelShaderTracy tracy(settings);
 
-	DefaultInput input;
+	InputParser parser;
 	InputRecorder recorder("replay");
 	InputPlayer player("replay");
 
 	while(true)
 	{
+		Input input;
 		MSG msg;
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg); // this calls window procs!
 
-			if (write) input.message(msg);
+			if (write) parser.parse(msg, input);
 		}
 
 		write ? recorder.write(input) : player.read(input);
+
 		tracy.step(input);
-		if (write) input.flush();
 	}
 }
 

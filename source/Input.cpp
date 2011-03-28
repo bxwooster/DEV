@@ -5,10 +5,13 @@ typedef unsigned int uint;
 
 using std::fstream;
 
-DefaultInput::DefaultInput()
+Input::Input()
 {
-	flush();
+	mouse.x = mouse.y = 0;
+}
 
+InputParser::InputParser()
+{
 	RAWINPUTDEVICE info[2];
 	info[0].dwFlags = 0;
 	info[0].hwndTarget = NULL;
@@ -23,13 +26,7 @@ DefaultInput::DefaultInput()
 	OK_P( RegisterRawInputDevices( info, 2, sizeof(RAWINPUTDEVICE) ) );
 }
 
-void DefaultInput::flush()
-{
-	mouse.x = mouse.y = 0;
-	keys.clear();
-}
-
-void DefaultInput::message(MSG msg)
+void InputParser::parse(MSG msg, Input& input)
 {
 	if (WM_INPUT == msg.message)
 	{
@@ -47,14 +44,14 @@ void DefaultInput::message(MSG msg)
 		{
 			RAWKEYBOARD* data = &raw->data.keyboard;
 			bool up = data->Flags & RI_KEY_BREAK;
-			Key key = { data->VKey, up };
-			keys.push_back(key);
+			Input::Key key = { data->VKey, up };
+			input.keys.push_back(key);
 		}
 		else if ( RIM_TYPEMOUSE == raw->header.dwType )
 		{
 			RAWMOUSE* data = &raw->data.mouse;
-			mouse.x += data->lLastX;
-			mouse.y += data->lLastY;
+			input.mouse.x += data->lLastX;
+			input.mouse.y += data->lLastY;
 		}
 
 		delete[] bytes;
@@ -70,7 +67,7 @@ InputPlayer::InputPlayer(std::string path)
 InputRecorder::InputRecorder(std::string path)
 {
 	file.exceptions( fstream::failbit | fstream::badbit | fstream::eofbit );
-	file.open(path.c_str(), fstream::out | fstream::trunc | fstream::binary);
+	file.open(path.c_str(), fstream::out | fstream::binary); // | fstream::trunc
 }
 
 void InputRecorder::write(Input& input)
