@@ -79,19 +79,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\DefaultInput.cpp" />
+    <ClCompile Include="source\Input.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\PixelShaderTracy.cpp" />
-    <ClCompile Include="source\Recorder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\DefaultInput.h" />
+    <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\iPtr.h" />
     <ClInclude Include="source\Macro.h" />
     <ClInclude Include="source\Matrix.h" />
     <ClInclude Include="source\Ok.h" />
     <ClInclude Include="source\PixelShaderTracy.h" />
-    <ClInclude Include="source\Recorder.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.hlsl" />

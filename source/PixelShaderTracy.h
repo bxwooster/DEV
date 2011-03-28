@@ -9,7 +9,7 @@
 #include "iPtr.h"
 #include "Matrix.h"
 
-#include "DefaultInput.h"
+#include "Input.h"
 
 using namespace common;
 
@@ -61,7 +61,7 @@ private:
 
 public:
 	PixelShaderTracy(Settings settings_);
-	void step(DefaultInput& input);
+	void step(Input& input);
 };
 
 #endif

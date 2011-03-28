@@ -246,7 +246,7 @@ PixelShaderTracy::PixelShaderTracy(Settings settings_)
 	OK( var_aspect->SetFloat( float(settings.width) / settings.height ) );
 }
 
-void PixelShaderTracy::step(DefaultInput& input)
+void PixelShaderTracy::step(Input& input)
 {
 	{
 		const float white[4] = {1.0f, 1.0f, 1.0f, 0.0f};

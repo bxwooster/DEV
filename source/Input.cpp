@@ -1,7 +1,9 @@
 #include "Ok.h"
-#include "DefaultInput.h"
+#include "Input.h"
 
 typedef unsigned int uint;
+
+using std::fstream;
 
 DefaultInput::DefaultInput()
 {
@@ -56,5 +58,44 @@ void DefaultInput::message(MSG msg)
 		}
 
 		delete[] bytes;
+	}
+}
+
+InputPlayer::InputPlayer(std::string path)
+{
+	file.exceptions( fstream::failbit | fstream::badbit | fstream::eofbit );
+	file.open(path.c_str(), fstream::in | fstream::binary);
+}
+
+InputRecorder::InputRecorder(std::string path)
+{
+	file.exceptions( fstream::failbit | fstream::badbit | fstream::eofbit );
+	file.open(path.c_str(), fstream::out | fstream::trunc | fstream::binary);
+}
+
+void InputRecorder::write(Input& input)
+{
+	file.write( (char*)&input.mouse, sizeof(input.mouse));
+
+	int n = input.keys.size();
+	file.write( (char*)&n, sizeof(n) );
+
+	for(int i = 0; i < n; i++)
+	{
+		file.write( (char*)&input.keys[i], sizeof(input.keys[i]));
+	}
+}
+
+void InputPlayer::read(Input& input)
+{
+	file.read( (char*)&input.mouse, sizeof(input.mouse));
+
+	int n;
+	file.read( (char*)&n, sizeof(n) );
+	input.keys.resize(n);
+
+	for(int i = 0; i < n; i++)
+	{
+		file.read( (char*)&input.keys[i], sizeof(input.keys[i]));
 	}
 }

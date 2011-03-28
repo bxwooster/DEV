@@ -3,8 +3,7 @@
 #include <iostream>
 #include <Windows.h>
 
-#include "DefaultInput.h"
-#include "Recorder.h"
+#include "Input.h"
 #include "PixelShaderTracy.h"
 
 void run()
@@ -15,7 +14,8 @@ void run()
 	PixelShaderTracy tracy(settings);
 
 	DefaultInput input;
-	Recorder recorder("replay");
+	InputRecorder recorder("replay");
+	InputPlayer player("replay");
 
 	while(true)
 	{
@@ -28,7 +28,7 @@ void run()
 			if (write) input.message(msg);
 		}
 
-		write ? recorder.write(input) : recorder.read(input);
+		write ? recorder.write(input) : player.read(input);
 		tracy.step(input);
 		if (write) input.flush();
 	}
