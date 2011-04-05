@@ -38,7 +38,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(DXSDK_DIR)Samples\C++\Effects11\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)source\external;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\external;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
     <SourcePath>$(SourcePath)</SourcePath>
