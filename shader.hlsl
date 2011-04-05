@@ -91,4 +91,3 @@ technique11
 		SetRasterizerState( rs_default );
 	}
 }
-

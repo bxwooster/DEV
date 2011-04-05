@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "Ok.h"
 #include "Input.h"
 
@@ -34,11 +36,11 @@ void InputParser::parse(MSG msg, Input& input)
 		GetRawInputData((HRAWINPUT)msg.lParam, 
 			RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
                     
-		byte* bytes = new byte[size];
+		std::vector<byte> bytes(size);
 		GetRawInputData((HRAWINPUT)msg.lParam, 
-			RID_INPUT, bytes, &size, sizeof(RAWINPUTHEADER));
+			RID_INPUT, bytes.data(), &size, sizeof(RAWINPUTHEADER));
 
-		RAWINPUT* raw = (RAWINPUT*)bytes;
+		RAWINPUT* raw = (RAWINPUT*)bytes.data();
 
 		if ( RIM_TYPEKEYBOARD == raw->header.dwType )
 		{
@@ -53,8 +55,6 @@ void InputParser::parse(MSG msg, Input& input)
 			input.mouse.x += data->lLastX;
 			input.mouse.y += data->lLastY;
 		}
-
-		delete[] bytes;
 	}
 }
 

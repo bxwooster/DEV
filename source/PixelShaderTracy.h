@@ -62,6 +62,8 @@ private:
 public:
 	PixelShaderTracy(Settings settings_);
 	void step(Input& input);
+
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif

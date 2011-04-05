@@ -86,7 +86,6 @@
   <ItemGroup>
     <ClInclude Include="source\Input.h" />
     <ClInclude Include="source\iPtr.h" />
-    <ClInclude Include="source\Macro.h" />
     <ClInclude Include="source\Matrix.h" />
     <ClInclude Include="source\Ok.h" />
     <ClInclude Include="source\PixelShaderTracy.h" />

@@ -1,17 +1,20 @@
 #define NOMINMAX
 
 #include <iostream>
+#include <memory>
 #include <Windows.h>
 
 #include "Input.h"
 #include "PixelShaderTracy.h"
 
+using std::auto_ptr;
+
 void run()
 {
 	const bool write = true;
 
-	PixelShaderTracy::Settings settings = {480, 480, 0.25};
-	PixelShaderTracy tracy(settings);
+	PixelShaderTracy::Settings settings = {960, 960, 0.25};
+	auto_ptr<PixelShaderTracy> tracy( new PixelShaderTracy(settings) );
 
 	InputParser parser;
 	InputRecorder recorder("replay");
@@ -31,7 +34,7 @@ void run()
 
 		write ? recorder.write(input) : player.read(input);
 
-		tracy.step(input);
+		tracy->step(input);
 	}
 }
 

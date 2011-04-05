@@ -93,9 +93,11 @@ PixelShaderTracy::PixelShaderTracy(Settings settings_)
 		iptr<IDXGIDevice1> dxgi_device;
 		iptr<IDXGIAdapter1> dxgi_adapter;
 
+		D3D_FEATURE_LEVEL feature_level;
+
 		OK( D3D11CreateDevice
 			( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D10_CREATE_DEVICE_DEBUG,
-			NULL, 0, D3D11_SDK_VERSION, &device, NULL, &context ) );
+			NULL, 0, D3D11_SDK_VERSION, &device, &feature_level, &context ) );
 
 		OK( device->QueryInterface
 			( __uuidof(IDXGIDevice1), (void**)&dxgi_device ) );
