@@ -73,7 +73,7 @@ Freddy::Geometry Freddy::read_geom(const std::string& filename)
     
     char* vertices = new char[width];
     file.read( vertices, width ); 
-    
+
     D3D11_SUBRESOURCE_DATA data;
     data.pSysMem = vertices;
 
@@ -87,7 +87,7 @@ Freddy::Geometry Freddy::read_geom(const std::string& filename)
     OK( device->CreateBuffer
       ( &buffer_desc, &data, &geometry.buffer ) );
 
-	//delete[] vertices;
+	delete[] vertices;
 
 	return geometry;
 }
@@ -209,10 +209,13 @@ Freddy::Freddy(Settings settings_)
 		pass.hdr = effect->GetTechniqueByName("hdr")->GetPassByIndex(0);
 
 		var.accum = effect->GetVariableByName("accum")->AsShaderResource();
+		var.zbuffer = effect->GetVariableByName("zbuffer")->AsShaderResource();
+		var.gbuffer0 = effect->GetVariableByName("gbuffer0")->AsShaderResource();
+		var.gbuffer1 = effect->GetVariableByName("gbuffer1")->AsShaderResource();
 		var.aperture = effect->GetVariableByName("aperture")->AsScalar();
 		var.aspect_ratio = effect->GetVariableByName("aspect_ratio")->AsScalar();
 		var.field_of_view = effect->GetVariableByName("field_of_view")->AsScalar();
-		var.light_color = effect->GetVariableByName("light_color")->AsVector();
+		var.light_colour = effect->GetVariableByName("light_colour")->AsVector();
 		var.light_pos = effect->GetVariableByName("light_pos")->AsVector();
 		var.mViewProj = effect->GetVariableByName("mViewProj")->AsMatrix();
 		var.mView_I = effect->GetVariableByName("mView_I")->AsMatrix();
@@ -374,7 +377,7 @@ Freddy::Freddy(Settings settings_)
 		( accum, NULL, &accum_srv ) );
 	
 	OK( device->CreateRenderTargetView
-		( gbuffer1, NULL, &gbuffer0_rtv ) );
+		( gbuffer0, NULL, &gbuffer0_rtv ) );
 	OK( device->CreateRenderTargetView
 		( gbuffer1, NULL, &gbuffer1_rtv ) );
 	OK( device->CreateRenderTargetView
@@ -382,7 +385,7 @@ Freddy::Freddy(Settings settings_)
 
 	aperture = 1.0;
 
-	Object object = { Matrix4f::Identity(), read_geom("geometry//torus.geom")};
+	Object object = { Matrix4f::Identity(), read_geom("geometry//sphere.geom")};
 	objects.push_back(object);
 
 }
@@ -445,8 +448,8 @@ void Freddy::step(Input& input)
 	}
 
 	// step 1: render
-	ID3D11RenderTargetView* targets[2] = { window_rtv, gbuffer1_rtv };
-	context->OMSetRenderTargets(1, targets, NULL);
+	ID3D11RenderTargetView* targets[] = { gbuffer0_rtv, gbuffer1_rtv };
+	context->OMSetRenderTargets(2, targets, depth_dsv);
 
 	for (auto i = objects.begin(); i != objects.end(); i++)
 	{
@@ -468,44 +471,48 @@ void Freddy::step(Input& input)
 		context->Draw( object.geometry.count, 0 );
 	}
 
-	//// step 2: point lights
-	//context->IASetInputLayout( input_layout_quad );
-	//context->IASetVertexBuffers(0, 1, &quad.buffer, &quad.stride, &quad.offset);
-	//context->OMSetRenderTargets(1, &accum_rtv, NULL);
-	//
-	//for (int i=0; i<1; i++)
-	//{
-	//	Vector3f position = Vector3f::Zero();
-	//	OK( var.light_pos->SetRawValue
-	//		( (void*)position.data(), 0, sizeof(Vector3f) ) );
+	// step 2: point lights
+	context->IASetInputLayout( input_layout_quad );
+	context->IASetVertexBuffers(0, 1, &quad.buffer, &quad.stride, &quad.offset);
+	
+	context->OMSetRenderTargets(1, &accum_rtv, depth_dsv);
+	
+	OK( var.gbuffer0->SetResource( gbuffer0_srv ) );
+	OK( var.gbuffer1->SetResource( gbuffer1_srv ) );
 
-	//	Vector3f color = Vector3f::Unit(0);
-	//	OK( var.light_color->SetRawValue
-	//		( (void*)color.data(), 0, sizeof(Vector3f) ) );
+	for (int i=0; i<1; i++)
+	{
+		Vector3f position(1.0, 2.0, 1.0);
+		OK( var.light_pos->SetRawValue
+			( (void*)position.data(), 0, sizeof(Vector3f) ) );
 
-	//	OK( pass.light_point->Apply( 0, context ) );
-	//	context->Draw( quad.count, 0 );
-	//}
+		Vector3f colour(0.0, 0.0, 1.0);
+		OK( var.light_colour->SetRawValue
+			( (void*)colour.data(), 0, sizeof(Vector3f) ) );
 
-	//// step 3: ambient
-	//Vector3f color = Vector3f::Ones();
-	//OK( var.light_color->SetRawValue
-	//	( (void*)color.data(), 0, sizeof(Vector3f) ) );
+		OK( pass.light_point->Apply( 0, context ) );
+		context->Draw( quad.count, 0 );
+	}
 
-	//OK( pass.light_ambient->Apply( 0, context ) );
-	//context->Draw( quad.count, 0 );
+	// step 3: ambient
+	Vector3f colour(0.1, 0.1, 0.1);
+	OK( var.light_colour->SetRawValue
+		( (void*)colour.data(), 0, sizeof(Vector3f) ) );
 
-	//// step 4: sky
-	//OK( pass.sky->Apply( 0, context ) );
-	//context->Draw( quad.count, 0 );
+	OK( pass.light_ambient->Apply( 0, context ) );
+	context->Draw( quad.count, 0 );
 
-	//// step 5: "HDR"
-	//OK( var.aperture->SetFloat( aperture ) );
-	//OK( var.accum->SetResource( accum_srv ) );
+	// step 4: sky
+	OK( pass.sky->Apply( 0, context ) );
+	context->Draw( quad.count, 0 );
 
-	//context->OMSetRenderTargets(1, &window_rtv, NULL);
-	//OK( pass.hdr->Apply( 0, context ) );
-	//context->Draw( quad.count, 0 );
-	//
+	// step 5: "HDR"
+	OK( var.aperture->SetFloat( aperture ) );
+	OK( var.accum->SetResource( accum_srv ) );
+
+	context->OMSetRenderTargets(1, &window_rtv, NULL);
+	OK( pass.hdr->Apply( 0, context ) );
+	context->Draw( quad.count, 0 );
+	
 	OK( swap_chain->Present( 0, 0 ) );
 }

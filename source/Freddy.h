@@ -97,13 +97,16 @@ private:
 		ID3DX11EffectMatrixVariable* mView_I;
 
 		ID3DX11EffectVectorVariable* light_pos;
-		ID3DX11EffectVectorVariable* light_color;
+		ID3DX11EffectVectorVariable* light_colour;
 
 		ID3DX11EffectScalarVariable* field_of_view;
 		ID3DX11EffectScalarVariable* aspect_ratio;
 		ID3DX11EffectScalarVariable* aperture;
 
 		ID3DX11EffectShaderResourceVariable* accum;
+		ID3DX11EffectShaderResourceVariable* gbuffer0;
+		ID3DX11EffectShaderResourceVariable* gbuffer1;
+		ID3DX11EffectShaderResourceVariable* zbuffer;
 	} var;
 
 	Matrix4f proj;

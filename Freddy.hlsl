@@ -9,7 +9,7 @@ cbuffer per_view
 cbuffer per_light
 {
 	float3 light_pos;
-	float3 light_color;
+	float3 light_colour;
 }
 
 float aperture;
@@ -24,6 +24,7 @@ sampler smp;
 float field_of_view;
 float aspect_ratio;
 float surface_far = 100.0;
+float light_scale = 8.0;
 
 float eps = 3e-7;
 
@@ -67,12 +68,6 @@ struct Pixel
 	float3 normal : Normal;
 };
 
-struct GBuffer
-{
-	float4 first : SV_Target0;
-	float4 second : SV_Target1;
-};
-
 struct ScreenPixel
 {
 	float2 uv : Position;
@@ -106,20 +101,16 @@ float4 vs_prepass( float4 position : POSITION ) : SV_Position
 
 void vs_render( uint id : SV_VertexID, Vertex vertex, out Pixel pixel )
 {
-	float4 p;
-	if (id == 0) p = float4(0, 0, 0, 1);
-	if (id == 1) p = float4(0, 1, 0, 1);
-	if (id == 2) p = float4(2, 0, 0, 1);
-	//return;
-	vertex.position = p;
 	pixel.pos = mul( mWorldViewProj, vertex.position );
 	pixel.normal = normalize( mul( (float3x3)mWorldView, vertex.normal ) );
 }
 		
-void ps_render( Pixel pixel, out GBuffer gbuffer )
+void ps_render( Pixel pixel,
+	out float4 g0 : SV_Target0,
+	out float4 g1 : SV_Target1 )
 {
-	gbuffer.first.xyz = 1.0;//pixel.normal;
-	gbuffer.second.xyz = 1.0;//some color
+	g0.xyz = pixel.normal;
+	g1.xyz = 1.0; // some colour
 }
 
 void vs_fullscreen(uniform float depth, float2 position : POSITION, out ScreenPixel pixel)
@@ -135,18 +126,19 @@ float4 ps_light_point(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 	clip(1.0 - eps - z);
 	z = linear_z( z );
 	float4 view_pos = float4( view_ray * z, z, 1.0 );
-	float3 color = gbuffer1.Sample(smp, uv).xyz;
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
+	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float3 lightvec = light_pos.xyz - view_pos.xyz;
-    float rad = saturate(dot( normalize(lightvec), normal ));
+	float len = length(lightvec);
+    float radiance = saturate(dot( normalize(lightvec), normal )) / (len * len) * light_scale;
 
-	return float4(rad * light_color * color, 1.0);
+	return float4(radiance * light_colour * colour, 1.0);
 }
 
 float4 ps_light_ambient(float2 uv : Position) : SV_Target0
 {
-	float3 color = gbuffer1.Sample(smp, uv).xyz;
-	return float4(light_color * color, 1.0);
+	float3 colour = gbuffer1.Sample(smp, uv).xyz;
+	return float4(light_colour * colour, 1.0);
 }
 
 float4 ps_sky(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
@@ -192,6 +184,7 @@ technique11 light_point
 		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_light_point() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );
 	}
 }
@@ -203,6 +196,7 @@ technique11 sky
 		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(1.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_sky() ) );
 		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );
 	}
 }
