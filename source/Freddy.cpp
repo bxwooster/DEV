@@ -336,7 +336,7 @@ Freddy::Freddy(Settings settings_)
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.MipLevels = 1;
 
-		OK( device->CreateTexture2D( &desc, NULL, &depth ) );
+		OK( device->CreateTexture2D( &desc, NULL, &zbuffer ) );
 
 		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
@@ -356,7 +356,7 @@ Freddy::Freddy(Settings settings_)
 		desc.Texture2D.MipLevels = 1;
 
 		OK( device->CreateShaderResourceView
-		  ( depth, &desc, &depth_srv ));
+		  ( zbuffer, &desc, &zbuffer_srv ));
 	}
 
 	{
@@ -366,7 +366,7 @@ Freddy::Freddy(Settings settings_)
 		desc.Texture2D.MipSlice = 0;
 
 		OK( device->CreateDepthStencilView
-		  ( depth, &desc, &depth_dsv ));
+		  ( zbuffer, &desc, &zbuffer_dsv ));
 	}
 
 	OK( device->CreateShaderResourceView
@@ -385,8 +385,11 @@ Freddy::Freddy(Settings settings_)
 
 	aperture = 1.0;
 
-	Object object = { Matrix4f::Identity(), read_geom("geometry//sphere.geom")};
+	Object object = { Matrix4f::Identity(), read_geom("geometry//icosphere.geom")};
 	objects.push_back(object);
+
+	Object object2 = { Matrix4f::Identity(), read_geom("geometry//plane.geom")};
+	objects.push_back(object2);
 
 }
 
@@ -410,7 +413,7 @@ void Freddy::step(Input& input)
 		context->ClearRenderTargetView(gbuffer1_rtv, black);
 		context->ClearRenderTargetView(accum_rtv, black);
 		context->ClearDepthStencilView
-			(depth_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+			(zbuffer_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 	}
 	//matrices
 	
@@ -449,7 +452,7 @@ void Freddy::step(Input& input)
 
 	// step 1: render
 	ID3D11RenderTargetView* targets[] = { gbuffer0_rtv, gbuffer1_rtv };
-	context->OMSetRenderTargets(2, targets, depth_dsv);
+	context->OMSetRenderTargets(2, targets, zbuffer_dsv);
 
 	for (auto i = objects.begin(); i != objects.end(); i++)
 	{
@@ -475,10 +478,11 @@ void Freddy::step(Input& input)
 	context->IASetInputLayout( input_layout_quad );
 	context->IASetVertexBuffers(0, 1, &quad.buffer, &quad.stride, &quad.offset);
 	
-	context->OMSetRenderTargets(1, &accum_rtv, depth_dsv);
+	context->OMSetRenderTargets(1, &accum_rtv, NULL);
 	
 	OK( var.gbuffer0->SetResource( gbuffer0_srv ) );
 	OK( var.gbuffer1->SetResource( gbuffer1_srv ) );
+	OK( var.zbuffer->SetResource( zbuffer_srv ) );
 
 	for (int i=0; i<1; i++)
 	{
@@ -495,7 +499,7 @@ void Freddy::step(Input& input)
 	}
 
 	// step 3: ambient
-	Vector3f colour(0.1, 0.1, 0.1);
+	Vector3f colour(0.1f, 0.1f, 0.1f);
 	OK( var.light_colour->SetRawValue
 		( (void*)colour.data(), 0, sizeof(Vector3f) ) );
 
@@ -503,6 +507,8 @@ void Freddy::step(Input& input)
 	context->Draw( quad.count, 0 );
 
 	// step 4: sky
+	OK( var.zbuffer->SetResource( NULL ) );
+	context->OMSetRenderTargets(1, &accum_rtv, zbuffer_dsv);
 	OK( pass.sky->Apply( 0, context ) );
 	context->Draw( quad.count, 0 );
 

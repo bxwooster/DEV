@@ -60,14 +60,13 @@ private:
 	iptr<ID3D11RenderTargetView> window_rtv;
 	iptr<ID3DX11Effect> effect;
 
-	iptr<ID3D11Texture2D> depth;
-	iptr<ID3D11ShaderResourceView> depth_srv;
-	iptr<ID3D11DepthStencilView> depth_dsv;
+	iptr<ID3D11Texture2D> zbuffer;
+	iptr<ID3D11ShaderResourceView> zbuffer_srv;
+	iptr<ID3D11DepthStencilView> zbuffer_dsv;
 
 	iptr<ID3D11Texture2D> gbuffer0;
 	iptr<ID3D11ShaderResourceView> gbuffer0_srv;
 	iptr<ID3D11RenderTargetView> gbuffer0_rtv;
-
 	iptr<ID3D11Texture2D> gbuffer1;
 	iptr<ID3D11ShaderResourceView> gbuffer1_srv;
 	iptr<ID3D11RenderTargetView> gbuffer1_rtv;
