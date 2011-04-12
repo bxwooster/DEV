@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 #include "Input.h"
-#include "PixelShaderTracy.h"
+#include "Freddy.h"
 
 using std::auto_ptr;
 
@@ -13,8 +13,8 @@ void run()
 {
 	const bool write = true;
 
-	PixelShaderTracy::Settings settings = {960, 960, 0.25};
-	auto_ptr<PixelShaderTracy> tracy( new PixelShaderTracy(settings) );
+	Freddy::Settings settings = {960, 960, 0.25};
+	auto_ptr<Freddy> freddy( new Freddy(settings) );
 
 	InputParser parser;
 	InputRecorder recorder("replay");
@@ -34,7 +34,7 @@ void run()
 
 		write ? recorder.write(input) : player.read(input);
 
-		tracy->step(input);
+		freddy->step(input);
 	}
 }
 
@@ -52,7 +52,7 @@ int main()
 		MessageBox( GetConsoleWindow(), exception.what(), "Exception!", 0);
 		return -1;
 	}
-	catch(PixelShaderTracy::Quit) 
+	catch(Freddy::Quit) 
 	{
 		return 0;
 	}
