@@ -18,22 +18,23 @@ public:
 	{
 		Renderer::Settings r;
 		float mouse_sens;
+		float camera_speed;
 	};
 
 private:
 	Renderer renderer;
+	Physics physics;
 	Settings settings;
-
-	typedef Renderer::Object Object;
-	typedef Renderer::Light Light;
-	std::vector<Object, Eigen::aligned_allocator<Object>> objects;
-	std::vector<Light, Eigen::aligned_allocator<Light>> lights;
+	double dt;
 
 	void on_key(int key, bool up);
 	void on_mouse(long dx, long dy);
 public:
+	Renderer::ObjectData object;
+	Renderer::LightData light;
+
 	Freddy(Settings settings_);
-	void step(Input& input, double dt);
+	void step(Input& input, double dt_);
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

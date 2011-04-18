@@ -1,7 +1,9 @@
 cbuffer frame	
 {
-	float4x4 mViewProj;
-	float4x4 mView_I;
+	float4x4 view_proj;
+	float4x4 view_i;
+	float4x4 view;
+	float z_near;
 	float aperture;
 	float field_of_view;
 	float aspect_ratio;
@@ -9,8 +11,8 @@ cbuffer frame
 
 cbuffer object
 {
-	float4x4 mWorldViewProj;
-	float4x4 mWorldView;
+	float4x4 world_view_proj;
+	float4x4 world_view;
 }
 
 cbuffer light
@@ -26,13 +28,12 @@ Texture2D accum;
 
 sampler smp;
 
-const float light_scale = 8.0;
-const float eps = 3e-7;
+static const float light_scale = 10.0;
+static const float eps = 3e-7;
 
 RasterizerState rs_default
 {
 	FrontCounterClockwise = true; 
-	CullMode = none;
 };
 
 BlendState bs_none
@@ -78,8 +79,7 @@ struct ScreenPixel
 
 float linear_z(float depth)
 {
-	float zn = 0.01;
-	return zn / ( depth - 1.0 );
+	return z_near / ( depth - 1.0 );
 }
 
 float2 uv_to_ray(float2 uv)
@@ -89,10 +89,16 @@ float2 uv_to_ray(float2 uv)
 	return uv * float2(-aspect_ratio, 1.0) * tan(alpha);
 }
 
-void vs_render( uint id : SV_VertexID, Vertex vertex, out Pixel pixel )
+void vs_plane( float2 position : POSITION, out Pixel pixel )
 {
-	pixel.pos = mul( mWorldViewProj, vertex.position );
-	pixel.normal = normalize( mul( (float3x3)mWorldView, vertex.normal ) );
+	pixel.pos = mul( view_proj, float4(position, 0, 1) );
+	pixel.normal = normalize( mul( view, float3(0, 0, 1) ) );
+}
+
+void vs_render( Vertex vertex, out Pixel pixel )
+{
+	pixel.pos = mul( world_view_proj, vertex.position );
+	pixel.normal = normalize( mul( world_view, vertex.normal ) );
 }
 		
 void ps_render( Pixel pixel,
@@ -116,7 +122,7 @@ float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Ta
 	clip(1.0 - eps - z);
 	z = linear_z( z );
 	float4 view_pos = float4( view_ray * z, z, 1.0 );
-float3 normal = gbuffer0.Sample(smp, uv).xyz;
+	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float3 lightvec = light_pos.xyz - view_pos.xyz;
 	float len = length(lightvec);
@@ -136,7 +142,7 @@ float4 ps_sky(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 	float4 horizon = float4(0.6, 0.75, 0.9, 1.0);
 	float4 zenith = float4(0.25, 0.35, 0.9, 1.0);
 
-	float3 world_ray = mul( (float4x3)mView_I, float3(view_ray, 1.0) );
+	float3 world_ray = mul( (float4x3)view_i, float3(view_ray, 1.0) );
 	return lerp(horizon, zenith, dot( world_ray, float3(0.0, 0.0, -1.0) ) );
 }
 
@@ -150,6 +156,16 @@ technique11 render
 	pass
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_render() ) );
+		SetPixelShader( CompileShader( ps_4_1, ps_render() ) );
+		SetRasterizerState( rs_default );
+	}
+}
+
+technique11 plane
+{
+	pass
+	{
+		SetVertexShader( CompileShader( vs_4_1, vs_plane() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_render() ) );
 		SetRasterizerState( rs_default );
 	}

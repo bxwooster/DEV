@@ -15,7 +15,7 @@ void run()
 {
 	const bool write = true;
 
-	Freddy::Settings settings = {960, 960, 0.25};
+	Freddy::Settings settings = {960, 960, 0.25, 5.0};
 	auto_ptr<Freddy> freddy( new Freddy(settings) );
 
 	InputParser parser;

@@ -11,11 +11,14 @@
 const float to_radians = (float)(PI / 180.0);
 const float from_radians = (float)(180.0 / PI);
 
-Renderer::Renderer(Settings settings_) :
+Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 	settings(settings_),
-	window(settings.width, settings.height)
+	window(settings.width, settings.height),
+	object(object_),
+	light(light_)
 {
 	camera.yaw = camera.pitch = 0.0;
+	z_near = 0.01f;
 	// 
 	{
 		iptr<IDXGIDevice1> dxgi_device;
@@ -99,14 +102,16 @@ Renderer::Renderer(Settings settings_) :
 		var.gbuffer0 = effect->GetVariableByName("gbuffer0")->AsShaderResource();
 		var.gbuffer1 = effect->GetVariableByName("gbuffer1")->AsShaderResource();
 		var.aperture = effect->GetVariableByName("aperture")->AsScalar();
+		var.z_near = effect->GetVariableByName("z_near")->AsScalar();
 		var.aspect_ratio = effect->GetVariableByName("aspect_ratio")->AsScalar();
 		var.field_of_view = effect->GetVariableByName("field_of_view")->AsScalar();
 		var.light_colour = effect->GetVariableByName("light_colour")->AsVector();
 		var.light_pos = effect->GetVariableByName("light_pos")->AsVector();
-		var.mViewProj = effect->GetVariableByName("mViewProj")->AsMatrix();
-		var.mView_I = effect->GetVariableByName("mView_I")->AsMatrix();
-		var.mWorldView = effect->GetVariableByName("mWorldView")->AsMatrix();
-		var.mWorldViewProj = effect->GetVariableByName("mWorldViewProj")->AsMatrix();
+		var.view_proj = effect->GetVariableByName("view_proj")->AsMatrix();
+		var.view_i = effect->GetVariableByName("view_i")->AsMatrix();
+		var.view = effect->GetVariableByName("view")->AsMatrix();
+		var.world_view = effect->GetVariableByName("world_view")->AsMatrix();
+		var.world_view_proj = effect->GetVariableByName("world_view_proj")->AsMatrix();
 	}
 
 	{
@@ -183,25 +188,15 @@ Renderer::Renderer(Settings settings_) :
 	}
 
 	{
-		float field_of_view = 90.0;
+		float field_of_view = 60;
 		float aspect_ratio = float(settings.width) / settings.height;
 
-		float zn = 0.01f;
-		float eps = 3e-7f;
-		//float zf = 1000.0f;
-		float y_scale = 1 / tanf( field_of_view * to_radians / 2.0f );
-		float x_scale = y_scale / aspect_ratio;
-		float c = eps - 1;//zf / (zn - zf);
-		float d = zn * c;
-		proj << x_scale, 0, 0, 0,
-					0, y_scale, 0, 0,
-					0, 0, c, d,
-					0, 0, -1, 0;
-
-		start_view << 0.0, 1.0, 0.0, 0.0,
-					  0.0, 0.0, 1.0, -1.0,
-					  1.0, 0.0, 0.0, -4.0,
-					 0.0, 0.0, 0.0, 1.0;
+		float y = 1 / tanf( field_of_view * to_radians / 2.0f );
+		float x = y / aspect_ratio;
+		proj << x, 0, 0, 0,
+				0, y, 0, 0,
+				0, 0, -1, -z_near,
+				0, 0, -1, 0;
 
 		OK( var.field_of_view->SetFloat( field_of_view ) );
 		OK( var.aspect_ratio->SetFloat( aspect_ratio ) );
@@ -266,12 +261,11 @@ Renderer::Renderer(Settings settings_) :
 	OK( device->CreateRenderTargetView
 		( accum, NULL, &accum_rtv ) );
 
-	aperture = 1.0;
+	aperture = 1.0f;
+	eye = Vector3f(10, 0, 20);
 }
 
-void Renderer::render(
-	std::vector<Object, Eigen::aligned_allocator<Object>>& objects,
-	std::vector<Light, Eigen::aligned_allocator<Light>>& lights )
+void Renderer::render()
 {
 	//clear
 	{
@@ -294,19 +288,29 @@ void Renderer::render(
 	D3DXMatrixRotationYawPitchRoll
 		( reinterpret_cast<D3DXMATRIX*>(rot2.data()), 
 		0.0, camera.pitch * to_radians, 0.0);
-	Matrix4f view = rot2.transpose() * rot1.transpose() * start_view;
-	
-	Matrix4f view_I( view.inverse() );
-	OK( var.mView_I->SetMatrix( view_I.data() ));
 
-	Matrix4f viewProj( proj * view );
-	OK( var.mViewProj->SetMatrix( viewProj.data() ));
+	Matrix4f axis;
+	axis << 0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			1.0, 0.0, 0.0, 0.0,
+		    0.0, 0.0, 0.0, 1.0;
+	Matrix4f translate = Matrix4f::Identity();
+	translate.col(3) << -eye, 1.0;
+	Matrix4f view = rot2.transpose() * rot1.transpose() * axis  * translate;
+	
+	Matrix4f view_i( view.inverse() );
+	OK( var.view_i->SetMatrix( view_i.data() ));
+	OK( var.view->SetMatrix( view.data() ));
+
+	Matrix4f view_proj( proj * view );
+	OK( var.view_proj->SetMatrix( view_proj.data() ));
 
 	Vector3f colour(0.1f, 0.1f, 0.1f);
 	OK( var.light_colour->SetRawValue
 		( (void*)colour.data(), 0, sizeof(Vector3f) ) );
 
 	OK( var.aperture->SetFloat( aperture ) );
+	OK( var.z_near->SetFloat( z_near ) );
 
 	//viewport
 	{
@@ -332,22 +336,19 @@ void Renderer::render(
 	context->OMSetRenderTargets(2, targets, zbuffer_dsv);
 
 
-	for (auto i = objects.begin(); i != objects.end(); i++)
+	for (int i = 0; i < object.transforms.size(); i++)
 	{
-		Object& object = *i;
-		Matrix4f worldView = view * object.world;
-		Matrix4f worldViewProj = viewProj * object.world;
+		Matrix4f world_view = view * object.transforms[i];
+		Matrix4f world_view_proj = proj * world_view;
 	
-		OK( var.mWorldView->SetMatrix( worldView.data() ));
-
-		OK( var.mWorldViewProj->SetMatrix( worldViewProj.data() ));
-
+		OK( var.world_view->SetMatrix( world_view.data() ));
+		OK( var.world_view_proj->SetMatrix( world_view_proj.data() ));
 		OK( pass.render->Apply( 0, context ) );
 		
 		context->IASetVertexBuffers
-			(0, 1, &object.geometry.buffer, &object.geometry.stride, &object.geometry.offset);
+			(0, 1, &object.geometries[i].buffer, &object.geometries[i].stride, &object.geometries[i].offset);
 		
-		context->Draw( object.geometry.count, 0 );
+		context->Draw( object.geometries[i].count, 0 );
 	}
 
 	// step 2: lights
@@ -360,15 +361,15 @@ void Renderer::render(
 	OK( var.gbuffer1->SetResource( gbuffer1_srv ) );
 	OK( var.zbuffer->SetResource( zbuffer_srv ) );
 
-	for (auto i = lights.begin(); i != lights.end(); i++)
+	for (int i = 0; i < light.transforms.size(); i++)
 	{
-		Vector4f position( (*i).world.col(3) );
+		Vector4f position(view * light.transforms[i].col(3));
 		OK( var.light_pos->SetRawValue
 			( (void*)position.data(), 0, sizeof(Vector3f) ) );
 
-		Vector3f& colour = (*i).colour;
+		Vector3f& colour = light.colours[i];
 		OK( var.light_colour->SetRawValue
-			( (void*) colour.data(), 0, sizeof(Vector3f) ) );
+			( (void*)colour.data(), 0, sizeof(Vector3f) ) );
 
 		OK( pass.directional_light->Apply( 0, context ) );
 		context->Draw( quad.count, 0 );

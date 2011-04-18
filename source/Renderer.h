@@ -1,6 +1,7 @@
 #ifndef __Renderer_h__
 #define __Renderer_h__
 
+#include "LinearMath/btAlignedObjectArray.h"
 #include "Window.h"
 #include "Matrix.h"
 #include "iPtr.h"
@@ -29,18 +30,18 @@ public:
 		uint count;
 	};
 
-	struct Object
+	struct ObjectData
 	{
-		Matrix4f world;
-		Geometry geometry;
+		btAlignedObjectArray<Matrix4f> transforms;
+		std::vector<Geometry> geometries;
 	};
 
-	struct Light
+	struct LightData
 	{
-		Matrix4f world;
-		Vector3f colour;
+		btAlignedObjectArray<Matrix4f> transforms;
+		btAlignedObjectArray<Vector3f> colours;
 	};
-	
+
 private:
 	iptr<ID3D11Device> device;
 	iptr<ID3D11DeviceContext> context;
@@ -79,10 +80,11 @@ private:
 
 	struct
 	{
-		ID3DX11EffectMatrixVariable* mWorldViewProj;
-		ID3DX11EffectMatrixVariable* mWorldView;
-		ID3DX11EffectMatrixVariable* mViewProj;
-		ID3DX11EffectMatrixVariable* mView_I;
+		ID3DX11EffectMatrixVariable* world_view_proj;
+		ID3DX11EffectMatrixVariable* world_view;
+		ID3DX11EffectMatrixVariable* view_proj;
+		ID3DX11EffectMatrixVariable* view;
+		ID3DX11EffectMatrixVariable* view_i;
 
 		ID3DX11EffectVectorVariable* light_pos;
 		ID3DX11EffectVectorVariable* light_colour;
@@ -90,6 +92,7 @@ private:
 		ID3DX11EffectScalarVariable* field_of_view;
 		ID3DX11EffectScalarVariable* aspect_ratio;
 		ID3DX11EffectScalarVariable* aperture;
+		ID3DX11EffectScalarVariable* z_near;
 
 		ID3DX11EffectShaderResourceVariable* accum;
 		ID3DX11EffectShaderResourceVariable* gbuffer0;
@@ -108,15 +111,16 @@ public:
 		float pitch;
 	} camera;
 
+	float z_near;
 	Matrix4f proj;
-	Matrix4f start_view;
+	Vector3f eye;
 	float aperture;
 	Vector3f ambient;
+	ObjectData& object;
+	LightData& light;
 	
-	Renderer(Settings);
-	void render(
-		std::vector<Object, Eigen::aligned_allocator<Object>>& objects,
-		std::vector<Light, Eigen::aligned_allocator<Light>>& lights );
+	Renderer(ObjectData&, LightData&, Settings);
+	void render();
 
 	Geometry read_geom(const std::string& filename);
 
