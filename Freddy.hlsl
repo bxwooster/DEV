@@ -1,18 +1,23 @@
-cbuffer per_view
+cbuffer frame	
+{
+	float4x4 mViewProj;
+	float4x4 mView_I;
+	float aperture;
+	float field_of_view;
+	float aspect_ratio;
+}
+
+cbuffer object
 {
 	float4x4 mWorldViewProj;
 	float4x4 mWorldView;
-	float4x4 mViewProj;
-	float4x4 mView_I;
 }
 
-cbuffer per_light
+cbuffer light
 {
 	float3 light_pos;
 	float3 light_colour;
 }
-
-float aperture;
 
 Texture2D gbuffer0;
 Texture2D gbuffer1;
@@ -21,12 +26,8 @@ Texture2D accum;
 
 sampler smp;
 
-float field_of_view;
-float aspect_ratio;
-float surface_far = 100.0;
-float light_scale = 8.0;
-
-float eps = 3e-7;
+const float light_scale = 8.0;
+const float eps = 3e-7;
 
 RasterizerState rs_default
 {
@@ -75,15 +76,9 @@ struct ScreenPixel
 	float4 pos : SV_Position;
 };
 
-float2 cmul(float2 a, float2 b)
-{
-	return float2( a.x * b.x - a.y * b.y, a.x * b.y + b.x * a.y );
-}
-
 float linear_z(float depth)
 {
 	float zn = 0.01;
-	//float zf = 1000.0;
 	return zn / ( depth - 1.0 );
 }
 
@@ -92,11 +87,6 @@ float2 uv_to_ray(float2 uv)
 	float alpha = radians(field_of_view) * 0.5;
 	uv = uv * 2.0 - 1.0;
 	return uv * float2(-aspect_ratio, 1.0) * tan(alpha);
-}
-
-float4 vs_prepass( float4 position : POSITION ) : SV_Position
-{
-	return mul( mWorldViewProj, position );
 }
 
 void vs_render( uint id : SV_VertexID, Vertex vertex, out Pixel pixel )
@@ -120,22 +110,22 @@ void vs_fullscreen(uniform float depth, float2 position : POSITION, out ScreenPi
 	pixel.view_ray = uv_to_ray(pixel.uv);
 }
 
-float4 ps_light_point(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
+float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 {
 	float z = zbuffer.Sample(smp, uv).x;
 	clip(1.0 - eps - z);
 	z = linear_z( z );
 	float4 view_pos = float4( view_ray * z, z, 1.0 );
-	float3 normal = gbuffer0.Sample(smp, uv).xyz;
+float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float3 lightvec = light_pos.xyz - view_pos.xyz;
 	float len = length(lightvec);
-    float radiance = saturate(dot( normalize(lightvec), normal )) / (len * len) * light_scale;
+    float radiance = max(0.0, dot( lightvec, normal )) / (len * len * len) * light_scale;
 
 	return float4(radiance * light_colour * colour, 1.0);
 }
 
-float4 ps_light_ambient(float2 uv : Position) : SV_Target0
+float4 ps_ambient_light(float2 uv : Position) : SV_Target0
 {
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	return float4(light_colour * colour, 1.0);
@@ -165,24 +155,24 @@ technique11 render
 	}
 }
 
-technique11 light_ambient
+technique11 ambient_light
 {
 	pass
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_light_ambient() ) );
+		SetPixelShader( CompileShader( ps_4_1, ps_ambient_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );
 	}
 }
 
-technique11 light_point
+technique11 directional_light
 {
 	pass
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_light_point() ) );
+		SetPixelShader( CompileShader( ps_4_1, ps_directional_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );

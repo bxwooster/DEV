@@ -4,7 +4,7 @@
 #include "Ok.h"
 
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
-#define ei_assert OK_P
+#define eigen_assert OK_P
 
 #include <Eigen/Core>
 #include <Eigen/LU> 

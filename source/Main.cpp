@@ -4,8 +4,10 @@
 #include <memory>
 #include <Windows.h>
 
+#include "Window.h"
 #include "Input.h"
 #include "Freddy.h"
+#include "Timer.h"
 
 using std::auto_ptr;
 
@@ -19,6 +21,8 @@ void run()
 	InputParser parser;
 	InputRecorder recorder("replay");
 	InputPlayer player("replay");
+
+	Timer timer;
 
 	while(true)
 	{
@@ -34,7 +38,7 @@ void run()
 
 		write ? recorder.write(input) : player.read(input);
 
-		freddy->step(input);
+		freddy->step(input, timer.elapsed() );
 	}
 }
 
@@ -46,9 +50,6 @@ int main()
 	}
 	catch(std::exception exception)
 	{
-		using namespace std;
-		//cout << "Exception:" << endl << exception.what() << endl;
-		//getchar();
 		MessageBox( GetConsoleWindow(), exception.what(), "Exception!", 0);
 		return -1;
 	}
