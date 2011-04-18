@@ -191,10 +191,10 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		float field_of_view = 60;
 		float aspect_ratio = float(settings.width) / settings.height;
 
-		float y = 1 / tanf( field_of_view * to_radians / 2.0f );
-		float x = y / aspect_ratio;
-		proj << x, 0, 0, 0,
-				0, y, 0, 0,
+		float ys = 1 / tanf( field_of_view * to_radians / 2.0f );
+		float xs = ys / aspect_ratio;
+		proj << xs, 0, 0, 0,
+				0, ys, 0, 0,
 				0, 0, -1, -z_near,
 				0, 0, -1, 0;
 
@@ -263,6 +263,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 
 	aperture = 1.0f;
 	eye = Vector3f(10, 0, 20);
+	ambient = Vector3f(0.05, 0.04, 0.05);
 }
 
 void Renderer::render()
@@ -376,8 +377,10 @@ void Renderer::render()
 	}
 
 	// step 3: ambient
+	OK( var.light_colour->SetRawValue
+		( (void*)ambient.data(), 0, sizeof(Vector3f) ) );
 	OK( pass.ambient_light->Apply( 0, context ) );
-	//context->Draw( quad.count, 0 );
+	context->Draw( quad.count, 0 );
 
 	// step 4: sky
 	context->OMSetRenderTargets(1, &accum_rtv, zbuffer_dsv);
