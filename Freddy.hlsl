@@ -15,15 +15,22 @@ cbuffer object
 	float4x4 world_view;
 }
 
+cbuffer object_z
+{
+	float4x4 world_lightview_lightproj;
+}
+
 cbuffer light
 {
 	float3 light_pos;
 	float3 light_colour;
+	float4x4 reproject;
 }
 
 Texture2D gbuffer0;
 Texture2D gbuffer1;
 Texture2D zbuffer;
+Texture2D shadowmap;
 Texture2D accum;
 
 sampler smp;
@@ -79,7 +86,7 @@ struct ScreenPixel
 
 float linear_z(float depth)
 {
-	return z_near / ( depth - 1.0 );
+	return z_near / ( 1.0 - depth);
 }
 
 float2 uv_to_ray(float2 uv)
@@ -89,16 +96,15 @@ float2 uv_to_ray(float2 uv)
 	return uv * float2(-aspect_ratio, 1.0) * tan(alpha);
 }
 
-void vs_plane( float2 position : POSITION, out Pixel pixel )
-{
-	pixel.pos = mul( view_proj, float4(position, 0, 1) );
-	pixel.normal = normalize( mul( view, float3(0, 0, 1) ) );
-}
-
 void vs_render( Vertex vertex, out Pixel pixel )
 {
 	pixel.pos = mul( world_view_proj, vertex.position );
 	pixel.normal = normalize( mul( world_view, vertex.normal ) );
+}
+
+void vs_render_z( Vertex vertex, out float4 position : SV_Position )
+{
+	position = mul( world_lightview_lightproj, vertex.position );
 }
 		
 void ps_render( Pixel pixel,
@@ -118,15 +124,24 @@ void vs_fullscreen(uniform float depth, float2 position : POSITION, out ScreenPi
 
 float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 {
-	float z = zbuffer.Sample(smp, uv).x;
-	clip(1.0 - eps - z);
-	z = linear_z( z );
-	float4 view_pos = float4( view_ray * z, z, 1.0 );
+	return float4(light_colour * (shadowmap.Sample(smp, uv).x - 0.9) / 0.1, 1.0);
+
+	float z_neg = -linear_z(zbuffer.Sample(smp, uv).x);
+	float4 surface_pos = float4( view_ray * z_neg, z_neg, 1.0 );
+	float4 reprojected = mul(reproject, surface_pos);
+	float in_front = reprojected.w > 0;
+	reprojected /= reprojected.w;
+	float inside_cone = length(reprojected.xy) < 1;
+	float s = linear_z(shadowmap.Sample(smp, reprojected.xy * 0.5 + 0.5).x);
+
+	float3 lightvec = light_pos - surface_pos.xyz;
+	float l = length(lightvec);
+
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
-	float3 lightvec = light_pos.xyz - view_pos.xyz;
-	float len = length(lightvec);
-    float radiance = max(0.0, dot( lightvec, normal )) / (len * len * len) * light_scale;
+
+	float bias = 0.3;
+    float radiance = (l < s + bias) * in_front * inside_cone * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
 	return float4(radiance * light_colour * colour, 1.0);
 }
@@ -161,15 +176,16 @@ technique11 render
 	}
 }
 
-technique11 plane
+technique11 render_z
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_plane() ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_render() ) );
+		SetVertexShader( CompileShader( vs_4_1, vs_render_z() ) );
+		SetPixelShader( NULL );
 		SetRasterizerState( rs_default );
 	}
 }
+
 
 technique11 ambient_light
 {

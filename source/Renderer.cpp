@@ -1,6 +1,7 @@
 #define D3D11_DEBUG_INFO
 #define NOMINMAX
 
+#include <iostream>
 #include <fstream>
 #include <d3dx11.h>
 #include <d3dx10math.h>
@@ -18,7 +19,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 	light(light_)
 {
 	camera.yaw = camera.pitch = 0.0;
-	z_near = 0.01f;
+	z_near = 0.1f;
 	// 
 	{
 		iptr<IDXGIDevice1> dxgi_device;
@@ -92,6 +93,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 			code->GetBufferSize(), 0, device, &effect ));
 
 		pass.render = effect->GetTechniqueByName("render")->GetPassByIndex(0);
+		pass.render_z = effect->GetTechniqueByName("render_z")->GetPassByIndex(0);
 		pass.directional_light = effect->GetTechniqueByName("directional_light")->GetPassByIndex(0);
 		pass.ambient_light = effect->GetTechniqueByName("ambient_light")->GetPassByIndex(0);
 		pass.sky = effect->GetTechniqueByName("sky")->GetPassByIndex(0);
@@ -99,6 +101,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 
 		var.accum = effect->GetVariableByName("accum")->AsShaderResource();
 		var.zbuffer = effect->GetVariableByName("zbuffer")->AsShaderResource();
+		var.shadowmap = effect->GetVariableByName("shadowmap")->AsShaderResource();
 		var.gbuffer0 = effect->GetVariableByName("gbuffer0")->AsShaderResource();
 		var.gbuffer1 = effect->GetVariableByName("gbuffer1")->AsShaderResource();
 		var.aperture = effect->GetVariableByName("aperture")->AsScalar();
@@ -110,8 +113,10 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		var.view_proj = effect->GetVariableByName("view_proj")->AsMatrix();
 		var.view_i = effect->GetVariableByName("view_i")->AsMatrix();
 		var.view = effect->GetVariableByName("view")->AsMatrix();
+		var.reproject = effect->GetVariableByName("reproject")->AsMatrix();
 		var.world_view = effect->GetVariableByName("world_view")->AsMatrix();
 		var.world_view_proj = effect->GetVariableByName("world_view_proj")->AsMatrix();
+		var.world_lightview_lightproj = effect->GetVariableByName("world_lightview_lightproj")->AsMatrix();
 	}
 
 	{
@@ -198,14 +203,19 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 				0, 0, -1, -z_near,
 				0, 0, -1, 0;
 
+		view_axis << 0.0, 1.0, 0.0, 0.0,
+					 0.0, 0.0, 1.0, 0.0,
+					 1.0, 0.0, 0.0, 0.0,
+					 0.0, 0.0, 0.0, 1.0;
+
 		OK( var.field_of_view->SetFloat( field_of_view ) );
 		OK( var.aspect_ratio->SetFloat( aspect_ratio ) );
 	}
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(desc) );
-		desc.Width = settings.width;
-		desc.Height = settings.height;
+		desc.Width = 512;
+		desc.Height = 512; //!
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
 		desc.ArraySize = 1;
@@ -214,6 +224,10 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.MipLevels = 1;
 
+		OK( device->CreateTexture2D( &desc, NULL, &shadowmap ) );
+
+		desc.Width = settings.width;
+		desc.Height = settings.height;
 		OK( device->CreateTexture2D( &desc, NULL, &zbuffer ) );
 
 		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -225,6 +239,26 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 		OK( device->CreateTexture2D( &desc, NULL, &gbuffer1 ) );
+	}
+
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
+		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		desc.Format = DXGI_FORMAT_R32_FLOAT;
+		desc.Texture2D.MipLevels = 1;
+
+		OK( device->CreateShaderResourceView
+		  ( shadowmap, &desc, &shadowmap_srv ));
+	}
+
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
+		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		desc.Format = DXGI_FORMAT_D32_FLOAT;
+		desc.Texture2D.MipSlice = 0;
+
+		OK( device->CreateDepthStencilView
+		  ( shadowmap, &desc, &shadowmap_dsv ));
 	}
 
 	{
@@ -261,8 +295,25 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 	OK( device->CreateRenderTargetView
 		( accum, NULL, &accum_rtv ) );
 
+	//viewports
+	{			
+		viewport_screen.Width = float(settings.width);
+		viewport_screen.Height = float(settings.height);
+		viewport_screen.MinDepth = 0.0f;
+		viewport_screen.MaxDepth = 1.0f;
+		viewport_screen.TopLeftX = 0.0f;
+		viewport_screen.TopLeftY = 0.0f;
+	   
+		viewport_shadowmap.Width = float(512);
+		viewport_shadowmap.Height = float(512); //!
+		viewport_shadowmap.MinDepth = 0.0f;
+		viewport_shadowmap.MaxDepth = 1.0f;
+		viewport_shadowmap.TopLeftX = 0.0f;
+		viewport_shadowmap.TopLeftY = 0.0f;
+	}
+
 	aperture = 1.0f;
-	eye = Vector3f(10, 0, 20);
+	eye = Vector3f(5, 0, 5);
 	ambient = Vector3f(0.05, 0.04, 0.05);
 }
 
@@ -280,24 +331,20 @@ void Renderer::render()
 		context->ClearRenderTargetView(accum_rtv, black);
 		context->ClearDepthStencilView
 			(zbuffer_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+		context->ClearDepthStencilView
+			(shadowmap_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
 	}
 	
-	Matrix4f rot1, rot2;
+	Matrix4f rot;
 	D3DXMatrixRotationYawPitchRoll
-		( reinterpret_cast<D3DXMATRIX*>(rot1.data()), 
-		camera.yaw * to_radians, 0.0, 0.0);
-	D3DXMatrixRotationYawPitchRoll
-		( reinterpret_cast<D3DXMATRIX*>(rot2.data()), 
-		0.0, camera.pitch * to_radians, 0.0);
+		( (D3DXMATRIX*) rot.data(), 
+		camera.pitch * to_radians, 0.0, camera.yaw * to_radians);
+	rot.transposeInPlace();
 
-	Matrix4f axis;
-	axis << 0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			1.0, 0.0, 0.0, 0.0,
-		    0.0, 0.0, 0.0, 1.0;
+
 	Matrix4f translate = Matrix4f::Identity();
 	translate.col(3) << -eye, 1.0;
-	Matrix4f view = rot2.transpose() * rot1.transpose() * axis  * translate;
+	Matrix4f view = view_axis * rot * translate;
 	
 	Matrix4f view_i( view.inverse() );
 	OK( var.view_i->SetMatrix( view_i.data() ));
@@ -313,29 +360,13 @@ void Renderer::render()
 	OK( var.aperture->SetFloat( aperture ) );
 	OK( var.z_near->SetFloat( z_near ) );
 
-	//viewport
-	{
-		D3D11_VIEWPORT viewport;
-			
-		viewport.Width = float(settings.width);
-		viewport.Height = float(settings.height);
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
-		viewport.TopLeftX = 0.0f;
-		viewport.TopLeftY = 0.0f;
-	   
-		context->RSSetViewports( 1, &viewport );
-	}
-	//ia
-	{
-		context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-		context->IASetInputLayout( input_layout_objects );
-	}
+	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	// step 1: render
 	ID3D11RenderTargetView* targets[] = { gbuffer0_rtv, gbuffer1_rtv };
 	context->OMSetRenderTargets(2, targets, zbuffer_dsv);
-
+	context->RSSetViewports( 1, &viewport_screen );
+	context->IASetInputLayout( input_layout_objects );
 
 	for (int i = 0; i < object.transforms.size(); i++)
 	{
@@ -353,25 +384,49 @@ void Renderer::render()
 	}
 
 	// step 2: lights
-	context->IASetInputLayout( input_layout_quad );
-	context->IASetVertexBuffers(0, 1, &quad.buffer, &quad.stride, &quad.offset);
-	
-	context->OMSetRenderTargets(1, &accum_rtv, NULL);
-	
 	OK( var.gbuffer0->SetResource( gbuffer0_srv ) );
 	OK( var.gbuffer1->SetResource( gbuffer1_srv ) );
 	OK( var.zbuffer->SetResource( zbuffer_srv ) );
 
-	for (int i = 0; i < light.transforms.size(); i++)
+	for (int k = 0; k < light.transforms.size(); k++)
 	{
-		Vector4f position(view * light.transforms[i].col(3));
+		context->OMSetRenderTargets(0, NULL, shadowmap_dsv);
+		context->IASetInputLayout( input_layout_objects );
+		context->RSSetViewports( 1, &viewport_shadowmap );
+
+		Matrix4f lightview_lightproj = proj * view_axis * light.transforms[k].inverse();
+		Matrix4f reproject = lightview_lightproj * view.inverse();
+
+		for (int i = 0; i < object.transforms.size(); i++)
+		{
+			Matrix4f world_lightview_lightproj = lightview_lightproj * object.transforms[i];
+	
+			std::cout << world_lightview_lightproj << std::endl << std::endl;
+
+			OK( var.world_lightview_lightproj->SetMatrix( world_lightview_lightproj.data() ));
+			OK( var.reproject->SetMatrix( reproject.data() ));
+			OK( pass.render_z->Apply( 0, context ) );
+		
+			context->IASetVertexBuffers
+				(0, 1, &object.geometries[i].buffer, &object.geometries[i].stride, &object.geometries[i].offset);
+		
+			context->Draw( object.geometries[i].count, 0 );
+		}
+
+		context->RSSetViewports( 1, &viewport_screen );
+		context->IASetInputLayout( input_layout_quad );
+		context->IASetVertexBuffers(0, 1, &quad.buffer, &quad.stride, &quad.offset);
+		context->OMSetRenderTargets(1, &accum_rtv, NULL);
+
+		Vector4f position(view * light.transforms[k].col(3));
 		OK( var.light_pos->SetRawValue
 			( (void*)position.data(), 0, sizeof(Vector3f) ) );
 
-		Vector3f& colour = light.colours[i];
+		Vector3f& colour = light.colours[k];
 		OK( var.light_colour->SetRawValue
 			( (void*)colour.data(), 0, sizeof(Vector3f) ) );
 
+		OK( var.shadowmap->SetResource( shadowmap_srv ) );
 		OK( pass.directional_light->Apply( 0, context ) );
 		context->Draw( quad.count, 0 );
 	}

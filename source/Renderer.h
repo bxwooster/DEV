@@ -50,6 +50,10 @@ private:
 	iptr<ID3D11RenderTargetView> window_rtv;
 	iptr<ID3DX11Effect> effect;
 
+	iptr<ID3D11Texture2D> shadowmap;
+	iptr<ID3D11ShaderResourceView> shadowmap_srv;
+	iptr<ID3D11DepthStencilView> shadowmap_dsv;
+
 	iptr<ID3D11Texture2D> zbuffer;
 	iptr<ID3D11ShaderResourceView> zbuffer_srv;
 	iptr<ID3D11DepthStencilView> zbuffer_dsv;
@@ -68,10 +72,14 @@ private:
 	iptr<ID3D11InputLayout> input_layout_quad;
 	iptr<ID3D11InputLayout> input_layout_objects;
 
+	D3D11_VIEWPORT viewport_screen;
+	D3D11_VIEWPORT viewport_shadowmap;
+
 	struct
 	{
 		ID3DX11EffectPass* prepass;
 		ID3DX11EffectPass* render;
+		ID3DX11EffectPass* render_z;
 		ID3DX11EffectPass* directional_light;
 		ID3DX11EffectPass* ambient_light;
 		ID3DX11EffectPass* sky;
@@ -80,11 +88,13 @@ private:
 
 	struct
 	{
+		ID3DX11EffectMatrixVariable* world_lightview_lightproj;
 		ID3DX11EffectMatrixVariable* world_view_proj;
 		ID3DX11EffectMatrixVariable* world_view;
 		ID3DX11EffectMatrixVariable* view_proj;
 		ID3DX11EffectMatrixVariable* view;
 		ID3DX11EffectMatrixVariable* view_i;
+		ID3DX11EffectMatrixVariable* reproject;
 
 		ID3DX11EffectVectorVariable* light_pos;
 		ID3DX11EffectVectorVariable* light_colour;
@@ -98,6 +108,7 @@ private:
 		ID3DX11EffectShaderResourceVariable* gbuffer0;
 		ID3DX11EffectShaderResourceVariable* gbuffer1;
 		ID3DX11EffectShaderResourceVariable* zbuffer;
+		ID3DX11EffectShaderResourceVariable* shadowmap;
 	} var;
 
 	Geometry quad;
@@ -113,6 +124,7 @@ public:
 
 	float z_near;
 	Matrix4f proj;
+	Matrix4f view_axis;
 	Vector3f eye;
 	float aperture;
 	Vector3f ambient;

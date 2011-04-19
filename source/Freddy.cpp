@@ -43,29 +43,23 @@ Freddy::Freddy(Settings settings_) :
 	object.transforms.push_back( Matrix4f::Identity() );
 	object.geometries.push_back( plane );
 
-	Matrix4f t;
-	for(int i = 0; i < 8; i++)
-	{
-		t.col(3)[2] = i * 2.0f;
-		for(int j = -4; j < 5; j++)
-		{
-			t.col(3)[1] = float(i % 2) + j * 2.0f;
-			t.col(3)[0] = -10 + float(i % 2);
-			object.transforms.push_back( t );
-			object.geometries.push_back( sphere );
-		}
-	};
+	Matrix4f t = Matrix4f::Identity();
+	t.col(3) = Vector4f(-3.0, 0.0, 1.0, 1.0);
+	object.transforms.push_back( t );
+	object.geometries.push_back( sphere );
 
 	t = Matrix4f::Identity();
-	t.col(3) = Vector4f(-5.0, -3.0, 1.0, 1.0);
+	t.col(3) = Vector4f(0.0, 0.0, 0.01, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(1.0, 0.0, 0.0) );
 
-	t.col(3) = Vector4f(-5.0, 0.0, 1.0, 1.0);
+	t = Matrix4f::Identity();
+	t.col(3) = Vector4f(0.0, -3.0, 1.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(0.0, 1.0, 0.0) );
 
-	t.col(3) = Vector4f(-5.0, 3.0, 1.0, 1.0);
+	t = Matrix4f::Identity();
+	t.col(3) = Vector4f(0.0, 3.0, 1.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(0.0, 0.0, 1.0) );
 
@@ -82,6 +76,6 @@ void Freddy::step(Input& input, double dt_)
 
 	on_mouse(input.mouse.x, input.mouse.y);
 
-	physics.step(dt);
+	//physics.step(dt);
 	renderer.render();
 }
