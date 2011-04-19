@@ -44,24 +44,31 @@ Freddy::Freddy(Settings settings_) :
 	object.geometries.push_back( plane );
 
 	Matrix4f t = Matrix4f::Identity();
-	t.col(3) = Vector4f(-3.0, 0.0, 1.0, 1.0);
-	object.transforms.push_back( t );
-	object.geometries.push_back( sphere );
+	for (int i = 0; i < 10; i++)
+		for (int j = -2; j <= 2; j++)
+		{
+			t.col(3) = Vector4f(-10.0f + j % 2, j * 2.0f + i % 2, i * 2.0f + 1.0f, 1.0f);
+			object.transforms.push_back( t );
+			object.geometries.push_back( sphere );
+		}
 
 	t = Matrix4f::Identity();
-	t.col(3) = Vector4f(0.0, 0.0, 0.01, 1.0);
+	t.col(3) = Vector4f(0.0, 0.0, 2.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(1.0, 0.0, 0.0) );
+	light.types.push_back( Renderer::LightType_directional );
 
 	t = Matrix4f::Identity();
-	t.col(3) = Vector4f(0.0, -3.0, 1.0, 1.0);
+	t.col(3) = Vector4f(0.0, 3.0, 2.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(0.0, 1.0, 0.0) );
+	light.types.push_back( Renderer::LightType_directional );
 
 	t = Matrix4f::Identity();
-	t.col(3) = Vector4f(0.0, 3.0, 1.0, 1.0);
+	t.col(3) = Vector4f(0.0, -3.0, 2.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(0.0, 0.0, 1.0) );
+	light.types.push_back( Renderer::LightType_point );
 
 	physics.capture(object.transforms);
 }
@@ -76,6 +83,6 @@ void Freddy::step(Input& input, double dt_)
 
 	on_mouse(input.mouse.x, input.mouse.y);
 
-	//physics.step(dt);
+	physics.step(dt);
 	renderer.render();
 }

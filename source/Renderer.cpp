@@ -5,12 +5,21 @@
 #include <fstream>
 #include <d3dx11.h>
 #include <d3dx10math.h>
-
 #include "Renderer.h"
 
 #define PI 3.1415926535897932384626433832795
 const float to_radians = (float)(PI / 180.0);
 const float from_radians = (float)(180.0 / PI);
+
+void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near)
+{
+	float ys = 1 / tanf( y_fov * to_radians / 2.0f );
+	float xs = ys / aspect_ratio;
+	proj << xs, 0, 0, 0,
+			0, ys, 0, 0,
+			0, 0, -1, -z_near,
+			0, 0, -1, 0;
+}
 
 Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 	settings(settings_),
@@ -18,9 +27,27 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 	object(object_),
 	light(light_)
 {
-	camera.yaw = camera.pitch = 0.0;
-	z_near = 0.1f;
-	// 
+	// Misc
+	{
+		z_near = 0.2f;
+		camera.yaw = camera.pitch = 0.0;
+		aperture = 1.0f;
+		eye = Vector3f(5, 0, 5);
+		ambient = Vector3f(0.05f, 0.04f, 0.05f);
+
+		field_of_view = 60;
+		aspect_ratio = float(settings.width) / settings.height;
+
+		projection_matrix(proj, field_of_view, aspect_ratio, z_near);
+		projection_matrix(lightproj, 90, 1.0, z_near);
+
+		view_axis << 0.0, 1.0, 0.0, 0.0,
+					 0.0, 0.0, 1.0, 0.0,
+					 1.0, 0.0, 0.0, 0.0,
+					 0.0, 0.0, 0.0, 1.0;
+	}
+
+	// Device, Factory
 	{
 		iptr<IDXGIDevice1> dxgi_device;
 		iptr<IDXGIAdapter1> dxgi_adapter;
@@ -43,7 +70,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		OK( dxgi_factory->MakeWindowAssociation(NULL, DXGI_MWA_NO_WINDOW_CHANGES) );
 	}
 
-	// swap chain
+	// Swap chain
 	{
 		DXGI_SWAP_CHAIN_DESC desc = {};
 		desc.BufferCount = 2;
@@ -61,7 +88,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 			( device, &desc, &swap_chain ));
 	}
 
-	// target
+	// Back buffer, view
 	{
 		iptr<ID3D11Texture2D> back_buffer;
 	
@@ -77,7 +104,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 			( back_buffer, NULL, &window_rtv ));
 	}
 
-	// effect
+	// Effect, Variables, Passes
 	{
 		iptr<ID3D10Blob> code;
 		iptr<ID3D10Blob> info;
@@ -94,7 +121,9 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 
 		pass.render = effect->GetTechniqueByName("render")->GetPassByIndex(0);
 		pass.render_z = effect->GetTechniqueByName("render_z")->GetPassByIndex(0);
+		pass.render_cube_z = effect->GetTechniqueByName("render_cube_z")->GetPassByIndex(0);
 		pass.directional_light = effect->GetTechniqueByName("directional_light")->GetPassByIndex(0);
+		pass.point_light = effect->GetTechniqueByName("point_light")->GetPassByIndex(0);
 		pass.ambient_light = effect->GetTechniqueByName("ambient_light")->GetPassByIndex(0);
 		pass.sky = effect->GetTechniqueByName("sky")->GetPassByIndex(0);
 		pass.hdr = effect->GetTechniqueByName("hdr")->GetPassByIndex(0);
@@ -117,8 +146,10 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		var.world_view = effect->GetVariableByName("world_view")->AsMatrix();
 		var.world_view_proj = effect->GetVariableByName("world_view_proj")->AsMatrix();
 		var.world_lightview_lightproj = effect->GetVariableByName("world_lightview_lightproj")->AsMatrix();
+		var.world_lightview = effect->GetVariableByName("world_lightview")->AsMatrix();
 	}
 
+	// Quad
 	{
 		const uint size = 2;
 		const uint offset = 0;
@@ -152,6 +183,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		quad = quad_;
 	}
 
+	// Layouts
 	{
 		D3DX11_PASS_DESC desc;
 		OK( pass.sky->GetDesc( &desc ) );
@@ -167,7 +199,6 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 			( &element, 1, desc.pIAInputSignature,
 				desc.IAInputSignatureSize, &input_layout_quad ) );
 	}
-
 	{
 		D3DX11_PASS_DESC desc;
 		OK( pass.render->GetDesc( &desc ) );
@@ -192,25 +223,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 				desc.IAInputSignatureSize, &input_layout_objects ) );
 	}
 
-	{
-		float field_of_view = 60;
-		float aspect_ratio = float(settings.width) / settings.height;
-
-		float ys = 1 / tanf( field_of_view * to_radians / 2.0f );
-		float xs = ys / aspect_ratio;
-		proj << xs, 0, 0, 0,
-				0, ys, 0, 0,
-				0, 0, -1, -z_near,
-				0, 0, -1, 0;
-
-		view_axis << 0.0, 1.0, 0.0, 0.0,
-					 0.0, 0.0, 1.0, 0.0,
-					 1.0, 0.0, 0.0, 0.0,
-					 0.0, 0.0, 0.0, 1.0;
-
-		OK( var.field_of_view->SetFloat( field_of_view ) );
-		OK( var.aspect_ratio->SetFloat( aspect_ratio ) );
-	}
+	// Textures
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(desc) );
@@ -218,12 +231,14 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		desc.Height = 512; //!
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
-		desc.ArraySize = 1;
+		desc.ArraySize = 6;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.MipLevels = 1;
 
+		OK( device->CreateTexture2D( &desc, NULL, &shadowcube ) );
+		desc.ArraySize = 1;
 		OK( device->CreateTexture2D( &desc, NULL, &shadowmap ) );
 
 		desc.Width = settings.width;
@@ -241,16 +256,26 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		OK( device->CreateTexture2D( &desc, NULL, &gbuffer1 ) );
 	}
 
+	// Views
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		desc.Format = DXGI_FORMAT_R32_FLOAT;
 		desc.Texture2D.MipLevels = 1;
+		desc.Texture2D.MostDetailedMip = 0;
 
 		OK( device->CreateShaderResourceView
 		  ( shadowmap, &desc, &shadowmap_srv ));
-	}
 
+		OK( device->CreateShaderResourceView
+		  ( zbuffer, &desc, &zbuffer_srv ));
+
+		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+		desc.Texture2DArray.MipLevels = 1;
+		desc.Texture2DArray.MostDetailedMip = 0;
+		desc.Texture2DArray.FirstArraySlice = 0;
+		desc.Texture2DArray.ArraySize = 6;
+	}
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -259,35 +284,24 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 
 		OK( device->CreateDepthStencilView
 		  ( shadowmap, &desc, &shadowmap_dsv ));
-	}
-
-	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
-		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		desc.Format = DXGI_FORMAT_R32_FLOAT;
-		desc.Texture2D.MipLevels = 1;
-
-		OK( device->CreateShaderResourceView
-		  ( zbuffer, &desc, &zbuffer_srv ));
-	}
-
-	{
-		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
-		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		desc.Format = DXGI_FORMAT_D32_FLOAT;
-		desc.Texture2D.MipSlice = 0;
 
 		OK( device->CreateDepthStencilView
 		  ( zbuffer, &desc, &zbuffer_dsv ));
-	}
 
+		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+		desc.Texture2DArray.MipSlice = 0;
+		desc.Texture2DArray.FirstArraySlice = 0;
+		desc.Texture2DArray.ArraySize = 6;
+
+		OK( device->CreateDepthStencilView
+		  ( shadowcube, &desc, &shadowcube_dsv ));
+	}
 	OK( device->CreateShaderResourceView
 		( gbuffer0, NULL, &gbuffer0_srv ) );
 	OK( device->CreateShaderResourceView
 		( gbuffer1, NULL, &gbuffer1_srv ) );
 	OK( device->CreateShaderResourceView
 		( accum, NULL, &accum_srv ) );
-	
 	OK( device->CreateRenderTargetView
 		( gbuffer0, NULL, &gbuffer0_rtv ) );
 	OK( device->CreateRenderTargetView
@@ -295,7 +309,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 	OK( device->CreateRenderTargetView
 		( accum, NULL, &accum_rtv ) );
 
-	//viewports
+	// Viewports
 	{			
 		viewport_screen.Width = float(settings.width);
 		viewport_screen.Height = float(settings.height);
@@ -311,10 +325,6 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		viewport_shadowmap.TopLeftX = 0.0f;
 		viewport_shadowmap.TopLeftY = 0.0f;
 	}
-
-	aperture = 1.0f;
-	eye = Vector3f(5, 0, 5);
-	ambient = Vector3f(0.05, 0.04, 0.05);
 }
 
 void Renderer::render()
@@ -329,10 +339,7 @@ void Renderer::render()
 		context->ClearRenderTargetView(gbuffer0_rtv, black);
 		context->ClearRenderTargetView(gbuffer1_rtv, black);
 		context->ClearRenderTargetView(accum_rtv, black);
-		context->ClearDepthStencilView
-			(zbuffer_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
-		context->ClearDepthStencilView
-			(shadowmap_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0, 0);
+		context->ClearDepthStencilView(zbuffer_dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 	}
 	
 	Matrix4f rot;
@@ -359,6 +366,8 @@ void Renderer::render()
 
 	OK( var.aperture->SetFloat( aperture ) );
 	OK( var.z_near->SetFloat( z_near ) );
+	OK( var.field_of_view->SetFloat( field_of_view ) );
+	OK( var.aspect_ratio->SetFloat( aspect_ratio ) );
 
 	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
@@ -390,31 +399,57 @@ void Renderer::render()
 
 	for (int k = 0; k < light.transforms.size(); k++)
 	{
-		context->OMSetRenderTargets(0, NULL, shadowmap_dsv);
 		context->IASetInputLayout( input_layout_objects );
-		context->RSSetViewports( 1, &viewport_shadowmap );
 
-		Matrix4f lightview_lightproj = proj * view_axis * light.transforms[k].inverse();
-		Matrix4f reproject = lightview_lightproj * view.inverse();
+		Matrix4f lightview = view_axis * light.transforms[k].inverse();
+		Matrix4f lightview_lightproj = lightproj * lightview;
 
-		for (int i = 0; i < object.transforms.size(); i++)
+		if (light.types[k] == LightType_directional)
 		{
-			Matrix4f world_lightview_lightproj = lightview_lightproj * object.transforms[i];
-	
-			std::cout << world_lightview_lightproj << std::endl << std::endl;
+			context->ClearDepthStencilView
+				(shadowmap_dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-			OK( var.world_lightview_lightproj->SetMatrix( world_lightview_lightproj.data() ));
+			context->OMSetRenderTargets(0, NULL, shadowmap_dsv);
+			context->RSSetViewports( 1, &viewport_shadowmap );
+
+			Matrix4f reproject = lightview_lightproj * view.inverse();
 			OK( var.reproject->SetMatrix( reproject.data() ));
-			OK( pass.render_z->Apply( 0, context ) );
+
+			for (int i = 0; i < object.transforms.size(); i++)
+			{
+				Matrix4f world_lightview_lightproj = lightview_lightproj * object.transforms[i];
+				OK( var.world_lightview_lightproj->SetMatrix( world_lightview_lightproj.data() ));
+				OK( pass.render_z->Apply( 0, context ) );
 		
-			context->IASetVertexBuffers
-				(0, 1, &object.geometries[i].buffer, &object.geometries[i].stride, &object.geometries[i].offset);
+				context->IASetVertexBuffers
+					(0, 1, &object.geometries[i].buffer, &object.geometries[i].stride, &object.geometries[i].offset);
+				context->Draw( object.geometries[i].count, 0 );
+			}
+		}
+		else if (light.types[k] == LightType_point)
+		{
+			context->ClearDepthStencilView
+				(shadowcube_dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
+
+			context->OMSetRenderTargets(0, NULL, shadowcube_dsv);
+			auto v = viewport_shadowmap;
+			D3D11_VIEWPORT viewports[6] = {v, v, v, v, v, v};
+			context->RSSetViewports( 6, viewports );
+
+			for (int i = 0; i < object.transforms.size(); i++)
+			{
+				Matrix4f world_lightview = lightview * object.transforms[i];
+				OK( var.world_lightview->SetMatrix( world_lightview.data() ));
+				OK( pass.render_cube_z->Apply( 0, context ) );
 		
-			context->Draw( object.geometries[i].count, 0 );
+				context->IASetVertexBuffers
+					(0, 1, &object.geometries[i].buffer, &object.geometries[i].stride, &object.geometries[i].offset);
+				context->Draw( object.geometries[i].count, 0 );
+			}
 		}
 
-		context->RSSetViewports( 1, &viewport_screen );
 		context->IASetInputLayout( input_layout_quad );
+		context->RSSetViewports( 1, &viewport_screen );
 		context->IASetVertexBuffers(0, 1, &quad.buffer, &quad.stride, &quad.offset);
 		context->OMSetRenderTargets(1, &accum_rtv, NULL);
 
@@ -425,9 +460,12 @@ void Renderer::render()
 		Vector3f& colour = light.colours[k];
 		OK( var.light_colour->SetRawValue
 			( (void*)colour.data(), 0, sizeof(Vector3f) ) );
-
+		
 		OK( var.shadowmap->SetResource( shadowmap_srv ) );
-		OK( pass.directional_light->Apply( 0, context ) );
+		if (light.types[k] == LightType_directional)
+			{OK( pass.directional_light->Apply( 0, context ) );}
+		else if (light.types[k] == LightType_point)
+			{OK( pass.point_light->Apply( 0, context ) );}
 		context->Draw( quad.count, 0 );
 	}
 

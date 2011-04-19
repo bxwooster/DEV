@@ -36,10 +36,17 @@ public:
 		std::vector<Geometry> geometries;
 	};
 
+	enum LightType
+	{
+		LightType_point,
+		LightType_directional
+	};
+
 	struct LightData
 	{
 		btAlignedObjectArray<Matrix4f> transforms;
 		btAlignedObjectArray<Vector3f> colours;
+		std::vector<LightType> types;
 	};
 
 private:
@@ -50,9 +57,12 @@ private:
 	iptr<ID3D11RenderTargetView> window_rtv;
 	iptr<ID3DX11Effect> effect;
 
+	iptr<ID3D11Texture2D> shadowcube;
 	iptr<ID3D11Texture2D> shadowmap;
 	iptr<ID3D11ShaderResourceView> shadowmap_srv;
 	iptr<ID3D11DepthStencilView> shadowmap_dsv;
+	iptr<ID3D11DepthStencilView> shadowcube_dsv;
+	iptr<ID3D11DepthStencilView> shadowcube_srv;
 
 	iptr<ID3D11Texture2D> zbuffer;
 	iptr<ID3D11ShaderResourceView> zbuffer_srv;
@@ -80,7 +90,9 @@ private:
 		ID3DX11EffectPass* prepass;
 		ID3DX11EffectPass* render;
 		ID3DX11EffectPass* render_z;
+		ID3DX11EffectPass* render_cube_z;
 		ID3DX11EffectPass* directional_light;
+		ID3DX11EffectPass* point_light;
 		ID3DX11EffectPass* ambient_light;
 		ID3DX11EffectPass* sky;
 		ID3DX11EffectPass* hdr;
@@ -89,6 +101,7 @@ private:
 	struct
 	{
 		ID3DX11EffectMatrixVariable* world_lightview_lightproj;
+		ID3DX11EffectMatrixVariable* world_lightview;
 		ID3DX11EffectMatrixVariable* world_view_proj;
 		ID3DX11EffectMatrixVariable* world_view;
 		ID3DX11EffectMatrixVariable* view_proj;
@@ -122,7 +135,10 @@ public:
 		float pitch;
 	} camera;
 
+	float field_of_view;
+	float aspect_ratio;
 	float z_near;
+	Matrix4f lightproj;
 	Matrix4f proj;
 	Matrix4f view_axis;
 	Vector3f eye;
