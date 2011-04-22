@@ -30,11 +30,11 @@ cbuffer light
 
 float4x4 cubeproj[6];
 
-
 Texture2D gbuffer0;
 Texture2D gbuffer1;
 Texture2D zbuffer;
 Texture2D shadowmap;
+Texture2DArray shadowcube;
 Texture2D accum;
 
 sampler smp;
@@ -185,6 +185,13 @@ float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Ta
 
 float4 ps_point_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 {
+	//int i = 0;
+	//if ( uv.x > 0.33 ) i += 1;
+	//if ( uv.x > 0.66 ) i += 1;
+	//if ( uv.y > 0.33 ) i += 3;
+	//if (uv.y > 0.66 || uv.x > 0.99) return 1;
+	//return shadowcube.Gather(smp, float3((uv % 0.33) / 0.33, i)).x;
+
 	float z_neg = -linear_z(zbuffer.Sample(smp, uv).x);
 	float4 surface_pos = float4( view_ray * z_neg, z_neg, 1.0 );
 
@@ -204,7 +211,7 @@ float4 ps_ambient_light(float2 uv : Position) : SV_Target0
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float mult = saturate(dot(mul( (float3x3)view_i, normal), float3(0, 0, 1)));
-	return float4(4 * mult * light_colour * colour, 1.0);
+	return float4(mult * light_colour * colour, 1.0);
 }
 
 float4 ps_sky(float2 uv : Position, float2 view_ray : Ray) : SV_Target0

@@ -19,8 +19,8 @@ void run()
 	auto_ptr<Freddy> freddy( new Freddy(settings) );
 
 	InputParser parser;
-	InputRecorder recorder("replay");
-	InputPlayer player("replay");
+	//InputRecorder recorder("replay");
+	//InputPlayer player("replay");
 
 	Timer timer;
 
@@ -36,7 +36,7 @@ void run()
 			if (write) parser.parse(msg, input);
 		}
 
-		write ? recorder.write(input) : player.read(input);
+		//write ? recorder.write(input) : player.read(input);
 
 		freddy->step(input, timer.elapsed() );
 	}

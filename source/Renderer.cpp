@@ -54,8 +54,13 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 
 		D3D_FEATURE_LEVEL feature_level;
 
+#ifdef DEBUG //!
+		D3D10_CREATE_DEVICE_FLAG flag = D3D10_CREATE_DEVICE_DEBUG;
+#else
+		D3D10_CREATE_DEVICE_FLAG flag = D3D10_CREATE_DEVICE_FLAG(0);
+#endif
 		OK( D3D11CreateDevice
-			( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D10_CREATE_DEVICE_DEBUG,
+			( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flag,
 			NULL, 0, D3D11_SDK_VERSION, &device, &feature_level, &context ) );
 
 		OK( device->QueryInterface
@@ -131,6 +136,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		var.accum = effect->GetVariableByName("accum")->AsShaderResource();
 		var.zbuffer = effect->GetVariableByName("zbuffer")->AsShaderResource();
 		var.shadowmap = effect->GetVariableByName("shadowmap")->AsShaderResource();
+		var.shadowcube = effect->GetVariableByName("shadowcube")->AsShaderResource();
 		var.gbuffer0 = effect->GetVariableByName("gbuffer0")->AsShaderResource();
 		var.gbuffer1 = effect->GetVariableByName("gbuffer1")->AsShaderResource();
 		var.aperture = effect->GetVariableByName("aperture")->AsScalar();
@@ -143,6 +149,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		var.view_i = effect->GetVariableByName("view_i")->AsMatrix();
 		var.view = effect->GetVariableByName("view")->AsMatrix();
 		var.reproject = effect->GetVariableByName("reproject")->AsMatrix();
+		var.cubeproj = effect->GetVariableByName("cubeproj")->AsMatrix();
 		var.world_view = effect->GetVariableByName("world_view")->AsMatrix();
 		var.world_view_proj = effect->GetVariableByName("world_view_proj")->AsMatrix();
 		var.world_lightview_lightproj = effect->GetVariableByName("world_lightview_lightproj")->AsMatrix();
@@ -275,6 +282,9 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		desc.Texture2DArray.MostDetailedMip = 0;
 		desc.Texture2DArray.FirstArraySlice = 0;
 		desc.Texture2DArray.ArraySize = 6;
+
+		OK( device->CreateShaderResourceView
+		  ( shadowcube, &desc, &shadowcube_srv ));
 	}
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
@@ -440,6 +450,9 @@ void Renderer::render()
 			{
 				Matrix4f world_lightview = lightview * object.transforms[i];
 				OK( var.world_lightview->SetMatrix( world_lightview.data() ));
+				Matrix4f m = Matrix4f::Identity();
+				Matrix4f cubeproj[6] = {m, m, m, m, m, m}; //!
+				OK( var.cubeproj->SetMatrixArray(cubeproj[0].data(), 0, 6));
 				OK( pass.render_cube_z->Apply( 0, context ) );
 		
 				context->IASetVertexBuffers
@@ -462,6 +475,7 @@ void Renderer::render()
 			( (void*)colour.data(), 0, sizeof(Vector3f) ) );
 		
 		OK( var.shadowmap->SetResource( shadowmap_srv ) );
+		OK( var.shadowcube->SetResource( shadowcube_srv ) );
 		if (light.types[k] == LightType_directional)
 			{OK( pass.directional_light->Apply( 0, context ) );}
 		else if (light.types[k] == LightType_point)

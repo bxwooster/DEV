@@ -62,7 +62,7 @@ private:
 	iptr<ID3D11ShaderResourceView> shadowmap_srv;
 	iptr<ID3D11DepthStencilView> shadowmap_dsv;
 	iptr<ID3D11DepthStencilView> shadowcube_dsv;
-	iptr<ID3D11DepthStencilView> shadowcube_srv;
+	iptr<ID3D11ShaderResourceView> shadowcube_srv;
 
 	iptr<ID3D11Texture2D> zbuffer;
 	iptr<ID3D11ShaderResourceView> zbuffer_srv;
@@ -108,6 +108,7 @@ private:
 		ID3DX11EffectMatrixVariable* view;
 		ID3DX11EffectMatrixVariable* view_i;
 		ID3DX11EffectMatrixVariable* reproject;
+		ID3DX11EffectMatrixVariable* cubeproj;
 
 		ID3DX11EffectVectorVariable* light_pos;
 		ID3DX11EffectVectorVariable* light_colour;
@@ -122,6 +123,7 @@ private:
 		ID3DX11EffectShaderResourceVariable* gbuffer1;
 		ID3DX11EffectShaderResourceVariable* zbuffer;
 		ID3DX11EffectShaderResourceVariable* shadowmap;
+		ID3DX11EffectShaderResourceVariable* shadowcube;
 	} var;
 
 	Geometry quad;
