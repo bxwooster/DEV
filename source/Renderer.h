@@ -96,6 +96,7 @@ private:
 		ID3DX11EffectPass* ambient_light;
 		ID3DX11EffectPass* sky;
 		ID3DX11EffectPass* hdr;
+		ID3DX11EffectPass* test;
 	} pass;
 
 	struct

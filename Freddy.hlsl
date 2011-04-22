@@ -94,6 +94,11 @@ struct GSInput
 	float4 position : POSITION;
 };
 
+struct Empty
+{
+
+};
+
 struct GSOutput
 {
 	float4 position : SV_Position;
@@ -132,7 +137,6 @@ void gs_render_cube_z( triangle GSInput input[3], inout TriangleStream<GSOutput>
 		}
 		stream.RestartStrip();
 	}
-
 }
 
 void vs_render_cube_z( Vertex vertex, out float4 position : POSITION )
@@ -158,6 +162,31 @@ void vs_fullscreen(uniform float depth, float2 position : POSITION, out ScreenPi
 	pixel.pos = float4(position * 2.0 - 1.0, depth, 1.0);
 	pixel.uv = float2(position.x, 1.0 - position.y);
 	pixel.view_ray = uv_to_ray(pixel.uv);
+}
+
+[maxvertexcount(6)]
+void gs_fullscreen(uniform float depth, point Empty empty[1], inout TriangleStream<ScreenPixel> stream)
+{
+	float2 position;
+	for (uint id = 0; id < 6; id++)
+	{
+		if (id == 0) position = float2(0, 0);
+		if (id == 1) position = float2(1, 0);
+		if (id == 2) position = float2(0, 1);
+
+		if (id == 3) position = float2(1, 1);
+		if (id == 4) position = float2(0, 0);
+		if (id == 5) position = float2(1, 0);
+
+		ScreenPixel pixel;
+
+		pixel.pos = float4(position * 2.0 - 1.0, depth, 1.0);
+		pixel.uv = float2(position.x, 1.0 - position.y);
+		pixel.view_ray = uv_to_ray(pixel.uv);
+
+		stream.Append(pixel);
+		if (id == 2) stream.RestartStrip();
+	}
 }
 
 float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
@@ -326,6 +355,19 @@ technique11 hdr
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
 		SetGeometryShader( NULL );
+		SetPixelShader( CompileShader( ps_4_1, ps_hdr() ) );
+		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetDepthStencilState( ds_nowrite, 0 );
+		SetRasterizerState( rs_default );
+	}
+}
+
+technique11 test
+{
+	pass
+	{
+		SetVertexShader( NULL );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_hdr() ) );
 		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );

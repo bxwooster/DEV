@@ -132,6 +132,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		pass.ambient_light = effect->GetTechniqueByName("ambient_light")->GetPassByIndex(0);
 		pass.sky = effect->GetTechniqueByName("sky")->GetPassByIndex(0);
 		pass.hdr = effect->GetTechniqueByName("hdr")->GetPassByIndex(0);
+		pass.test = effect->GetTechniqueByName("test")->GetPassByIndex(0);
 
 		var.accum = effect->GetVariableByName("accum")->AsShaderResource();
 		var.zbuffer = effect->GetVariableByName("zbuffer")->AsShaderResource();
@@ -496,9 +497,11 @@ void Renderer::render()
 
 	// step 5: "HDR"
 	OK( var.accum->SetResource( accum_srv ) );
+	//context->IASetInputLayout( NULL );
+	//context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );	
 	context->OMSetRenderTargets(1, &window_rtv, NULL);
 	OK( pass.hdr->Apply( 0, context ) );
-	context->Draw( quad.count, 0 );
+	context->Draw( 1, 0 );
 	
 	// finished
 	OK( swap_chain->Present( 0, 0 ) );
