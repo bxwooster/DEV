@@ -9,6 +9,7 @@
 #include <Eigen/Core>
 #include <Eigen/LU> 
 #include <Eigen/StdVector>
+#include <Eigen/Geometry>
 
 namespace common {
 

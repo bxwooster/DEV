@@ -53,19 +53,19 @@ Freddy::Freddy(Settings settings_) :
 		}
 
 	t = Matrix4f::Identity();
-	t.col(3) = Vector4f(0.0, 0.0, 2.0, 1.0);
+	t.col(3) = Vector4f(0.0, 0.0, 1.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(1.0, 0.0, 0.0) );
-	light.types.push_back( Renderer::LightType_directional );
+	light.types.push_back( Renderer::LightType_point );
 
 	t = Matrix4f::Identity();
-	t.col(3) = Vector4f(0.0, 3.0, 2.0, 1.0);
+	t.col(3) = Vector4f(0.0, 7.0, 1.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(0.0, 1.0, 0.0) );
 	light.types.push_back( Renderer::LightType_directional );
 
 	t = Matrix4f::Identity();
-	t.col(3) = Vector4f(0.0, -3.0, 2.0, 1.0);
+	t.col(3) = Vector4f(0.0, -7.0, 1.0, 1.0);
 	light.transforms.push_back( t );
 	light.colours.push_back( Vector3f(0.0, 0.0, 1.0) );
 	light.types.push_back( Renderer::LightType_directional );

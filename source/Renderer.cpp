@@ -7,9 +7,8 @@
 #include <d3dx10math.h>
 #include "Renderer.h"
 
-#define PI 3.1415926535897932384626433832795
-const float to_radians = (float)(PI / 180.0);
-const float from_radians = (float)(180.0 / PI);
+const float to_radians = (float)(M_PI / 180.0);
+const float from_radians = (float)(180.0 / M_PI);
 
 void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near)
 {
@@ -29,7 +28,38 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 {
 	// Misc
 	{
-		z_near = 0.2f;
+			cubematrices[0] <<
+				    0, 0, 1, 0,
+					0, 1, 0, 0,
+					-1, 0, 0, 0,
+					0, 0, 0, 1;
+			cubematrices[1] <<
+				    0, 0,-1, 0,
+					0, 1, 0, 0,
+					1, 0, 0, 0,
+					0, 0, 0, 1;
+			cubematrices[2] <<
+					1, 0, 0, 0,
+					0, 0, 1, 0,
+					0,-1, 0, 0,
+					0, 0, 0, 1;
+			cubematrices[3] <<
+					1, 0, 0, 0,
+					0, 0,-1, 0,
+					0, 1, 0, 0,
+					0, 0, 0, 1;
+			cubematrices[4] <<
+					1, 0, 0, 0,
+					0, 1, 0, 0,
+					0, 0, 1, 0,
+					0, 0, 0, 1;
+			cubematrices[5] <<
+				   -1, 0, 0, 0,
+					0, 1, 0, 0,
+					0, 0,-1, 0,
+					0, 0, 0, 1;
+
+		z_near = 0.01f;
 		camera.yaw = camera.pitch = 0.0;
 		aperture = 1.0f;
 		eye = Vector3f(5, 0, 5);
@@ -54,7 +84,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 
 		D3D_FEATURE_LEVEL feature_level;
 
-#ifdef DEBUG //!
+#ifdef _DEBUG
 		D3D10_CREATE_DEVICE_FLAG flag = D3D10_CREATE_DEVICE_DEBUG;
 #else
 		D3D10_CREATE_DEVICE_FLAG flag = D3D10_CREATE_DEVICE_FLAG(0);
@@ -132,7 +162,6 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		pass.ambient_light = effect->GetTechniqueByName("ambient_light")->GetPassByIndex(0);
 		pass.sky = effect->GetTechniqueByName("sky")->GetPassByIndex(0);
 		pass.hdr = effect->GetTechniqueByName("hdr")->GetPassByIndex(0);
-		pass.test = effect->GetTechniqueByName("test")->GetPassByIndex(0);
 
 		var.accum = effect->GetVariableByName("accum")->AsShaderResource();
 		var.zbuffer = effect->GetVariableByName("zbuffer")->AsShaderResource();
@@ -157,56 +186,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		var.world_lightview = effect->GetVariableByName("world_lightview")->AsMatrix();
 	}
 
-	// Quad
-	{
-		const uint size = 2;
-		const uint offset = 0;
-		const uint count = 6;
-
-		iptr<ID3D11Buffer> vertex_buffer;
-
-		D3D11_BUFFER_DESC desc;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
-		desc.ByteWidth = size * count * sizeof(float);
-	
-		float buffer[count][size] = {
-			{ 0.0f, 0.0f },
-			{ 1.0f, 1.0f },
-			{ 0.0f, 1.0f },
-
-			{ 1.0f, 1.0f },
-			{ 0.0f, 0.0f },
-			{ 1.0f, 0.0f }  };
-
-		D3D11_SUBRESOURCE_DATA data;
-		data.pSysMem = (void*)buffer;
-
-		OK( device->CreateBuffer
-			( &desc, &data, &vertex_buffer ) );
-
-		Geometry quad_ = { vertex_buffer, size * sizeof(float), offset, count };
-		quad = quad_;
-	}
-
-	// Layouts
-	{
-		D3DX11_PASS_DESC desc;
-		OK( pass.sky->GetDesc( &desc ) );
-        
-		D3D11_INPUT_ELEMENT_DESC element =
-		{
-			"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT,
-			0, D3D11_APPEND_ALIGNED_ELEMENT,
-			D3D11_INPUT_PER_VERTEX_DATA, 0
-		};
-
-		OK( device->CreateInputLayout
-			( &element, 1, desc.pIAInputSignature,
-				desc.IAInputSignatureSize, &input_layout_quad ) );
-	}
+	// Layout
 	{
 		D3DX11_PASS_DESC desc;
 		OK( pass.render->GetDesc( &desc ) );
@@ -244,9 +224,11 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		desc.SampleDesc.Quality = 0;
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.MipLevels = 1;
+		desc.MiscFlags = D3D10_RESOURCE_MISC_TEXTURECUBE;
 
 		OK( device->CreateTexture2D( &desc, NULL, &shadowcube ) );
 		desc.ArraySize = 1;
+		desc.MiscFlags = 0;
 		OK( device->CreateTexture2D( &desc, NULL, &shadowmap ) );
 
 		desc.Width = settings.width;
@@ -278,11 +260,9 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		OK( device->CreateShaderResourceView
 		  ( zbuffer, &desc, &zbuffer_srv ));
 
-		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-		desc.Texture2DArray.MipLevels = 1;
-		desc.Texture2DArray.MostDetailedMip = 0;
-		desc.Texture2DArray.FirstArraySlice = 0;
-		desc.Texture2DArray.ArraySize = 6;
+		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+		desc.TextureCube.MipLevels = 1;
+		desc.TextureCube.MostDetailedMip = 0;
 
 		OK( device->CreateShaderResourceView
 		  ( shadowcube, &desc, &shadowcube_srv ));
@@ -380,13 +360,12 @@ void Renderer::render()
 	OK( var.field_of_view->SetFloat( field_of_view ) );
 	OK( var.aspect_ratio->SetFloat( aspect_ratio ) );
 
-	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
 	// step 1: render
 	ID3D11RenderTargetView* targets[] = { gbuffer0_rtv, gbuffer1_rtv };
 	context->OMSetRenderTargets(2, targets, zbuffer_dsv);
 	context->RSSetViewports( 1, &viewport_screen );
 	context->IASetInputLayout( input_layout_objects );
+	context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 	for (int i = 0; i < object.transforms.size(); i++)
 	{
@@ -411,26 +390,28 @@ void Renderer::render()
 	for (int k = 0; k < light.transforms.size(); k++)
 	{
 		context->IASetInputLayout( input_layout_objects );
+		context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 		Matrix4f lightview = view_axis * light.transforms[k].inverse();
 		Matrix4f lightview_lightproj = lightproj * lightview;
+
+		Matrix4f reproject = lightview_lightproj * view.inverse();
+		OK( var.reproject->SetMatrix( reproject.data() ));
 
 		if (light.types[k] == LightType_directional)
 		{
 			context->ClearDepthStencilView
 				(shadowmap_dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-			context->OMSetRenderTargets(0, NULL, shadowmap_dsv);
 			context->RSSetViewports( 1, &viewport_shadowmap );
-
-			Matrix4f reproject = lightview_lightproj * view.inverse();
-			OK( var.reproject->SetMatrix( reproject.data() ));
 
 			for (int i = 0; i < object.transforms.size(); i++)
 			{
 				Matrix4f world_lightview_lightproj = lightview_lightproj * object.transforms[i];
 				OK( var.world_lightview_lightproj->SetMatrix( world_lightview_lightproj.data() ));
+				OK( var.shadowmap->SetResource( NULL ) );
 				OK( pass.render_z->Apply( 0, context ) );
+				context->OMSetRenderTargets(0, NULL, shadowmap_dsv);
 		
 				context->IASetVertexBuffers
 					(0, 1, &object.geometries[i].buffer, &object.geometries[i].stride, &object.geometries[i].offset);
@@ -442,19 +423,25 @@ void Renderer::render()
 			context->ClearDepthStencilView
 				(shadowcube_dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-			context->OMSetRenderTargets(0, NULL, shadowcube_dsv);
 			auto v = viewport_shadowmap;
 			D3D11_VIEWPORT viewports[6] = {v, v, v, v, v, v};
 			context->RSSetViewports( 6, viewports );
 
 			for (int i = 0; i < object.transforms.size(); i++)
 			{
+				{
+					Matrix4f p = lightproj;
+					Matrix4f w = lightview * object.transforms[i];
+					Matrix4f cubeproj[6];
+					for (int f = 0; f < 6; f++) cubeproj[f] = p * cubematrices[f] * w;
+					OK( var.cubeproj->SetMatrixArray((float*)cubeproj, 0, 6));
+				}
+				
 				Matrix4f world_lightview = lightview * object.transforms[i];
 				OK( var.world_lightview->SetMatrix( world_lightview.data() ));
-				Matrix4f m = Matrix4f::Identity();
-				Matrix4f cubeproj[6] = {m, m, m, m, m, m}; //!
-				OK( var.cubeproj->SetMatrixArray(cubeproj[0].data(), 0, 6));
+				OK( var.shadowcube->SetResource( NULL ) );
 				OK( pass.render_cube_z->Apply( 0, context ) );
+				context->OMSetRenderTargets(0, NULL, shadowcube_dsv);
 		
 				context->IASetVertexBuffers
 					(0, 1, &object.geometries[i].buffer, &object.geometries[i].stride, &object.geometries[i].offset);
@@ -462,9 +449,9 @@ void Renderer::render()
 			}
 		}
 
-		context->IASetInputLayout( input_layout_quad );
+		context->IASetInputLayout( NULL );
+		context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		context->RSSetViewports( 1, &viewport_screen );
-		context->IASetVertexBuffers(0, 1, &quad.buffer, &quad.stride, &quad.offset);
 		context->OMSetRenderTargets(1, &accum_rtv, NULL);
 
 		Vector4f position(view * light.transforms[k].col(3));
@@ -481,24 +468,23 @@ void Renderer::render()
 			{OK( pass.directional_light->Apply( 0, context ) );}
 		else if (light.types[k] == LightType_point)
 			{OK( pass.point_light->Apply( 0, context ) );}
-		context->Draw( quad.count, 0 );
+		context->Draw( 1, 0 );
 	}
 
 	// step 3: ambient
 	OK( var.light_colour->SetRawValue
 		( (void*)ambient.data(), 0, sizeof(Vector3f) ) );
 	OK( pass.ambient_light->Apply( 0, context ) );
-	context->Draw( quad.count, 0 );
+	context->Draw( 1, 0 );
 
 	// step 4: sky
-	context->OMSetRenderTargets(1, &accum_rtv, zbuffer_dsv);
+	OK( var.zbuffer->SetResource( NULL ) );
 	OK( pass.sky->Apply( 0, context ) );
-	context->Draw( quad.count, 0 );
+	context->OMSetRenderTargets(1, &accum_rtv, zbuffer_dsv);
+	context->Draw( 1, 0 );
 
 	// step 5: "HDR"
 	OK( var.accum->SetResource( accum_srv ) );
-	//context->IASetInputLayout( NULL );
-	//context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );	
 	context->OMSetRenderTargets(1, &window_rtv, NULL);
 	OK( pass.hdr->Apply( 0, context ) );
 	context->Draw( 1, 0 );

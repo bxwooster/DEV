@@ -79,7 +79,6 @@ private:
 	iptr<ID3D11ShaderResourceView> accum_srv;
 	iptr<ID3D11RenderTargetView> accum_rtv;
 
-	iptr<ID3D11InputLayout> input_layout_quad;
 	iptr<ID3D11InputLayout> input_layout_objects;
 
 	D3D11_VIEWPORT viewport_screen;
@@ -96,7 +95,7 @@ private:
 		ID3DX11EffectPass* ambient_light;
 		ID3DX11EffectPass* sky;
 		ID3DX11EffectPass* hdr;
-		ID3DX11EffectPass* test;
+		//ID3DX11EffectPass* test;
 	} pass;
 
 	struct
@@ -127,7 +126,6 @@ private:
 		ID3DX11EffectShaderResourceVariable* shadowcube;
 	} var;
 
-	Geometry quad;
 	Settings settings;
 	Window window;
 
@@ -138,6 +136,7 @@ public:
 		float pitch;
 	} camera;
 
+	Matrix4f cubematrices[6];
 	float field_of_view;
 	float aspect_ratio;
 	float z_near;

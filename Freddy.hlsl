@@ -34,13 +34,13 @@ Texture2D gbuffer0;
 Texture2D gbuffer1;
 Texture2D zbuffer;
 Texture2D shadowmap;
-Texture2DArray shadowcube;
+TextureCube shadowcube;
 Texture2D accum;
 
 sampler smp;
-
-static const float light_scale = 20.0;
+static const float light_scale = 100.0;
 static const float eps = 3e-7;
+static const float bias = 1.0;
 
 RasterizerState rs_default
 {
@@ -96,7 +96,7 @@ struct GSInput
 
 struct Empty
 {
-
+	float nothing : POSITION;
 };
 
 struct GSOutput
@@ -141,7 +141,7 @@ void gs_render_cube_z( triangle GSInput input[3], inout TriangleStream<GSOutput>
 
 void vs_render_cube_z( Vertex vertex, out float4 position : POSITION )
 {
-	position = mul( world_lightview, vertex.position );
+	position = vertex.position;
 }
 
 void vs_render_z( Vertex vertex, out float4 position : SV_Position )
@@ -157,35 +157,27 @@ void ps_render( Pixel pixel,
 	g1.xyz = 1.0; // some colour
 }
 
-void vs_fullscreen(uniform float depth, float2 position : POSITION, out ScreenPixel pixel)
+void vs_dummy( out Empty empty )
 {
-	pixel.pos = float4(position * 2.0 - 1.0, depth, 1.0);
-	pixel.uv = float2(position.x, 1.0 - position.y);
-	pixel.view_ray = uv_to_ray(pixel.uv);
+
 }
 
-[maxvertexcount(6)]
+[maxvertexcount(3)]
 void gs_fullscreen(uniform float depth, point Empty empty[1], inout TriangleStream<ScreenPixel> stream)
 {
+	ScreenPixel pixel;
 	float2 position;
-	for (uint id = 0; id < 6; id++)
+	for (uint id = 0; id < 3; id++)
 	{
 		if (id == 0) position = float2(0, 0);
-		if (id == 1) position = float2(1, 0);
-		if (id == 2) position = float2(0, 1);
-
-		if (id == 3) position = float2(1, 1);
-		if (id == 4) position = float2(0, 0);
-		if (id == 5) position = float2(1, 0);
-
-		ScreenPixel pixel;
+		if (id == 1) position = float2(2, 0);
+		if (id == 2) position = float2(0, 2);
 
 		pixel.pos = float4(position * 2.0 - 1.0, depth, 1.0);
 		pixel.uv = float2(position.x, 1.0 - position.y);
 		pixel.view_ray = uv_to_ray(pixel.uv);
 
 		stream.Append(pixel);
-		if (id == 2) stream.RestartStrip();
 	}
 }
 
@@ -201,7 +193,6 @@ float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Ta
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
-	float bias = 1.0; //!
 	float lighted = l < s + bias;
 
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
@@ -214,23 +205,20 @@ float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Ta
 
 float4 ps_point_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 {
-	//int i = 0;
-	//if ( uv.x > 0.33 ) i += 1;
-	//if ( uv.x > 0.66 ) i += 1;
-	//if ( uv.y > 0.33 ) i += 3;
-	//if (uv.y > 0.66 || uv.x > 0.99) return 1;
-	//return shadowcube.Gather(smp, float3((uv % 0.33) / 0.33, i)).x;
-
 	float z_neg = -linear_z(zbuffer.Sample(smp, uv).x);
 	float4 surface_pos = float4( view_ray * z_neg, z_neg, 1.0 );
+	float4 reprojected = mul(reproject, surface_pos);
+	//reprojected /= reprojected.w;
+	float s = linear_z(shadowcube.Sample(smp, reprojected.xyz));
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
+	float lighted = l < s + bias;
 
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 
-    float radiance = max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
+    float radiance = lighted * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
 	return float4(radiance * light_colour * colour, 1.0);
 }
@@ -240,7 +228,7 @@ float4 ps_ambient_light(float2 uv : Position) : SV_Target0
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float mult = saturate(dot(mul( (float3x3)view_i, normal), float3(0, 0, 1)));
-	return float4(mult * light_colour * colour, 1.0);
+	return float4(2*mult * light_colour * colour, 1.0);
 }
 
 float4 ps_sky(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
@@ -301,8 +289,8 @@ technique11 ambient_light
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
-		SetGeometryShader( NULL );
+		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_ambient_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
@@ -314,8 +302,8 @@ technique11 directional_light
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
-		SetGeometryShader( NULL );
+		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_directional_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
@@ -327,8 +315,8 @@ technique11 point_light
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
-		SetGeometryShader( NULL );
+		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_point_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
@@ -340,8 +328,8 @@ technique11 sky
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(1.0) ) );
-		SetGeometryShader( NULL );
+		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(1.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_sky() ) );
 		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
@@ -353,20 +341,7 @@ technique11 hdr
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen(0.0) ) );
-		SetGeometryShader( NULL );
-		SetPixelShader( CompileShader( ps_4_1, ps_hdr() ) );
-		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_nowrite, 0 );
-		SetRasterizerState( rs_default );
-	}
-}
-
-technique11 test
-{
-	pass
-	{
-		SetVertexShader( NULL );
+		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_hdr() ) );
 		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
