@@ -59,10 +59,19 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 					0, 0,-1, 0,
 					0, 0, 0, 1;
 
-		z_near = 0.01f;
+		view_axis << 0, 1, 0, 0,
+					 0, 0, 1, 0,
+					 1, 0, 0, 0,
+					 0, 0, 0, 1;
+
+		z_near = 0.1f;
 		camera.yaw = camera.pitch = 0.0;
 		aperture = 1.0f;
-		eye = Vector3f(5, 0, 5);
+		view = Matrix4f::Identity();
+		
+		eye = Matrix4f::Identity();
+		eye.col(3).head<3>() = Vector3f(5, 5, 5);
+		view = view_axis * eye.inverse();
 		ambient = Vector3f(0.05f, 0.04f, 0.05f);
 
 		field_of_view = 60;
@@ -70,11 +79,6 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 
 		projection_matrix(proj, field_of_view, aspect_ratio, z_near);
 		projection_matrix(lightproj, 90, 1.0, z_near);
-
-		view_axis << 0.0, 1.0, 0.0, 0.0,
-					 0.0, 0.0, 1.0, 0.0,
-					 1.0, 0.0, 0.0, 0.0,
-					 0.0, 0.0, 0.0, 1.0;
 	}
 
 	// Device, Factory
@@ -333,16 +337,14 @@ void Renderer::render()
 		context->ClearDepthStencilView(zbuffer_dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 	}
 	
-	Matrix4f rot;
+	Matrix4f rotate;
 	D3DXMatrixRotationYawPitchRoll
-		( (D3DXMATRIX*) rot.data(), 
+		( (D3DXMATRIX*) rotate.data(), 
 		camera.pitch * to_radians, 0.0, camera.yaw * to_radians);
-	rot.transposeInPlace();
+	rotate.transposeInPlace();
 
-
-	Matrix4f translate = Matrix4f::Identity();
-	translate.col(3) << -eye, 1.0;
-	Matrix4f view = view_axis * rot * translate;
+	eye.topLeftCorner<3,3>() = Matrix3f::Identity();
+	view = view_axis * rotate * eye.inverse();
 	
 	Matrix4f view_i( view.inverse() );
 	OK( var.view_i->SetMatrix( view_i.data() ));

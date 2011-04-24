@@ -142,9 +142,10 @@ public:
 	float z_near;
 	Matrix4f lightproj;
 	Matrix4f proj;
+	Matrix4f view;
 	Matrix4f view_axis;
-	Vector3f eye;
 	float aperture;
+	Matrix4f eye;
 	Vector3f ambient;
 	ObjectData& object;
 	LightData& light;
