@@ -1,0 +1,7 @@
+/geometry
+/ipch
+/build
+*.opensdf
+*.sdf
+*.suo
+*.vcxproj.user
