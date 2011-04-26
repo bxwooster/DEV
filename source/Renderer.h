@@ -95,7 +95,6 @@ private:
 		ID3DX11EffectPass* ambient_light;
 		ID3DX11EffectPass* sky;
 		ID3DX11EffectPass* hdr;
-		//ID3DX11EffectPass* test;
 	} pass;
 
 	struct
@@ -110,6 +109,7 @@ private:
 		ID3DX11EffectMatrixVariable* reproject;
 		ID3DX11EffectMatrixVariable* cubeproj;
 
+		ID3DX11EffectMatrixVariable* light_matrix;
 		ID3DX11EffectVectorVariable* light_pos;
 		ID3DX11EffectVectorVariable* light_colour;
 

@@ -72,7 +72,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		eye = Matrix4f::Identity();
 		eye.col(3).head<3>() = Vector3f(5, 5, 5);
 		view = view_axis * eye.inverse();
-		ambient = Vector3f(0.05f, 0.04f, 0.05f);
+		ambient = Vector3f(0.02f, 0.02f, 0.02f);
 
 		field_of_view = 60;
 		aspect_ratio = float(settings.width) / settings.height;
@@ -116,7 +116,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		desc.BufferDesc.Width = settings.width;
 		desc.BufferDesc.Height = settings.height;
-		desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 		desc.OutputWindow = window.handle;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
@@ -179,6 +179,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		var.field_of_view = effect->GetVariableByName("field_of_view")->AsScalar();
 		var.light_colour = effect->GetVariableByName("light_colour")->AsVector();
 		var.light_pos = effect->GetVariableByName("light_pos")->AsVector();
+		var.light_matrix = effect->GetVariableByName("light_matrix")->AsMatrix();
 		var.view_proj = effect->GetVariableByName("view_proj")->AsMatrix();
 		var.view_i = effect->GetVariableByName("view_i")->AsMatrix();
 		var.view = effect->GetVariableByName("view")->AsMatrix();
@@ -397,7 +398,9 @@ void Renderer::render()
 		Matrix4f lightview = view_axis * light.transforms[k].inverse();
 		Matrix4f lightview_lightproj = lightproj * lightview;
 
-		Matrix4f reproject = lightview_lightproj * view.inverse();
+		Matrix4f light_matrix = lightview * view.inverse();
+		OK( var.light_matrix->SetMatrix( light_matrix.data() ));
+		Matrix4f reproject = lightproj * light_matrix;
 		OK( var.reproject->SetMatrix( reproject.data() ));
 
 		if (light.types[k] == LightType_directional)

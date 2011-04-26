@@ -25,6 +25,7 @@ cbuffer light
 {
 	float3 light_pos;
 	float3 light_colour;
+	float4x4 light_matrix;
 	float4x4 reproject;
 };
 
@@ -38,35 +39,33 @@ TextureCube shadowcube;
 Texture2D accum;
 
 sampler smp;
+static const float bias = 0.2;
 static const float light_scale = 100.0;
 static const float eps = 3e-7;
-static const float bias = 1.0;
 
 RasterizerState rs_default
 {
 	FrontCounterClockwise = true; 
 };
 
-BlendState bs_none
+RasterizerState rs_shadow
 {
-	BlendEnable[0] = false;
+	FrontCounterClockwise = true; 
+	DepthBias = 0;
+	SlopeScaledDepthBias = 1.0;
 };
 
+BlendState bs_default;
 BlendState bs_additive
 {
 	BlendEnable[0] = true;
 	DestBlend = one;
 };
 
+DepthStencilState ds_default;
 DepthStencilState ds_nowrite
 {
 	DepthWriteMask = zero;
-	DepthFunc = less_equal;
-};
-
-DepthStencilState ds_default
-{
-	DepthWriteMask = all;
 	DepthFunc = less_equal;
 };
 
@@ -105,11 +104,6 @@ struct GSOutput
 	uint index : SV_RenderTargetArrayIndex;
 };
 
-float linear_z(float depth)
-{
-	return z_near / ( 1.0 - depth);
-}
-
 float2 uv_to_ray(float2 uv)
 {
 	float alpha = radians(field_of_view) * 0.5;
@@ -133,6 +127,7 @@ void gs_render_cube_z( triangle GSInput input[3], inout TriangleStream<GSOutput>
 		for (int v = 0; v < 3; v++)
 		{
 			output.position = mul(cubeproj[i], input[v].position);
+
 			stream.Append( output );
 		}
 		stream.RestartStrip();
@@ -183,37 +178,41 @@ void gs_fullscreen(uniform float depth, point Empty empty[1], inout TriangleStre
 
 float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 {
-	float z_neg = -linear_z(zbuffer.Sample(smp, uv).x);
+	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
 	float4 surface_pos = float4( view_ray * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	float in_front = reprojected.w > 0;
 	reprojected /= reprojected.w;
 	float inside_cone = length(reprojected.xy) < 1;
-	float s = linear_z(shadowmap.Sample(smp, float2(reprojected.x, -reprojected.y) * 0.5 + 0.5).x);
+	float2 s_uv = float2(reprojected.x, -reprojected.y) * 0.5 + 0.5;
+	float4 s = z_near / (1.0 - shadowmap.Gather(smp, s_uv).x);
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
-	float lighted = l < s + bias;
+	float p = dot(light_matrix[2], lightvec);
+	float lighted = dot(p - bias <= s, 0.25);
 
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 
-    float radiance = lighted * inside_cone * in_front * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
+    float radiance = lighted * in_front * inside_cone * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
 	return float4(radiance * light_colour * colour, 1.0);
 }
 
 float4 ps_point_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 {
-	float z_neg = -linear_z(zbuffer.Sample(smp, uv).x);
+	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
 	float4 surface_pos = float4( view_ray * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	//reprojected /= reprojected.w;
-	float s = linear_z(shadowcube.Sample(smp, reprojected.xyz));
+	float4 s = z_near / (1.0 - shadowcube.Gather(smp, reprojected.xyz));
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
-	float lighted = l < s + bias;
+	float3 p = abs(mul(light_matrix, float4(lightvec, 0)).xyz);
+	float m = max(p.x, max(p.y, p.z));
+	float lighted = dot(m - bias <= s, 0.25);
 
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
@@ -228,7 +227,7 @@ float4 ps_ambient_light(float2 uv : Position) : SV_Target0
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float mult = saturate(dot(mul( (float3x3)view_i, normal), float3(0, 0, 1)));
-	return float4(2*mult * light_colour * colour, 1.0);
+	return float4(mult * light_colour * colour, 1.0);
 }
 
 float4 ps_sky(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
@@ -253,7 +252,7 @@ technique11 render
 		SetGeometryShader( NULL );
 		SetPixelShader( CompileShader( ps_4_1, ps_render() ) );
 		SetRasterizerState( rs_default );
-		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_default, 0 );
 	}
 }
@@ -265,9 +264,9 @@ technique11 render_z
 		SetVertexShader( CompileShader( vs_4_1, vs_render_z() ) );
 		SetGeometryShader( NULL );
 		SetPixelShader( NULL );
-		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_default, 0 );
-		SetRasterizerState( rs_default );
+		SetRasterizerState( rs_shadow );
 	}
 }
 
@@ -278,9 +277,9 @@ technique11 render_cube_z
 		SetVertexShader( CompileShader( vs_4_1, vs_render_cube_z() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_render_cube_z() ) );
 		SetPixelShader( NULL );
-		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_default, 0 );
-		SetRasterizerState( rs_default );
+		SetRasterizerState( rs_shadow );
 	}
 }
 
@@ -331,7 +330,7 @@ technique11 sky
 		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(1.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_sky() ) );
-		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );
 	}
@@ -344,7 +343,7 @@ technique11 hdr
 		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_hdr() ) );
-		SetBlendState( bs_none, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
+		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );
 	}

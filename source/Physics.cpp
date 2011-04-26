@@ -48,8 +48,8 @@ Physics::Physics()
 	btVector3 localInertia(0, 0, 0);
 		
 	btMotionState* motionState = new btDefaultMotionState(groundTransform);
-	btRigidBody* body = new btRigidBody(mass, motionState, groundShape, localInertia);
-	dynamicsWorld->addRigidBody(body);
+	btRigidBody* planeBody = new btRigidBody(mass, motionState, groundShape, localInertia);
+	dynamicsWorld->addRigidBody(planeBody);
 }
 
 void Physics::capture(btAlignedObjectArray<Matrix4f>& transforms, Matrix4f& eye)
