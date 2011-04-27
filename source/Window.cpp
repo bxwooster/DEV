@@ -1,4 +1,4 @@
-#include "Devora.h"
+#include "App.h"
 #include "Window.h"
 
 #include "ok.h"
@@ -18,7 +18,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 			ClipCursor( NULL );
 			return 0;
 		case WM_CLOSE:
-			throw Devora::Quit();
+			throw App::Quit();
     } 
     return DefWindowProc(handle, msg, w, l);
 }

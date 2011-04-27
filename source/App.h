@@ -1,5 +1,5 @@
-#ifndef __Devora_h__
-#define __Devora_h__
+#ifndef __App_h__
+#define __App_h__
 
 #include <list>
 #include <memory>
@@ -10,7 +10,7 @@
 #include "Physics.h"
 #include "Input.h"
 
-class Devora
+class App
 {
 public:
 	class Quit {};
@@ -38,7 +38,7 @@ public:
 	Renderer::ObjectData object;
 	Renderer::LightData light;
 
-	Devora(Settings settings_);
+	App(Settings settings_);
 	void step(Input& input, double dt_);
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW

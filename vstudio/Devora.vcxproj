@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\Devora.cpp" />
+    <ClCompile Include="..\source\App.cpp" />
     <ClCompile Include="..\source\Input.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\Physics.cpp" />
@@ -20,7 +20,7 @@
     <ClCompile Include="..\source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\Devora.h" />
+    <ClInclude Include="..\source\App.h" />
     <ClInclude Include="..\source\Input.h" />
     <ClInclude Include="..\source\iptr.h" />
     <ClInclude Include="..\source\matrix.h" />

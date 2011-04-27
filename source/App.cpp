@@ -1,7 +1,7 @@
-#include "Devora.h"
+#include "App.h"
 #include "Ok.h"
 
-void Devora::on_key(int key, bool up)
+void App::on_key(int key, bool up)
 {
 	if(!up)
 	{
@@ -17,7 +17,7 @@ void Devora::on_key(int key, bool up)
 	}
 }
 
-void Devora::on_held_key(int key)
+void App::on_held_key(int key)
 {
 	switch(key)
 		{
@@ -37,14 +37,14 @@ void Devora::on_held_key(int key)
 }
 
 
-void Devora::on_mouse(long dx, long dy)
+void App::on_mouse(long dx, long dy)
 {
 	renderer.camera.yaw += dx * settings.mouse_sens;
 	renderer.camera.pitch += dy * settings.mouse_sens;
 	renderer.camera.pitch = max(-90, min(renderer.camera.pitch, 90));
 }
 
-Devora::Devora(Settings settings_) :
+App::App(Settings settings_) :
 	renderer(object, light, settings_.r)
 {
 	settings = settings_;
@@ -87,7 +87,7 @@ Devora::Devora(Settings settings_) :
 	physics.capture(object.transforms, renderer.eye);
 }
 
-void Devora::step(Input& input, double dt_)
+void App::step(Input& input, double dt_)
 {
 	dt = dt_;
 	player_movement = Vector2f::Zero();
