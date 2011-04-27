@@ -1,6 +1,6 @@
 /geometry
-/ipch
-/build
+/vstudio/ipch
+/vstudio/build
 *.opensdf
 *.sdf
 *.suo

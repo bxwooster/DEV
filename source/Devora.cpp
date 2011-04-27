@@ -1,7 +1,7 @@
-#include "Freddy.h"
+#include "Devora.h"
 #include "Ok.h"
 
-void Freddy::on_key(int key, bool up)
+void Devora::on_key(int key, bool up)
 {
 	if(!up)
 	{
@@ -17,7 +17,7 @@ void Freddy::on_key(int key, bool up)
 	}
 }
 
-void Freddy::on_held_key(int key)
+void Devora::on_held_key(int key)
 {
 	switch(key)
 		{
@@ -37,14 +37,14 @@ void Freddy::on_held_key(int key)
 }
 
 
-void Freddy::on_mouse(long dx, long dy)
+void Devora::on_mouse(long dx, long dy)
 {
 	renderer.camera.yaw += dx * settings.mouse_sens;
 	renderer.camera.pitch += dy * settings.mouse_sens;
 	renderer.camera.pitch = max(-90, min(renderer.camera.pitch, 90));
 }
 
-Freddy::Freddy(Settings settings_) :
+Devora::Devora(Settings settings_) :
 	renderer(object, light, settings_.r)
 {
 	settings = settings_;
@@ -87,7 +87,7 @@ Freddy::Freddy(Settings settings_) :
 	physics.capture(object.transforms, renderer.eye);
 }
 
-void Freddy::step(Input& input, double dt_)
+void Devora::step(Input& input, double dt_)
 {
 	dt = dt_;
 	player_movement = Vector2f::Zero();

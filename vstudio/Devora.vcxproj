@@ -10,9 +10,33 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\Devora.cpp" />
+    <ClCompile Include="..\source\Input.cpp" />
+    <ClCompile Include="..\source\Main.cpp" />
+    <ClCompile Include="..\source\Physics.cpp" />
+    <ClCompile Include="..\source\Renderer.cpp" />
+    <ClCompile Include="..\source\Timer.cpp" />
+    <ClCompile Include="..\source\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\Devora.h" />
+    <ClInclude Include="..\source\Input.h" />
+    <ClInclude Include="..\source\iptr.h" />
+    <ClInclude Include="..\source\matrix.h" />
+    <ClInclude Include="..\source\ok.h" />
+    <ClInclude Include="..\source\Physics.h" />
+    <ClInclude Include="..\source\Renderer.h" />
+    <ClInclude Include="..\source\Timer.h" />
+    <ClInclude Include="..\source\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Devora.hlsl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{17005A34-EEA1-4F6A-994F-9756AC8F37A5}</ProjectGuid>
     <RootNamespace>Freddy</RootNamespace>
+    <ProjectName>Devora</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -37,15 +61,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(DXSDK_DIR)Samples\C++\Effects11\$(Configuration);$(SolutionDir)..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\__external__;$(SolutionDir)..\__external__\bullet\src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(DXSDK_DIR)Samples\C++\Effects11\$(Configuration);$(SolutionDir)..\..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(DXSDK_DIR)Samples\C++\Effects11\$(Configuration);$(SolutionDir)..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\__external__;$(SolutionDir)..\__external__\bullet\src;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(DXSDK_DIR)Samples\C++\Effects11\$(Configuration);$(SolutionDir)..\..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
     <SourcePath>$(SourcePath)</SourcePath>
@@ -78,29 +102,6 @@
       </IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="source\Renderer.cpp" />
-    <ClCompile Include="source\Timer.cpp" />
-    <ClCompile Include="source\Input.cpp" />
-    <ClCompile Include="source\Main.cpp" />
-    <ClCompile Include="source\Freddy.cpp" />
-    <ClCompile Include="source\Physics.cpp" />
-    <ClCompile Include="source\Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="source\Renderer.h" />
-    <ClInclude Include="source\Timer.h" />
-    <ClInclude Include="source\Input.h" />
-    <ClInclude Include="source\iPtr.h" />
-    <ClInclude Include="source\Matrix.h" />
-    <ClInclude Include="source\Ok.h" />
-    <ClInclude Include="source\Freddy.h" />
-    <ClInclude Include="source\Physics.h" />
-    <ClInclude Include="source\Window.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Freddy.hlsl" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

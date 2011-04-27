@@ -148,7 +148,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		iptr<ID3D10Blob> code;
 		iptr<ID3D10Blob> info;
 
-		OK_EX( D3DX11CompileFromFile( "Freddy.hlsl",
+		OK_EX( D3DX11CompileFromFile( "Devora.hlsl",
 		NULL, NULL, NULL, "fx_5_0",
 		D3D10_SHADER_ENABLE_STRICTNESS |
 		D3D10_SHADER_OPTIMIZATION_LEVEL0 |
