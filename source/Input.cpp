@@ -3,8 +3,9 @@
 #include "Ok.h"
 #include "Input.h"
 
-typedef unsigned int uint;
+namespace Devora {
 
+typedef unsigned int uint;
 using std::fstream;
 
 Input::Input()
@@ -96,3 +97,5 @@ void InputPlayer::read(Input& input)
 		file.read( (char*)&input.keys[i], sizeof(input.keys[i]));
 	}
 }
+
+} // namespace Devora

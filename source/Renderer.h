@@ -9,8 +9,9 @@
 #include <d3d11.h>
 #include <d3dx11effect.h>
 
-typedef unsigned int uint;
+namespace Devora {
 
+typedef unsigned int uint;
 using namespace common;
 
 class Renderer
@@ -158,4 +159,5 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+} // namespace Devora
 #endif

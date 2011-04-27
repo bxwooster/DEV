@@ -1,5 +1,7 @@
 #include "Physics.h"
 
+namespace Devora {
+
 class MotionState : public btMotionState
 {
 	Matrix4f& transform;
@@ -85,3 +87,5 @@ void Physics::step(double dt)
 {
 	dynamicsWorld->stepSimulation(btScalar(dt), 6);
 }
+
+} // namespace Devora

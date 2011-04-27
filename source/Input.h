@@ -7,6 +7,8 @@
 #include <string>
 #include <fstream>
 
+namespace Devora {
+
 class Input
 {
 public:
@@ -53,4 +55,5 @@ public:
 	void write(Input& input);
 };
 
+} // namespace Devora
 #endif

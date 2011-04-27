@@ -1,6 +1,8 @@
 #include "App.h"
 #include "Ok.h"
 
+namespace Devora {
+
 void App::on_key(int key, bool up)
 {
 	if(!up)
@@ -120,3 +122,5 @@ void App::step(Input& input, double dt_)
 	physics.step(dt);
 	renderer.render();
 }
+
+} // namespace Devora

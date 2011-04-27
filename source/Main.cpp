@@ -10,6 +10,7 @@
 #include "Timer.h"
 
 using std::auto_ptr;
+using namespace Devora;
 
 void run()
 {

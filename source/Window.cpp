@@ -3,6 +3,8 @@
 
 #include "ok.h"
 
+namespace Devora {
+
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
     switch (msg) 
@@ -36,3 +38,5 @@ Window::Window(int width, int height)
 		WS_SYSMENU | WS_OVERLAPPED | WS_VISIBLE, CW_USEDEFAULT,
 		CW_USEDEFAULT, width, height, NULL, NULL, NULL, 0 ) );
 }
+
+} // namespace Devora

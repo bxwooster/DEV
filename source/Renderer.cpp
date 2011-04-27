@@ -7,6 +7,8 @@
 #include <d3dx10math.h>
 #include "Renderer.h"
 
+namespace Devora {
+
 const float to_radians = (float)(M_PI / 180.0);
 const float from_radians = (float)(180.0 / M_PI);
 
@@ -556,3 +558,5 @@ Renderer::Geometry Renderer::read_geom(const std::string& filename)
 
 	return geometry;
 }
+
+} // namespace Devora

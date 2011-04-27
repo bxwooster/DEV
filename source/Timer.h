@@ -3,6 +3,8 @@
 
 #include "Windows.h"
 
+namespace Devora {
+
 class Timer
 {
 	__int64 last;
@@ -14,4 +16,5 @@ public:
 	double elapsed();
 };
 
+} // namespace Devora
 #endif

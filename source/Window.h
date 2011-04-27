@@ -3,6 +3,8 @@
 
 #include "Windows.h"
 
+namespace Devora {
+
 class Window
 {
 public:
@@ -11,4 +13,5 @@ public:
 	HWND handle;
 };
 
+} // namespace Devora
 #endif

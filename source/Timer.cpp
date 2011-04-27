@@ -1,5 +1,7 @@
 #include "Timer.h"
 
+namespace Devora {
+
 Timer::Timer(bool reset_)
 {
 	LARGE_INTEGER large;
@@ -18,3 +20,5 @@ double Timer::elapsed()
 	if (reset) last = large.QuadPart;
 	return result;
 }
+
+} // namespace Devora

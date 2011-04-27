@@ -10,6 +10,8 @@
 #include "Physics.h"
 #include "Input.h"
 
+namespace Devora {
+
 class App
 {
 public:
@@ -44,4 +46,5 @@ public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+} // namespace Devora
 #endif

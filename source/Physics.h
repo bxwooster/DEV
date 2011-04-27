@@ -4,6 +4,7 @@
 #include "Matrix.h"
 #include "btBulletDynamicsCommon.h"
 
+namespace Devora {
 using namespace common;
 
 class Physics
@@ -25,4 +26,5 @@ public:
 	void control_player(Vector2f direction, bool jump);
 };
 
+} // namespace Devora
 #endif
