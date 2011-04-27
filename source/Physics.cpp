@@ -31,7 +31,6 @@ Physics::Physics()
 {
 	collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
-	dispatcher->registerCollisionCreateFunc(BOX_SHAPE_PROXYTYPE,BOX_SHAPE_PROXYTYPE, collisionConfiguration->getCollisionAlgorithmCreateFunc(CONVEX_SHAPE_PROXYTYPE,CONVEX_SHAPE_PROXYTYPE));
 	broadphase = new btDbvtBroadphase();
 	solver = new btSequentialImpulseConstraintSolver();
 
@@ -41,7 +40,7 @@ Physics::Physics()
 	dynamicsWorld->getDispatchInfo().m_useContinuous = true;
 	dynamicsWorld->setGravity(btVector3(0, 0, -10));
 
-	groundShape = new btStaticPlaneShape(btVector3(0, 0, 1), 0);
+	btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 0, 1), 0);
 
 	btTransform groundTransform;
 	groundTransform.setIdentity();
@@ -50,13 +49,37 @@ Physics::Physics()
 	btVector3 localInertia(0, 0, 0);
 		
 	btMotionState* motionState = new btDefaultMotionState(groundTransform);
-	btRigidBody* planeBody = new btRigidBody(mass, motionState, groundShape, localInertia);
+	planeBody = new btRigidBody(mass, motionState, groundShape, localInertia);
 	dynamicsWorld->addRigidBody(planeBody);
+}
+
+Physics::~Physics()
+{
+	delete dynamicsWorld;
+
+	for (int i = 0; i < bodies.size(); ++i)
+	{
+		delete bodies[i]->getMotionState();
+		delete bodies[i];
+	}
+
+	delete planeBody->getMotionState();
+	delete planeBody->getCollisionShape();
+	delete planeBody;
+
+	delete playerBody->getMotionState();
+	delete playerBody;
+
+	delete sphere;
+	delete solver;
+	delete broadphase;
+	delete dispatcher;
+	delete collisionConfiguration;
 }
 
 void Physics::capture(btAlignedObjectArray<Matrix4f>& transforms, Matrix4f& eye)
 {
-	btSphereShape* sphere = new btSphereShape(1);
+	sphere = new btSphereShape(1);
 	btScalar mass(1);
 	btVector3 localInertia;
 	sphere->calculateLocalInertia(mass, localInertia);
@@ -66,6 +89,7 @@ void Physics::capture(btAlignedObjectArray<Matrix4f>& transforms, Matrix4f& eye)
 		btMotionState* motionState = new MotionState(transforms[i]);
 		btRigidBody* body = new btRigidBody(mass, motionState, sphere, localInertia);
 		dynamicsWorld->addRigidBody(body);
+		bodies.push_back(body);
 	}
 
 	mass = 5;

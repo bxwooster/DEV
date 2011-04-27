@@ -9,17 +9,20 @@ using namespace common;
 
 class Physics
 {
-public:
+private:
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btDbvtBroadphase* broadphase;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
-	btCollisionShape* groundShape;
 	btRigidBody* playerBody;
+	btRigidBody* planeBody;
+	btSphereShape* sphere;
+	std::vector<btRigidBody*> bodies;
 
 public:
 	Physics();
+	~Physics();
 
 	void capture(btAlignedObjectArray<Matrix4f>&, Matrix4f& view);
 	void step(double);
