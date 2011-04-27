@@ -73,9 +73,12 @@ void Physics::capture(btAlignedObjectArray<Matrix4f>& transforms, Matrix4f& eye)
 	dynamicsWorld->addRigidBody(playerBody);
 };
 
-void Physics::control_player()
+void Physics::control_player(Vector2f mov, bool jump)
 {
-	//playerBody->applyCentralForce( btVector3(0.0, 5.0, 0.0) ); ?
+	playerBody->activate(true);
+	btVector3 vel = playerBody->getLinearVelocity();
+	if (jump) vel.setZ( 5 );
+	playerBody->setLinearVelocity( btVector3(5 * mov.x(), 5 * mov.y(), vel.z()));
 }
 
 void Physics::step(double dt)

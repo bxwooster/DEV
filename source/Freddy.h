@@ -28,6 +28,8 @@ private:
 	Settings settings;
 	std::set<int> held_keys;
 	double dt;
+	Vector2f player_movement;
+	bool player_jump;
 
 	void on_held_key(int key);
 	void on_key(int key, bool up);

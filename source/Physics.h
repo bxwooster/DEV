@@ -22,7 +22,7 @@ public:
 
 	void capture(btAlignedObjectArray<Matrix4f>&, Matrix4f& view);
 	void step(double);
-	void control_player();
+	void control_player(Vector2f direction, bool jump);
 };
 
 #endif
