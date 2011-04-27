@@ -52,7 +52,7 @@ App::App(Settings settings_) :
 	settings = settings_;
 
 	auto plane = renderer.read_geom("geometry//plane.geom");
-	auto sphere = renderer.read_geom("geometry//sphere.geom");
+	auto sphere = renderer.read_geom("geometry//icosphere.geom");
 
 	object.transforms.push_back( Matrix4f::Identity() );
 	object.geometries.push_back( plane );
