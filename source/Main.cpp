@@ -14,15 +14,10 @@ using namespace Devora;
 
 void run()
 {
-	const bool write = true;
-
 	App::Settings settings = {960, 960, 0.25, 5.0};
-	auto_ptr<App> Devora( new App(settings) );
+	auto_ptr<App> app( new App(settings) );
 
 	InputParser parser;
-	//InputRecorder recorder("replay");
-	//InputPlayer player("replay");
-
 	Timer timer;
 
 	while(true)
@@ -34,12 +29,10 @@ void run()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg); // this calls window procs!
 
-			if (write) parser.parse(msg, input);
+			parser.parse(msg, input);
 		}
 
-		//write ? recorder.write(input) : player.read(input);
-
-		Devora->step(input, timer.elapsed() );
+		app->step(input, timer.elapsed() );
 	}
 }
 

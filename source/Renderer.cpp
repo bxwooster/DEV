@@ -150,12 +150,13 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		iptr<ID3D10Blob> code;
 		iptr<ID3D10Blob> info;
 
-		OK_EX( D3DX11CompileFromFile( "Devora.hlsl",
-		NULL, NULL, NULL, "fx_5_0",
-		D3D10_SHADER_ENABLE_STRICTNESS |
+		uint flags = D3D10_SHADER_ENABLE_STRICTNESS |
 		D3D10_SHADER_OPTIMIZATION_LEVEL0 |
-		D3D10_SHADER_PACK_MATRIX_ROW_MAJOR |
-		0, 0, NULL, &code, &info, NULL ), (char*)info->GetBufferPointer() );
+		D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
+
+		OK_EX( D3DX11CompileFromFile( "Devora.hlsl",
+		NULL, NULL, NULL, "fx_5_0", flags,
+		0, NULL, &code, &info, NULL ), (char*)info->GetBufferPointer() );
 	
 		OK( D3DX11CreateEffectFromMemory( code->GetBufferPointer(),
 			code->GetBufferSize(), 0, device, &effect ));
@@ -165,9 +166,7 @@ Renderer::Renderer(ObjectData& object_, LightData& light_, Settings settings_) :
 		pass.render_cube_z = effect->GetTechniqueByName("render_cube_z")->GetPassByIndex(0);
 		pass.directional_light = effect->GetTechniqueByName("directional_light")->GetPassByIndex(0);
 		pass.point_light = effect->GetTechniqueByName("point_light")->GetPassByIndex(0);
-		pass.ambient_light = effect->GetTechniqueByName("ambient_light")->GetPassByIndex(0);
-		pass.sky = effect->GetTechniqueByName("sky")->GetPassByIndex(0);
-		pass.hdr = effect->GetTechniqueByName("hdr")->GetPassByIndex(0);
+		pass.final = effect->GetTechniqueByName("final")->GetPassByIndex(0);
 
 		var.accum = effect->GetVariableByName("accum")->AsShaderResource();
 		var.zbuffer = effect->GetVariableByName("zbuffer")->AsShaderResource();
@@ -478,22 +477,12 @@ void Renderer::render()
 		context->Draw( 1, 0 );
 	}
 
-	// step 3: ambient
+	// step 3: final: ambient + HDR + sky
 	OK( var.light_colour->SetRawValue
 		( (void*)ambient.data(), 0, sizeof(Vector3f) ) );
-	OK( pass.ambient_light->Apply( 0, context ) );
-	context->Draw( 1, 0 );
-
-	// step 4: sky
-	OK( var.zbuffer->SetResource( NULL ) );
-	OK( pass.sky->Apply( 0, context ) );
-	context->OMSetRenderTargets(1, &accum_rtv, zbuffer_dsv);
-	context->Draw( 1, 0 );
-
-	// step 5: "HDR"
 	OK( var.accum->SetResource( accum_srv ) );
 	context->OMSetRenderTargets(1, &window_rtv, NULL);
-	OK( pass.hdr->Apply( 0, context ) );
+	OK( pass.final->Apply( 0, context ) );
 	context->Draw( 1, 0 );
 	
 	// finished

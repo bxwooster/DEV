@@ -87,15 +87,12 @@ private:
 
 	struct
 	{
-		ID3DX11EffectPass* prepass;
 		ID3DX11EffectPass* render;
 		ID3DX11EffectPass* render_z;
 		ID3DX11EffectPass* render_cube_z;
 		ID3DX11EffectPass* directional_light;
 		ID3DX11EffectPass* point_light;
-		ID3DX11EffectPass* ambient_light;
-		ID3DX11EffectPass* sky;
-		ID3DX11EffectPass* hdr;
+		ID3DX11EffectPass* final;
 	} pass;
 
 	struct

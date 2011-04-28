@@ -84,7 +84,7 @@ struct Pixel
 struct ScreenPixel
 {
 	float2 uv : Position;
-	float2 view_ray : Ray;
+	//float2 view_ray : Ray;
 	float4 pos : SV_Position;
 };
 
@@ -170,40 +170,42 @@ void gs_fullscreen(uniform float depth, point Empty empty[1], inout TriangleStre
 
 		pixel.pos = float4(position * 2.0 - 1.0, depth, 1.0);
 		pixel.uv = float2(position.x, 1.0 - position.y);
-		pixel.view_ray = uv_to_ray(pixel.uv);
 
 		stream.Append(pixel);
 	}
 }
 
-float4 ps_directional_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
+float4 ps_directional_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
-	float4 surface_pos = float4( view_ray * z_neg, z_neg, 1.0 );
+	int3 uvw = int3(pos.xy, 0);
+	float z_neg = -z_near / (1.0 - zbuffer.Load(uvw));
+	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	float in_front = reprojected.w > 0;
 	reprojected /= reprojected.w;
 	float inside_cone = length(reprojected.xy) < 1;
+	clip(in_front * inside_cone - 1);
 	float2 s_uv = float2(reprojected.x, -reprojected.y) * 0.5 + 0.5;
 	float4 s = z_near / (1.0 - shadowmap.Gather(smp, s_uv).x);
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
-	float p = dot(light_matrix[2], lightvec);
+	float p = dot(light_matrix[2].xyz, lightvec);
 	float lighted = dot(p - bias <= s, 0.25);
 
-	float3 normal = gbuffer0.Sample(smp, uv).xyz;
-	float3 colour = gbuffer1.Sample(smp, uv).xyz;
+	float3 normal = gbuffer0.Load(uvw).xyz;
+	float3 colour = gbuffer1.Load(uvw).xyz;
 
-    float radiance = lighted * in_front * inside_cone * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
+    float radiance = lighted * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
 	return float4(radiance * light_colour * colour, 1.0);
 }
 
-float4 ps_point_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
+float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
-	float4 surface_pos = float4( view_ray * z_neg, z_neg, 1.0 );
+	int3 uvw = int3(pos.xy, 0);
+	float z_neg = -z_near / (1.0 - zbuffer.Load(uvw).x);
+	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	//reprojected /= reprojected.w;
 	float4 s = z_near / (1.0 - shadowcube.Gather(smp, reprojected.xyz));
@@ -214,34 +216,32 @@ float4 ps_point_light(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
 	float m = max(p.x, max(p.y, p.z));
 	float lighted = dot(m - bias <= s, 0.25);
 
-	float3 normal = gbuffer0.Sample(smp, uv).xyz;
-	float3 colour = gbuffer1.Sample(smp, uv).xyz;
+	float3 normal = gbuffer0.Load(uvw).xyz;
+	float3 colour = gbuffer1.Load(uvw).xyz;
 
     float radiance = lighted * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
 	return float4(radiance * light_colour * colour, 1.0);
 }
 
-float4 ps_ambient_light(float2 uv : Position) : SV_Target0
+float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	float3 normal = gbuffer0.Sample(smp, uv).xyz;
-	float3 colour = gbuffer1.Sample(smp, uv).xyz;
-	float mult = saturate(dot(mul( (float3x3)view_i, normal), float3(0, 0, 1)));
-	return float4(mult * light_colour * colour, 1.0);
-}
+	int3 uvw = int3(pos.xy, 0);
+	if (zbuffer.Sample(smp, uv).x == 1.0) //sky
+	{
+		float4 horizon = float4(0.6, 0.75, 0.9, 1.0);
+		float4 zenith = float4(0.25, 0.35, 0.9, 1.0);
 
-float4 ps_sky(float2 uv : Position, float2 view_ray : Ray) : SV_Target0
-{
-	float4 horizon = float4(0.6, 0.75, 0.9, 1.0);
-	float4 zenith = float4(0.25, 0.35, 0.9, 1.0);
+		float3 world_ray = mul( (float3x3)view_i, float3(uv_to_ray(uv), 1.0) );
+		return lerp(horizon, zenith, -world_ray.z );
+	}
+	
+	float3 normal = gbuffer0.Load(uvw).xyz;
+	float3 colour = gbuffer1.Load(uvw).xyz;
+	float mult = max(0.0, dot( view_i[2].xyz, normal));
+	float4 ambient = float4(mult * light_colour * colour, 1.0);
 
-	float3 world_ray = mul( (float3x3)view_i, float3(view_ray, 1.0) );
-	return lerp(horizon, zenith, dot( world_ray, float3(0.0, 0.0, -1.0) ) );
-}
-
-float4 ps_hdr(float2 uv : Position) : SV_Target0
-{
-	return accum.Sample(smp, uv) / aperture;
+	return (ambient + accum.Load(uvw)) / aperture;
 }
 
 technique11 render
@@ -283,20 +283,6 @@ technique11 render_cube_z
 	}
 }
 
-
-technique11 ambient_light
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_ambient_light() ) );
-		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_nowrite, 0 );
-		SetRasterizerState( rs_default );
-	}
-}
-
 technique11 directional_light
 {
 	pass
@@ -323,26 +309,13 @@ technique11 point_light
 	}
 }
 
-technique11 sky
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(1.0) ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_sky() ) );
-		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_nowrite, 0 );
-		SetRasterizerState( rs_default );
-	}
-}
-
-technique11 hdr
+technique11 final
 {
 	pass
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_hdr() ) );
+		SetPixelShader( CompileShader( ps_4_1, ps_final() ) );
 		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );
