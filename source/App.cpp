@@ -71,7 +71,7 @@ App::App(Settings settings_) :
 	t = Matrix4f::Identity();
 	t.col(3) = Vector4f(0.0, 0.0, 5.0, 1.0);
 	light.transforms.push_back( t );
-	light.colours.push_back( Vector3f(0.5, 0.5, 0.0) );
+	light.colours.push_back( Vector3f(0.1, 0.1, 0.0) );
 	light.types.push_back( Renderer::LightType_point );
 
 	t = Matrix4f::Identity();

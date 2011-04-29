@@ -40,7 +40,7 @@ Texture2D accum;
 
 sampler smp;
 static const float bias = 0.2;
-static const float light_scale = 100.0;
+static const float light_scale = 200.0;
 static const float eps = 3e-7;
 
 RasterizerState rs_default
