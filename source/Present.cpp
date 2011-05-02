@@ -1,5 +1,7 @@
 #include "DeviceState.hpp"
 
+#include "OK.h"
+
 namespace Devora {
 
 void Present(DeviceState& state)

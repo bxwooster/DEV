@@ -1,7 +1,6 @@
 #ifndef __Devora_GraphicsState__
 #define __Devora_GraphicsState__
 
-#include "Matrix.h"
 #include "IPtr.h"
 
 #include <d3d11.h>

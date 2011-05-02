@@ -12,6 +12,8 @@ struct Camera
 	float field_of_view;
 	float aspect_ratio;
 	float aperture;
+
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace Devora

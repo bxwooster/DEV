@@ -1,3 +1,4 @@
+#include "Camera.hpp"
 #include "DeviceState.hpp"
 #include "GraphicsState.hpp"
 #include "VisualRenderInfo.hpp"
@@ -5,7 +6,6 @@
 #include "PostProcessInfo.hpp"
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
-#include "Camera.hpp"
 
 #include <D3DX11.h>
 #include <fstream>
@@ -405,7 +405,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		gbuffer0.viewport.TopLeftX = 0.0f;
 		gbuffer0.viewport.TopLeftY = 0.0f;
 
-		lbuffer.viewport = zbuffer.viewport = gbuffer1.viewport = gbuffer0.viewport;
+		backbuffer.viewport = lbuffer.viewport = zbuffer.viewport 
+			= gbuffer1.viewport = gbuffer0.viewport;
 	   
 		shadowmap.viewport.Width = float(512);
 		shadowmap.viewport.Height = float(512); //!

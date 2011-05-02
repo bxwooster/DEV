@@ -2,7 +2,6 @@
 #include "TimingData.hpp"
 #include "InputData.hpp"
 
-#include "Matrix.h"
 #include <algorithm>
 
 namespace Devora {

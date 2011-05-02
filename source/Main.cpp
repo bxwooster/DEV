@@ -57,6 +57,7 @@ void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
 
 void run()
 {
+	// Data
 	GraphicsState graphics;
 	DeviceState device;
 	PhysicsState physics;
@@ -77,6 +78,7 @@ void run()
 	Visuals visuals;
 	Lights lights;
 
+	// Code
 	InitGraphics(graphics, device, vinfo, linfo, pinfo, gbuffer0, gbuffer1,
 		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera);
 	InitPhysics(physics);

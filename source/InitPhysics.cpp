@@ -1,9 +1,5 @@
 #include "PhysicsState.hpp"
 
-#include "Matrix.h"
-
-#include <btBulletDynamicsCommon.h>
-
 namespace Devora {
 
 using namespace std;
