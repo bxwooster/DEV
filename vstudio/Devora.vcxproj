@@ -42,7 +42,6 @@
     <ClCompile Include="..\source\InitTiming.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\PostProcess.cpp" />
-    <ClCompile Include="..\source\Prepare.cpp" />
     <ClCompile Include="..\source\Present.cpp" />
     <ClCompile Include="..\source\RenderLights.cpp" />
     <ClCompile Include="..\source\RenderVisuals.cpp" />

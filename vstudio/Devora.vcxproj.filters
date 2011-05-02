@@ -107,9 +107,6 @@
     <ClCompile Include="..\source\InitInput.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Prepare.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\DeriveCamera.cpp">
       <Filter>Code</Filter>

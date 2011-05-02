@@ -40,7 +40,6 @@ void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera);
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
 
-void Prepare(GraphicsState& state);
 void Present(GraphicsState& state);
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
@@ -91,7 +90,6 @@ void run()
 		CrunchPhysics(physics, transforms, player, timing);
 		DeriveCamera(transforms, player, camera);
 
-		Prepare(graphics);
 		RenderVisuals(graphics, vinfo, transforms, visuals,
 			camera, gbuffer0, gbuffer1, zbuffer);
 		RenderLights(graphics, vinfo, linfo, transforms, lights, visuals,

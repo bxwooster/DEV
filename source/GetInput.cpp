@@ -9,8 +9,6 @@ void GetInput(InputData& input)
 {
 	input.keys_up.clear();
 	input.keys_down.clear();
-	input.mouse.x = 0;
-	input.mouse.y = 0;
 
 	MSG msg;
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

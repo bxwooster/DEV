@@ -50,7 +50,6 @@ struct GraphicsState
 		ID3DX11EffectShaderResourceVariable* shadowcube;
 	} var;
 
-	Matrix4f cubematrices[6];
 	float field_of_view;
 	float aspect_ratio;
 	float z_near;

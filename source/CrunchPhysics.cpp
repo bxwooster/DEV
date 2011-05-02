@@ -10,7 +10,7 @@ void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 {
 	btVector3 vel = state.playerBody->getLinearVelocity();
 	if (player.jump) vel.setZ( 5 );
-	
+
 	state.playerBody->activate(true);
 	state.playerBody->setLinearVelocity( btVector3(5 * player.mov.x(), 5 * player.mov.y(), vel.z())); //! 5
 	
