@@ -111,6 +111,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Main.cpp" />
+    <ClCompile Include="..\source\DeriveCamera.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\Devora.hlsl">

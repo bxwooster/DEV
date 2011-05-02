@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp" />
+    <ClCompile Include="..\source\DeriveCamera.cpp" />
     <ClCompile Include="..\source\DerivePlayerState.cpp" />
     <ClCompile Include="..\source\GetInput.cpp" />
     <ClCompile Include="..\source\GetTiming.cpp" />

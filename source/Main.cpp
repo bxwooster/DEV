@@ -35,8 +35,9 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 
 void InitPhysics(PhysicsState& state);
 void CrunchPhysics(PhysicsState& state, Transforms& transforms,
-	PlayerState& player, TimingData& timing, Camera& camera);
+	PlayerState& player, TimingData& timing);
 
+void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera);
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
 
 void Prepare(GraphicsState& state);
@@ -87,7 +88,8 @@ void run()
 		GetTiming(timing);
 		GetInput(input);
 		DerivePlayerState(player, input, timing);
-		CrunchPhysics(physics, transforms, player, timing, camera);
+		CrunchPhysics(physics, transforms, player, timing);
+		DeriveCamera(transforms, player, camera);
 
 		Prepare(graphics);
 		RenderVisuals(graphics, vinfo, transforms, visuals,

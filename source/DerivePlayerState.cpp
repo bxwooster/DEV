@@ -23,16 +23,21 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 
 	state.mov = Vector2f(0, 0);
 	if (input.keys_held.find(W) != end)
-		state.mov += Vector2f(1, 0);
-	if (input.keys_held.find(S) != end)
 		state.mov += Vector2f(-1, 0);
+	if (input.keys_held.find(S) != end)
+		state.mov += Vector2f(1, 0);
 	if (input.keys_held.find(A) != end)
-		state.mov += Vector2f(0, 1);
-	if (input.keys_held.find(D) != end)
 		state.mov += Vector2f(0, -1);
+	if (input.keys_held.find(D) != end)
+		state.mov += Vector2f(0, 1);
 
 	if (state.mov != Vector2f(0, 0))
 		state.mov.normalize();
+
+	float yaw = float(state.camera.yaw / 180 * M_PI);
+	Matrix2f rot;
+	rot << cos(yaw), sin(yaw), -sin(yaw), cos(yaw);
+	state.mov = rot * state.mov;
 
 	state.jump = ( input.keys_held.find(SPACE) != end );
 

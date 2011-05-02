@@ -25,6 +25,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
 	state.context->OMSetRenderTargets(2, targets, zbuffer.dsv);
+	OK( gbuffer0.viewport == gbuffer1.viewport );
 	state.context->RSSetViewports( 1, &gbuffer0.viewport );
 	state.context->IASetInputLayout( info.layout );
 	state.context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
