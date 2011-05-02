@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Code">
+      <UniqueIdentifier>{0c025bc3-9b6e-4af9-a7f7-5b396ad54d15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{887f879e-ac4d-45e4-89b9-f9a8960b6288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{a42bfd3a-d5ff-4083-9e21-539215fc41fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{96d36d1e-6eed-43b1-a71a-5aed2e6aaade}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\GraphicsState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\LightRenderInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Lights.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PhysicsState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PlayerState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PostProcessInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\TimingData.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Transforms.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\VisualRenderInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Visuals.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ZBuffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\InputData.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Camera.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Buffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\IPtr.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Matrix.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\OK.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\CrunchPhysics.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DerivePlayerState.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\GetInput.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\GetTiming.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitGraphics.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitPhysics.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitScene.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitTiming.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PostProcess.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Present.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\RenderLights.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\RenderVisuals.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitInput.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Prepare.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Devora.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,21 +1,18 @@
-#ifndef __Matrix_h__
-#define __Matrix_h__
+#ifndef __Matrix__
+#define __Matrix__
 
-#include "Ok.h"
+#include "OK.h"
 
+#define NOMINMAX
 #define EIGEN_DEFAULT_TO_ROW_MAJOR
-#define eigen_assert OK_P
+#define eigen_assert OK
 
 #include <Eigen/Core>
 #include <Eigen/LU> 
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 
-namespace common {
-
 using Eigen::Matrix;
 EIGEN_USING_MATRIX_TYPEDEFS
-
-} //namespace common
 
 #endif

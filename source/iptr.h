@@ -1,29 +1,25 @@
-#ifndef __iPtr_h__
-#define __iPtr_h__
-
-namespace common {
-
-struct IUnknown;
+#ifndef __IPtr_h__
+#define __IPtr_h__
 
 template <typename Interface>
-struct iptr
+struct IPtr
 {  
-    iptr()
-    : pointer(NULL)
+    IPtr()
+    : pointer(nullptr)
     {}
     
-    iptr(const iptr& other)
+    IPtr(const IPtr& other)
     : pointer( other.pointer )
     {
         if (pointer) pointer->AddRef();
     }
     
-    ~iptr()
+    ~IPtr()
     {
         if (pointer) pointer->Release();
     }
     
-    const iptr& operator=(const iptr& other)
+    const IPtr& operator=(const IPtr& other)
     {
         if ( pointer != other.pointer )
         {
@@ -44,11 +40,6 @@ struct iptr
         return pointer;
     }
     
-    operator IUnknown*()
-    {
-        return (IUnknown*)pointer;
-    }
-    
     Interface** operator&()
     {
         return &pointer;
@@ -62,7 +53,5 @@ struct iptr
   private:
     Interface* pointer;
 };
-
-} //namespace common
 
 #endif

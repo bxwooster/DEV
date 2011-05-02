@@ -1,5 +1,5 @@
-#ifndef __common_ok_h__
-#define __common_ok_h__
+#ifndef __OK__
+#define __OK__
 
 #include <exception>
 #include <string>
@@ -24,17 +24,17 @@ inline std::string to_string(const T& obj)
 	"File \"" __FILE__ "\", line " \
     _QUOTE(__LINE__) ", in " __FUNCTION__
 
-#define OK( RESULT ) \
+#define HOK( RESULT ) \
     { \
         HRESULT h = (RESULT); \
 		if ( FAILED(h) ) throw std::exception \
 			( ( __INFO__ "\n" #RESULT "\nError code: " + common::to_string(h) ).c_str() ); \
     }
 
-#define OK_P( RESULT ) \
+#define OK( RESULT ) \
         if ( !(RESULT) ) throw std::exception( __INFO__ "\n" #RESULT);
 
-#define OK_EX( RESULT, MESSAGE ) \
+#define HOK_EX( RESULT, MESSAGE ) \
     { \
         HRESULT h = (RESULT); \
 		if ( FAILED(h) ) throw std::exception \
@@ -42,7 +42,7 @@ inline std::string to_string(const T& obj)
 			"\n" + std::string(MESSAGE) ).c_str() ); \
     }
 
-#define OK_P_EX( RESULT, MESSAGE ) \
+#define OK_EX( RESULT, MESSAGE ) \
         if ( !(RESULT) ) throw std::exception \
 			( ( __INFO__ "\n" #RESULT "\n" + std::string(MESSAGE) ).c_str() );
 

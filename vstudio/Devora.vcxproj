@@ -11,24 +11,40 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\App.cpp" />
-    <ClCompile Include="..\source\Input.cpp" />
-    <ClCompile Include="..\source\Main.cpp" />
-    <ClCompile Include="..\source\Physics.cpp" />
-    <ClCompile Include="..\source\Renderer.cpp" />
-    <ClCompile Include="..\source\Timer.cpp" />
-    <ClCompile Include="..\source\Window.cpp" />
+    <ClInclude Include="..\source\Camera.hpp" />
+    <ClInclude Include="..\source\Buffer.hpp" />
+    <ClInclude Include="..\source\GraphicsState.hpp" />
+    <ClInclude Include="..\source\InputData.hpp" />
+    <ClInclude Include="..\source\IPtr.h" />
+    <ClInclude Include="..\source\LightRenderInfo.hpp" />
+    <ClInclude Include="..\source\Lights.hpp" />
+    <ClInclude Include="..\source\Matrix.h" />
+    <ClInclude Include="..\source\OK.h" />
+    <ClInclude Include="..\source\PhysicsState.hpp" />
+    <ClInclude Include="..\source\PlayerState.hpp" />
+    <ClInclude Include="..\source\PostProcessInfo.hpp" />
+    <ClInclude Include="..\source\TimingData.hpp" />
+    <ClInclude Include="..\source\Transforms.hpp" />
+    <ClInclude Include="..\source\VisualRenderInfo.hpp" />
+    <ClInclude Include="..\source\Visuals.hpp" />
+    <ClInclude Include="..\source\ZBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\App.h" />
-    <ClInclude Include="..\source\Input.h" />
-    <ClInclude Include="..\source\iptr.h" />
-    <ClInclude Include="..\source\matrix.h" />
-    <ClInclude Include="..\source\ok.h" />
-    <ClInclude Include="..\source\Physics.h" />
-    <ClInclude Include="..\source\Renderer.h" />
-    <ClInclude Include="..\source\Timer.h" />
-    <ClInclude Include="..\source\Window.h" />
+    <ClCompile Include="..\source\CrunchPhysics.cpp" />
+    <ClCompile Include="..\source\DerivePlayerState.cpp" />
+    <ClCompile Include="..\source\GetInput.cpp" />
+    <ClCompile Include="..\source\GetTiming.cpp" />
+    <ClCompile Include="..\source\InitGraphics.cpp" />
+    <ClCompile Include="..\source\InitInput.cpp" />
+    <ClCompile Include="..\source\InitPhysics.cpp" />
+    <ClCompile Include="..\source\InitScene.cpp" />
+    <ClCompile Include="..\source\InitTiming.cpp" />
+    <ClCompile Include="..\source\Main.cpp" />
+    <ClCompile Include="..\source\PostProcess.cpp" />
+    <ClCompile Include="..\source\Prepare.cpp" />
+    <ClCompile Include="..\source\Present.cpp" />
+    <ClCompile Include="..\source\RenderLights.cpp" />
+    <ClCompile Include="..\source\RenderVisuals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Devora.hlsl" />

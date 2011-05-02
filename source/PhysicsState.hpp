@@ -1,15 +1,14 @@
-#ifndef __Physics_h__
-#define __Physics_h__
+#ifndef __Devora_PhysicsState__
+#define __Devora_PhysicsState__
 
 #include "Matrix.h"
-#include "btBulletDynamicsCommon.h"
+#include <btBulletDynamicsCommon.h>
+#include <vector>
 
 namespace Devora {
-using namespace common;
 
-class Physics
+struct PhysicsState
 {
-private:
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btDbvtBroadphase* broadphase;
@@ -19,15 +18,11 @@ private:
 	btRigidBody* planeBody;
 	btSphereShape* sphere;
 	std::vector<btRigidBody*> bodies;
+	Matrix4f eye;
 
-public:
-	Physics();
-	~Physics();
-
-	void capture(btAlignedObjectArray<Matrix4f>&, Matrix4f& view);
-	void step(double);
-	void control_player(Vector2f direction, bool jump);
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace Devora
+
 #endif

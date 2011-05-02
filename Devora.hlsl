@@ -1,6 +1,5 @@
 cbuffer frame	
 {
-	float4x4 view_proj;
 	float4x4 view_i;
 	float4x4 view;
 	float z_near;
@@ -36,7 +35,7 @@ Texture2D gbuffer1;
 Texture2D zbuffer;
 Texture2D shadowmap;
 TextureCube shadowcube;
-Texture2D accum;
+Texture2D lbuffer;
 
 sampler smp;
 static const float bias = 0.2;
@@ -241,7 +240,7 @@ float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 	float mult = max(0.0, dot( view_i[2].xyz, normal));
 	float4 ambient = float4(mult * light_colour * colour, 1.0);
 
-	return (ambient + accum.Load(uvw)) / aperture;
+	return (ambient + lbuffer.Load(uvw)) / aperture;
 }
 
 technique11 render
