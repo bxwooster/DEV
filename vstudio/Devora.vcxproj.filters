@@ -66,6 +66,9 @@
     <ClInclude Include="..\source\OK.h">
       <Filter>Tools</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\DeviceState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp">

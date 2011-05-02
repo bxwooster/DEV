@@ -2,6 +2,7 @@
 
 #include "Buffer.hpp"
 #include "Camera.hpp"
+#include "DeviceState.hpp"
 #include "GraphicsState.hpp"
 #include "InputData.hpp"
 #include "LightRenderInfo.hpp"
@@ -20,10 +21,10 @@
 
 namespace Devora {
 
-void InitGraphics(GraphicsState& state, 
+void InitGraphics(GraphicsState& state, DeviceState& device,
 	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, 
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer);
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera);
 
 void InitInput(InputData& input);
 void GetInput(InputData& input);
@@ -40,7 +41,7 @@ void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera);
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
 
-void Present(GraphicsState& state);
+void Present(DeviceState& state);
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Camera& camera,
@@ -57,6 +58,7 @@ void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
 void run()
 {
 	GraphicsState graphics;
+	DeviceState device;
 	PhysicsState physics;
 
 	VisualRenderInfo vinfo;
@@ -75,8 +77,8 @@ void run()
 	Visuals visuals;
 	Lights lights;
 
-	InitGraphics(graphics, vinfo, linfo, pinfo, gbuffer0, gbuffer1,
-		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer);
+	InitGraphics(graphics, device, vinfo, linfo, pinfo, gbuffer0, gbuffer1,
+		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera);
 	InitPhysics(physics);
 	InitTiming(timing);
 	InitInput(input);
@@ -95,7 +97,7 @@ void run()
 		RenderLights(graphics, vinfo, linfo, transforms, lights, visuals,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer);
 		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, camera);
-		Present(graphics);
+		Present(device);
 	}
 }
 

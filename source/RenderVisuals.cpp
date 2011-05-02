@@ -23,10 +23,9 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state.context->ClearRenderTargetView(gbuffer1.rtv, black);
 	state.context->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	HOK( state.var.aperture->SetFloat( state.aperture ) );
-	HOK( state.var.z_near->SetFloat( state.z_near ) );
-	HOK( state.var.field_of_view->SetFloat( state.field_of_view ) );
-	HOK( state.var.aspect_ratio->SetFloat( state.aspect_ratio ) );
+	HOK( state.var.aperture->SetFloat( camera.aperture ) );
+	HOK( state.var.field_of_view->SetFloat( camera.field_of_view ) );
+	HOK( state.var.aspect_ratio->SetFloat( camera.aspect_ratio ) );
 
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
 	state.context->OMSetRenderTargets(2, targets, zbuffer.dsv);

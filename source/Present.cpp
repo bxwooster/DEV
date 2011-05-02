@@ -1,8 +1,8 @@
-#include "GraphicsState.hpp"
+#include "DeviceState.hpp"
 
 namespace Devora {
 
-void Present(GraphicsState& state)
+void Present(DeviceState& state)
 {
 	HOK( state.swap_chain->Present(0, 0) );
 }

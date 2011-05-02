@@ -1,11 +1,13 @@
+#include "DeviceState.hpp"
 #include "GraphicsState.hpp"
 #include "VisualRenderInfo.hpp"
 #include "LightRenderInfo.hpp"
 #include "PostProcessInfo.hpp"
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
+#include "Camera.hpp"
 
-#include <d3dx11.h>
+#include <D3DX11.h>
 #include <fstream>
 
 namespace Devora {
@@ -26,7 +28,7 @@ namespace {
 				0, 0, -1, 0;
 	}
 
-	Geometry read_geom(GraphicsState& state, const std::string& filename)
+	Geometry read_geom(DeviceState& device, const std::string& filename)
 	{
 		using std::ifstream;
 
@@ -77,7 +79,7 @@ namespace {
 		buffer_desc.MiscFlags = 0;
 		buffer_desc.ByteWidth = width;
 
-		HOK( state.device->CreateBuffer
+		HOK( device.device->CreateBuffer
 		  ( &buffer_desc, &data, &geometry.buffer ) );
 
 		delete[] vertices;
@@ -106,16 +108,18 @@ namespace {
 	}
 }
 
-void InitGraphics(GraphicsState& state, 
+void InitGraphics(GraphicsState& state, DeviceState& device, 
 	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, 
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer)
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera)
 {
+	float const z_near = 0.1f;
+
 	struct
 	{
 		uint width;
 		uint height;
-	} settings = { 960, 960 };
+	} const settings = { 960, 960 };
 
 	WNDCLASSEX window_class;
 	ZeroMemory( &window_class, sizeof( WNDCLASSEX ) );
@@ -124,7 +128,7 @@ void InitGraphics(GraphicsState& state,
 	window_class.lpfnWndProc = WindowProc;  
 	RegisterClassEx( &window_class );
 
-	OK( state.window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
+	OK( device.window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
 		WS_SYSMENU | WS_OVERLAPPED | WS_VISIBLE, CW_USEDEFAULT,
 		CW_USEDEFAULT, settings.width, settings.height, NULL, NULL, NULL, 0 ) );
 
@@ -161,19 +165,14 @@ void InitGraphics(GraphicsState& state,
 				0, 0,-1, 0,
 				0, 0, 0, 1;
 
-		state.z_near = 0.1f;
-		state.aperture = 1.0f;
-		
+		camera.aperture = 1.0f;
+		camera.field_of_view = 60;
+		camera.aspect_ratio = float(settings.width) / settings.height;
+
+		projection_matrix(vinfo.proj, camera.field_of_view, camera.aspect_ratio, z_near);
+		projection_matrix(linfo.proj, 90, 1.0, z_near);
 		pinfo.ambient = Vector3f(0.02f, 0.02f, 0.02f);
-
-		state.field_of_view = 60;
-		state.aspect_ratio = float(settings.width) / settings.height;
-
-		projection_matrix(vinfo.proj, state.field_of_view, state.aspect_ratio, state.z_near);
-		projection_matrix(linfo.proj, 90, 1.0, state.z_near);
 	}
-
-	IPtr<ID3D11Device> device;
 
 	// Device, Factory
 	{
@@ -190,11 +189,9 @@ void InitGraphics(GraphicsState& state,
 #endif
 		HOK( D3D11CreateDevice
 			( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flag,
-			NULL, 0, D3D11_SDK_VERSION, &device, &feature_level, &state.context ) );
+			NULL, 0, D3D11_SDK_VERSION, &device.device, &feature_level, &state.context ) );
 
-		state.device = device;
-
-		HOK( device->QueryInterface
+		HOK( device.device->QueryInterface
 			( __uuidof(IDXGIDevice1), (void**)&dxgi_device ) );
     
 		HOK( dxgi_device->GetParent
@@ -211,21 +208,21 @@ void InitGraphics(GraphicsState& state,
 		desc.BufferDesc.Width = settings.width;
 		desc.BufferDesc.Height = settings.height;
 		desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		desc.OutputWindow = state.window;
+		desc.OutputWindow = device.window;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Windowed = 1;
 		desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		HOK( dxgi_factory->CreateSwapChain
-			( device, &desc, &state.swap_chain ));
+			( device.device, &desc, &device.swap_chain ));
 	}
 
 	// Back buffer, view
 	{
 		IPtr<ID3D11Texture2D> buffer;
 	
-		HOK( state.swap_chain->GetBuffer
+		HOK( device.swap_chain->GetBuffer
 			( 0, __uuidof( ID3D11Texture2D ), ( void** )( &backbuffer.texture ) ));
 
 		D3D11_RENDER_TARGET_VIEW_DESC desc = {};
@@ -233,7 +230,7 @@ void InitGraphics(GraphicsState& state,
 		desc.Format = DXGI_FORMAT(0);
 		desc.Texture2D.MipSlice = 0;
 
-		HOK( device->CreateRenderTargetView
+		HOK( device.device->CreateRenderTargetView
 			( backbuffer.texture, NULL, &backbuffer.rtv ));
 	}
 
@@ -252,7 +249,7 @@ void InitGraphics(GraphicsState& state,
 		0, NULL, &code, &info, NULL ), (char*)info->GetBufferPointer() );
 	
 		HOK( D3DX11CreateEffectFromMemory( code->GetBufferPointer(),
-			code->GetBufferSize(), 0, device, &effect ));
+			code->GetBufferSize(), 0, device.device, &effect ));
 
 		state.effect = effect;
 
@@ -305,7 +302,7 @@ void InitGraphics(GraphicsState& state,
 			}
 		};
 
-		HOK( device->CreateInputLayout
+		HOK( device.device->CreateInputLayout
 			( element, 2, desc.pIAInputSignature,
 				desc.IAInputSignatureSize, &vinfo.layout ) );
 	}
@@ -325,24 +322,24 @@ void InitGraphics(GraphicsState& state,
 		desc.MipLevels = 1;
 		desc.MiscFlags = D3D10_RESOURCE_MISC_TEXTURECUBE;
 
-		HOK( device->CreateTexture2D( &desc, NULL, &shadowcube.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, &shadowcube.texture ) );
 		desc.ArraySize = 1;
 		desc.MiscFlags = 0;
-		HOK( device->CreateTexture2D( &desc, NULL, &shadowmap.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, &shadowmap.texture ) );
 
 		desc.Width = settings.width;
 		desc.Height = settings.height;
-		HOK( device->CreateTexture2D( &desc, NULL, &zbuffer.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, &zbuffer.texture ) );
 
 		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 
-		HOK( device->CreateTexture2D( &desc, NULL, &gbuffer0.texture ) );
-		HOK( device->CreateTexture2D( &desc, NULL, &lbuffer.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, &gbuffer0.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, &lbuffer.texture ) );
 
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-		HOK( device->CreateTexture2D( &desc, NULL, &gbuffer1.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, &gbuffer1.texture ) );
 	}
 
 	// Views
@@ -353,17 +350,17 @@ void InitGraphics(GraphicsState& state,
 		desc.Texture2D.MipLevels = 1;
 		desc.Texture2D.MostDetailedMip = 0;
 
-		HOK( device->CreateShaderResourceView
+		HOK( device.device->CreateShaderResourceView
 			( shadowmap.texture, &desc, &shadowmap.srv ));
 
-		HOK( device->CreateShaderResourceView
+		HOK( device.device->CreateShaderResourceView
 			( zbuffer.texture, &desc, &zbuffer.srv ));
 
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 		desc.TextureCube.MipLevels = 1;
 		desc.TextureCube.MostDetailedMip = 0;
 
-		HOK( device->CreateShaderResourceView
+		HOK( device.device->CreateShaderResourceView
 		  ( shadowcube.texture, &desc, &shadowcube.srv ));
 	}
 	{
@@ -372,10 +369,10 @@ void InitGraphics(GraphicsState& state,
 		desc.Format = DXGI_FORMAT_D32_FLOAT;
 		desc.Texture2D.MipSlice = 0;
 
-		HOK( device->CreateDepthStencilView
+		HOK( device.device->CreateDepthStencilView
 			( shadowmap.texture, &desc, &shadowmap.dsv ));
 
-		HOK( device->CreateDepthStencilView
+		HOK( device.device->CreateDepthStencilView
 		  ( zbuffer.texture, &desc, &zbuffer.dsv ));
 
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
@@ -383,20 +380,20 @@ void InitGraphics(GraphicsState& state,
 		desc.Texture2DArray.FirstArraySlice = 0;
 		desc.Texture2DArray.ArraySize = 6;
 
-		HOK( device->CreateDepthStencilView
+		HOK( device.device->CreateDepthStencilView
 		  ( shadowcube.texture, &desc, &shadowcube.dsv ));
 	}
-	HOK( device->CreateShaderResourceView
+	HOK( device.device->CreateShaderResourceView
 		( gbuffer0.texture, NULL, &gbuffer0.srv ) );
-	HOK( device->CreateShaderResourceView
+	HOK( device.device->CreateShaderResourceView
 		( gbuffer1.texture, NULL, &gbuffer1.srv ) );
-	HOK( device->CreateShaderResourceView
+	HOK( device.device->CreateShaderResourceView
 		( lbuffer.texture, NULL, &lbuffer.srv ) );
-	HOK( device->CreateRenderTargetView
+	HOK( device.device->CreateRenderTargetView
 		( gbuffer0.texture, NULL, &gbuffer0.rtv ) );
-	HOK( device->CreateRenderTargetView
+	HOK( device.device->CreateRenderTargetView
 		( gbuffer1.texture, NULL, &gbuffer1.rtv ) );
-	HOK( device->CreateRenderTargetView
+	HOK( device.device->CreateRenderTargetView
 		( lbuffer.texture, NULL, &lbuffer.rtv ) );
 
 	// Viewports
@@ -421,8 +418,10 @@ void InitGraphics(GraphicsState& state,
 	}
 
 	//Geometry
-	vinfo.geoms.push_back( read_geom(state, "geometry//plane.geom") );
-	vinfo.geoms.push_back( read_geom(state, "geometry//icosphere.geom") );
+	vinfo.geoms.push_back( read_geom(device, "geometry//plane.geom") );
+	vinfo.geoms.push_back( read_geom(device, "geometry//icosphere.geom") );
+
+	HOK( state.var.z_near->SetFloat( z_near ) );
 }
 
 } // namespace Devora

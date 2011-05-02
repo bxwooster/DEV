@@ -11,9 +11,7 @@ namespace Devora {
 
 struct GraphicsState
 {
-	IPtr<ID3D11Device> device;
 	IPtr<ID3D11DeviceContext> context;
-	IPtr<IDXGISwapChain> swap_chain;
 	IPtr<ID3DX11Effect> effect;
 
 	ID3DX11EffectPass* pass_render;
@@ -49,14 +47,6 @@ struct GraphicsState
 		ID3DX11EffectShaderResourceVariable* shadowmap;
 		ID3DX11EffectShaderResourceVariable* shadowcube;
 	} var;
-
-	float field_of_view;
-	float aspect_ratio;
-	float z_near;
-	float aperture;
-	HWND window;
-
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace Devora

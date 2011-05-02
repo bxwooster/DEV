@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="..\source\Camera.hpp" />
     <ClInclude Include="..\source\Buffer.hpp" />
+    <ClInclude Include="..\source\DeviceState.hpp" />
     <ClInclude Include="..\source\GraphicsState.hpp" />
     <ClInclude Include="..\source\InputData.hpp" />
     <ClInclude Include="..\source\IPtr.h" />

@@ -8,6 +8,10 @@ namespace Devora {
 struct Camera
 {
 	Matrix4f view;
+
+	float field_of_view;
+	float aspect_ratio;
+	float aperture;
 };
 
 } // namespace Devora
