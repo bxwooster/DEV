@@ -45,16 +45,16 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 	transforms.push_back( Matrix4f::Identity() );
 	visuals.push_back( v ); // plane
 
-	//for (int i = -2; i <= 2; i++)
-	//{
-	//	for (int j = -2; j <= 2; j++)
-	//	{
-	//		t.col(3) = Vector4f(i * 3.0f + j % 2, j * 3.0f + i % 2, 1.0f, 1.0f);
-	//		Visual v = { transforms.size(), 1 };
-	//		transforms.push_back( t );
-	//		visuals.push_back( v );
-	//	}
-	//}
+	for (int i = -2; i <= 2; i++)
+	{
+		for (int j = -2; j <= 2; j++)
+		{
+			t.col(3) = Vector4f(i * 3.0f + j % 2, j * 3.0f + i % 2, 1.0f, 1.0f);
+			Visual v = { transforms.size(), 1 };
+			transforms.push_back( t );
+			visuals.push_back( v );
+		}
+	}
 
 	t.col(3) = Vector4f(0, 0, 5, 1);
 	Light light = { Vector3f(1, 1, 0), transforms.size(), LightType::point };

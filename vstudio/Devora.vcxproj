@@ -47,7 +47,7 @@
     <ClCompile Include="..\source\RenderVisuals.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Devora.hlsl" />
+    <None Include="..\shaders\Devora.hlsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{17005A34-EEA1-4F6A-994F-9756AC8F37A5}</ProjectGuid>

@@ -29,7 +29,6 @@ struct GraphicsState
 		ID3DX11EffectMatrixVariable* world_lightview;
 		ID3DX11EffectMatrixVariable* world_view_proj;
 		ID3DX11EffectMatrixVariable* world_view;
-		ID3DX11EffectMatrixVariable* view;
 		ID3DX11EffectMatrixVariable* view_i;
 		ID3DX11EffectMatrixVariable* reproject;
 		ID3DX11EffectMatrixVariable* cubeproj;

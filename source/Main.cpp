@@ -39,9 +39,8 @@ void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
 
+void Prepare(GraphicsState& state);
 void Present(GraphicsState& state);
-void Prepare(GraphicsState& state, Buffer& gbuffer0, Buffer& gbuffer1,
-	Buffer& lbuffer, ZBuffer& zbuffer, Camera& camera);
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Camera& camera,
@@ -53,8 +52,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer);
 
 void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer, 
-	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer);
-
+	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, Camera& camera);
 
 void run()
 {
@@ -91,12 +89,12 @@ void run()
 		DerivePlayerState(player, input, timing);
 		CrunchPhysics(physics, transforms, player, timing, camera);
 
-		Prepare(graphics, gbuffer0, gbuffer1, lbuffer, zbuffer, camera);
+		Prepare(graphics);
 		RenderVisuals(graphics, vinfo, transforms, visuals,
 			camera, gbuffer0, gbuffer1, zbuffer);
 		RenderLights(graphics, vinfo, linfo, transforms, lights, visuals,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer);
-		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer);
+		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, camera);
 		Present(graphics);
 	}
 }

@@ -1,7 +1,6 @@
 cbuffer frame	
 {
 	float4x4 view_i;
-	float4x4 view;
 	float z_near;
 	float aperture;
 	float field_of_view;

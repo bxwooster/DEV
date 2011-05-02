@@ -277,7 +277,6 @@ void InitGraphics(GraphicsState& state,
 		state.var.light_pos = effect->GetVariableByName("light_pos")->AsVector();
 		state.var.light_matrix = effect->GetVariableByName("light_matrix")->AsMatrix();
 		state.var.view_i = effect->GetVariableByName("view_i")->AsMatrix();
-		state.var.view = effect->GetVariableByName("view")->AsMatrix();
 		state.var.reproject = effect->GetVariableByName("reproject")->AsMatrix();
 		state.var.cubeproj = effect->GetVariableByName("cubeproj")->AsMatrix();
 		state.var.world_view = effect->GetVariableByName("world_view")->AsMatrix();

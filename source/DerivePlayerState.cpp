@@ -31,7 +31,7 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 	if (input.keys_held.find(D) != end)
 		state.mov += Vector2f(0, -1);
 
-	if (state.mov.x() != 0 || state.mov.y() != 0)
+	if (state.mov != Vector2f(0, 0))
 		state.mov.normalize();
 
 	state.jump = ( input.keys_held.find(SPACE) != end );

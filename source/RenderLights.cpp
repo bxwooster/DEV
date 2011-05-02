@@ -19,6 +19,9 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer)
 {
+	const float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	state.context->ClearRenderTargetView(lbuffer.rtv, black);
+
 	HOK( state.var.gbuffer0->SetResource( gbuffer0.srv ) );
 	HOK( state.var.gbuffer1->SetResource( gbuffer1.srv ) );
 	HOK( state.var.zbuffer->SetResource( zbuffer.srv ) );

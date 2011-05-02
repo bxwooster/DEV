@@ -113,7 +113,7 @@
     <ClCompile Include="..\source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Devora.hlsl">
+    <None Include="..\shaders\Devora.hlsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
