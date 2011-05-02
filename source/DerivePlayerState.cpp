@@ -3,7 +3,7 @@
 #include "InputData.hpp"
 
 #include "Matrix.h"
-#include <math.h>
+#include <algorithm>
 
 namespace Devora {
 
@@ -16,6 +16,10 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 	int const SPACE = 32;
 
 	auto end = input.keys_held.end();
+
+	int const ESC = 27;
+	if (input.keys_held.find(ESC) != end)
+		throw 0;
 
 	state.mov = Vector2f(0, 0);
 	if (input.keys_held.find(W) != end)
@@ -32,9 +36,9 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 
 	state.jump = ( input.keys_held.find(SPACE) != end );
 
-	state.camera.yaw += input.mouse.x; //! mouse sens
-	state.camera.pitch += input.mouse.y;
-	//state.camera.pitch = max(-90, min(state.camera.pitch, 90)); //!
+	state.camera.yaw += input.mouse.x * 0.25f; //! mouse sens
+	state.camera.pitch += input.mouse.y * 0.25f;
+	state.camera.pitch = std::max(-90.0f, std::min(state.camera.pitch, 90.0f));
 }
 
 } // namespace Devora

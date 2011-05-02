@@ -115,8 +115,8 @@ int main()
 		MessageBox( GetConsoleWindow(), exception.what(), "Exception!", 0);
 		return -1;
 	}
-	//catch(App::Quit) 
-	//{
-	//	return 0;
-	//}
+	catch(int status) 
+	{
+		return status;
+	}
 }

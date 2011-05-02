@@ -99,8 +99,8 @@ namespace {
 				ShowCursor(true);
 				ClipCursor( NULL );
 				return 0;
-			//case WM_CLOSE:
-			//	throw App::Quit();
+			case WM_CLOSE:
+				throw 0;
 		} 
 		return DefWindowProc(handle, msg, w, l);
 	}
@@ -422,7 +422,7 @@ void InitGraphics(GraphicsState& state,
 	}
 
 	//Geometry
-	vinfo.geoms.push_back( read_geom(state, "geometry//plane.geom") ); //!
+	vinfo.geoms.push_back( read_geom(state, "geometry//plane.geom") );
 	vinfo.geoms.push_back( read_geom(state, "geometry//icosphere.geom") );
 }
 

@@ -35,10 +35,9 @@ void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	view_axis << 0, 1, 0, 0,
 				 0, 0, 1, 0,
 				 1, 0, 0, 0,
-				 0, 0, 0, 1;
+				 0, 0, 0, 1; //!
 
-	state.eye.topLeftCorner<3,3>() = Matrix3f::Identity();
-	camera.view = view_axis * rotate * state.eye.inverse();
+	camera.view = view_axis * rotate * transforms[0].inverse();
 }
 
 } // namespace Devora
