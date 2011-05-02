@@ -247,7 +247,7 @@ void InitGraphics(GraphicsState& state,
 		D3D10_SHADER_OPTIMIZATION_LEVEL0 |
 		D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		HOK_EX( D3DX11CompileFromFile( "Devora.hlsl",
+		HOK_EX( D3DX11CompileFromFile( "shaders/Devora.hlsl",
 		NULL, NULL, NULL, "fx_5_0", flags,
 		0, NULL, &code, &info, NULL ), (char*)info->GetBufferPointer() );
 	
