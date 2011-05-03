@@ -121,6 +121,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		uint height;
 	} const settings = { 960, 960 };
 
+	int shadowmap_resolution = 512;
+
 	WNDCLASSEX window_class;
 	ZeroMemory( &window_class, sizeof( WNDCLASSEX ) );
 	window_class.lpszClassName = "Devora::window";                        
@@ -311,8 +313,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(desc) );
-		desc.Width = 512;
-		desc.Height = 512; //!
+		desc.Width = shadowmap_resolution;
+		desc.Height = shadowmap_resolution;
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
 		desc.ArraySize = 6;
@@ -408,8 +410,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		backbuffer.viewport = lbuffer.viewport = zbuffer.viewport 
 			= gbuffer1.viewport = gbuffer0.viewport;
 	   
-		shadowmap.viewport.Width = float(512);
-		shadowmap.viewport.Height = float(512); //!
+		shadowmap.viewport.Width = float(shadowmap_resolution);
+		shadowmap.viewport.Height = float(shadowmap_resolution);
 		shadowmap.viewport.MinDepth = 0.0f;
 		shadowmap.viewport.MaxDepth = 1.0f;
 		shadowmap.viewport.TopLeftX = 0.0f;

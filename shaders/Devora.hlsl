@@ -175,8 +175,7 @@ void gs_fullscreen(uniform float depth, point Empty empty[1], inout TriangleStre
 
 float4 ps_directional_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	int3 uvw = int3(pos.xy, 0);
-	float z_neg = -z_near / (1.0 - zbuffer.Load(uvw));
+	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	float in_front = reprojected.w > 0;
@@ -184,15 +183,15 @@ float4 ps_directional_light(float2 uv : Position, float4 pos : SV_Position) : SV
 	float inside_cone = length(reprojected.xy) < 1;
 	clip(in_front * inside_cone - 1);
 	float2 s_uv = float2(reprojected.x, -reprojected.y) * 0.5 + 0.5;
-	float4 s = z_near / (1.0 - shadowmap.Gather(smp, s_uv).x);
+	float4 s = z_near / (1.0 - shadowmap.Gather(smp, s_uv));
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
 	float p = dot(light_matrix[2].xyz, lightvec);
 	float lighted = dot(p - bias <= s, 0.25);
 
-	float3 normal = gbuffer0.Load(uvw).xyz;
-	float3 colour = gbuffer1.Load(uvw).xyz;
+	float3 normal = gbuffer0.Sample(smp, uv).xyz;
+	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 
     float radiance = lighted * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
@@ -201,11 +200,11 @@ float4 ps_directional_light(float2 uv : Position, float4 pos : SV_Position) : SV
 
 float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	int3 uvw = int3(pos.xy, 0);
-	float z_neg = -z_near / (1.0 - zbuffer.Load(uvw).x);
+	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	//reprojected /= reprojected.w;
+
 	float4 s = z_near / (1.0 - shadowcube.Gather(smp, reprojected.xyz));
 
 	float3 lightvec = light_pos - surface_pos.xyz;
@@ -214,8 +213,8 @@ float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Targe
 	float m = max(p.x, max(p.y, p.z));
 	float lighted = dot(m - bias <= s, 0.25);
 
-	float3 normal = gbuffer0.Load(uvw).xyz;
-	float3 colour = gbuffer1.Load(uvw).xyz;
+	float3 normal = gbuffer0.Sample(smp, uv).xyz;
+	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 
     float radiance = lighted * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
@@ -224,7 +223,6 @@ float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Targe
 
 float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	int3 uvw = int3(pos.xy, 0);
 	if (zbuffer.Sample(smp, uv).x == 1.0) //sky
 	{
 		float4 horizon = float4(0.6, 0.75, 0.9, 1.0);
@@ -234,12 +232,12 @@ float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 		return lerp(horizon, zenith, -world_ray.z );
 	}
 	
-	float3 normal = gbuffer0.Load(uvw).xyz;
-	float3 colour = gbuffer1.Load(uvw).xyz;
+	float3 normal = gbuffer0.Sample(smp, uv).xyz;
+	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float mult = max(0.0, dot( view_i[2].xyz, normal));
 	float4 ambient = float4(mult * light_colour * colour, 1.0);
 
-	return (ambient + lbuffer.Load(uvw)) / aperture;
+	return (ambient + lbuffer.Sample(smp, uv)) / aperture;
 }
 
 technique11 render
@@ -319,3 +317,27 @@ technique11 final
 		SetRasterizerState( rs_default );
 	}
 }
+
+
+
+//float2 mod = (uv % 0.25) / 0.25 * 2 - 1;
+//float x = mod.x;
+//float y = mod.y;
+//int n = 0;
+//if (uv.x > 0.25) n++;
+//if (uv.x > 0.5) n++;
+//if (uv.x > 0.75) n++;
+//if (uv.y > 0.25) n+=4;
+//if (uv.y > 0.5) n+=4;
+//if (uv.y > 0.75) n+=4;
+//float3 t;
+//if (n==4)
+//	t = float3(1, -y, x);
+//else if (n==5)
+//	t = float3(-x, -y, 1);
+//else if (n==6)
+//	t = float3(-1, -y, -x);
+//else if (n==7)
+//	t = float3(x, -y, -1);
+//else return 0;
+//return (shadowcube.Gather(smp, t) - 0.95) / 0.05;
