@@ -7,11 +7,11 @@
     <Filter Include="Data">
       <UniqueIdentifier>{887f879e-ac4d-45e4-89b9-f9a8960b6288}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tools">
-      <UniqueIdentifier>{a42bfd3a-d5ff-4083-9e21-539215fc41fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{96d36d1e-6eed-43b1-a71a-5aed2e6aaade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{a42bfd3a-d5ff-4083-9e21-539215fc41fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,13 +58,13 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="..\source\IPtr.h">
-      <Filter>Tools</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Matrix.h">
-      <Filter>Tools</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\source\OK.h">
-      <Filter>Tools</Filter>
+      <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\source\DeviceState.hpp">
       <Filter>Data</Filter>
@@ -114,6 +114,7 @@
     <ClCompile Include="..\source\DeriveCamera.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\Devora.hlsl">

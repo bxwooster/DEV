@@ -8,104 +8,30 @@
 #include "ZBuffer.hpp"
 
 #include <D3DX11.h>
-#include <fstream>
 
 namespace Devora {
 
-namespace {
-	typedef unsigned int uint;
+void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
+Devora::Geometry read_geom(ID3D11Device* device, const std::string& filename);
 
-	const float to_radians = (float)(M_PI / 180.0);
-	const float from_radians = (float)(180.0 / M_PI);
-
-	void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near)
-	{
-		float ys = 1 / tanf( y_fov * to_radians / 2.0f );
-		float xs = ys / aspect_ratio;
-		proj << xs, 0, 0, 0,
-				0, ys, 0, 0,
-				0, 0, -1, -z_near,
-				0, 0, -1, 0;
-	}
-
-	Geometry read_geom(DeviceState& device, const std::string& filename)
-	{
-		using std::ifstream;
-
-		Geometry geometry;
-
-		ifstream file( filename, ifstream::in | ifstream::binary );
-		file.exceptions( ifstream::eofbit | ifstream::failbit | ifstream::badbit );
-
-		char head[8];
-		char ver[4];
-    
-		file.read( head, 8 );
-		file.read( ver, 4 );
-
-		uint elements;
-		file.read( (char*)&elements, 4 );
-
-		uint fmt, index, len;
-
-		for ( uint i = 0; i < elements; i++ )
-		{
-			file.read( (char*)&fmt, 4 );
-			file.read( (char*)&index, 4 );
-			file.read( (char*)&len, 4 );
-        
-			char* semantic = new char[len + 1];
-			file.read( (char*)semantic, len );
-			delete[] semantic;
-		}
-    
-		geometry.offset = 0;
-		file.read( (char*)&geometry.stride, 4 );
-    
-		uint width;
-		file.read( (char*)&width, 4 );
-		geometry.count = width / geometry.stride;
-    
-		char* vertices = new char[width];
-		file.read( vertices, width ); 
-
-		D3D11_SUBRESOURCE_DATA data;
-		data.pSysMem = vertices;
-
-		D3D11_BUFFER_DESC buffer_desc;
-		buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		buffer_desc.CPUAccessFlags = 0;
-		buffer_desc.MiscFlags = 0;
-		buffer_desc.ByteWidth = width;
-
-		HOK( device.device->CreateBuffer
-		  ( &buffer_desc, &data, &geometry.buffer ) );
-
-		delete[] vertices;
-
-		return geometry;
-	}
-
-	LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
-	{
-		switch (msg) 
-		{ 
-			case WM_SETFOCUS:
-				ShowCursor(false);
-				RECT rect;
-				GetWindowRect( handle, &rect );
-				ClipCursor( &rect );
-				return 0;
-			case WM_KILLFOCUS:
-				ShowCursor(true);
-				ClipCursor( NULL );
-				return 0;
-			case WM_CLOSE:
-				throw 0;
-		} 
-		return DefWindowProc(handle, msg, w, l);
-	}
+LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
+{
+	switch (msg) 
+	{ 
+		case WM_SETFOCUS:
+			ShowCursor(false);
+			RECT rect;
+			GetWindowRect( handle, &rect );
+			ClipCursor( &rect );
+			return 0;
+		case WM_KILLFOCUS:
+			ShowCursor(true);
+			ClipCursor( NULL );
+			return 0;
+		case WM_CLOSE:
+			throw 0;
+	} 
+	return DefWindowProc(handle, msg, w, l);
 }
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
@@ -113,15 +39,9 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera)
 {
-	float const z_near = 0.1f;
-
-	struct
-	{
-		uint width;
-		uint height;
-	} const settings = { 960, 960 };
-
-	int shadowmap_resolution = 512;
+	device.z_near = 0.1f;
+	device.shadowmap_size = 512;
+	device.width = device.height = 960;
 
 	WNDCLASSEX window_class;
 	ZeroMemory( &window_class, sizeof( WNDCLASSEX ) );
@@ -132,7 +52,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	OK( device.window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
 		WS_SYSMENU | WS_OVERLAPPED | WS_VISIBLE, CW_USEDEFAULT,
-		CW_USEDEFAULT, settings.width, settings.height, NULL, NULL, NULL, 0 ) );
+		CW_USEDEFAULT, device.width, device.height, NULL, NULL, NULL, 0 ) );
 
 	//Misc
 	{
@@ -167,12 +87,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 				0, 0,-1, 0,
 				0, 0, 0, 1;
 
-		camera.aperture = 1.0f;
-		camera.field_of_view = 60;
-		camera.aspect_ratio = float(settings.width) / settings.height;
-
-		projection_matrix(vinfo.proj, camera.field_of_view, camera.aspect_ratio, z_near);
-		projection_matrix(linfo.proj, 90, 1.0, z_near);
+		projection_matrix(linfo.proj, 90, 1.0, device.z_near);
 		pinfo.ambient = Vector3f(0.02f, 0.02f, 0.02f);
 	}
 
@@ -207,8 +122,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		DXGI_SWAP_CHAIN_DESC desc = {};
 		desc.BufferCount = 2;
 		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		desc.BufferDesc.Width = settings.width;
-		desc.BufferDesc.Height = settings.height;
+		desc.BufferDesc.Width = device.width;
+		desc.BufferDesc.Height = device.height;
 		desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 		desc.OutputWindow = device.window;
 		desc.SampleDesc.Count = 1;
@@ -242,7 +157,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		IPtr<ID3D10Blob> info;
 		IPtr<ID3DX11Effect> effect;
 
-		uint flags = D3D10_SHADER_ENABLE_STRICTNESS |
+		unsigned int flags = D3D10_SHADER_ENABLE_STRICTNESS |
 		D3D10_SHADER_OPTIMIZATION_LEVEL0 |
 		D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
 
@@ -269,9 +184,9 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		state.var.gbuffer0 = effect->GetVariableByName("gbuffer0")->AsShaderResource();
 		state.var.gbuffer1 = effect->GetVariableByName("gbuffer1")->AsShaderResource();
 		state.var.aperture = effect->GetVariableByName("aperture")->AsScalar();
+		state.var.ambient = effect->GetVariableByName("ambient")->AsVector();
 		state.var.z_near = effect->GetVariableByName("z_near")->AsScalar();
-		state.var.aspect_ratio = effect->GetVariableByName("aspect_ratio")->AsScalar();
-		state.var.field_of_view = effect->GetVariableByName("field_of_view")->AsScalar();
+		state.var.xy_to_ray = effect->GetVariableByName("xy_to_ray")->AsVector();
 		state.var.light_colour = effect->GetVariableByName("light_colour")->AsVector();
 		state.var.light_pos = effect->GetVariableByName("light_pos")->AsVector();
 		state.var.light_matrix = effect->GetVariableByName("light_matrix")->AsMatrix();
@@ -281,7 +196,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		state.var.world_view = effect->GetVariableByName("world_view")->AsMatrix();
 		state.var.world_view_proj = effect->GetVariableByName("world_view_proj")->AsMatrix();
 		state.var.world_lightview_lightproj = effect->GetVariableByName("world_lightview_lightproj")->AsMatrix();
-		state.var.world_lightview = effect->GetVariableByName("world_lightview")->AsMatrix();
 	}
 
 	// Layout
@@ -313,9 +227,9 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(desc) );
-		desc.Width = shadowmap_resolution;
-		desc.Height = shadowmap_resolution;
-		desc.Format = DXGI_FORMAT_R32_TYPELESS;
+		desc.Width = device.shadowmap_size;
+		desc.Height = device.shadowmap_size;
+		desc.Format = DXGI_FORMAT_R16_TYPELESS;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
 		desc.ArraySize = 6;
 		desc.SampleDesc.Count = 1;
@@ -329,8 +243,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.MiscFlags = 0;
 		HOK( device.device->CreateTexture2D( &desc, NULL, &shadowmap.texture ) );
 
-		desc.Width = settings.width;
-		desc.Height = settings.height;
+		desc.Width = device.width;
+		desc.Height = device.height;
 		HOK( device.device->CreateTexture2D( &desc, NULL, &zbuffer.texture ) );
 
 		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -348,7 +262,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		desc.Format = DXGI_FORMAT_R32_FLOAT;
+		desc.Format = DXGI_FORMAT_R16_UNORM;
 		desc.Texture2D.MipLevels = 1;
 		desc.Texture2D.MostDetailedMip = 0;
 
@@ -368,7 +282,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		desc.Format = DXGI_FORMAT_D32_FLOAT;
+		desc.Format = DXGI_FORMAT_D16_UNORM;
 		desc.Texture2D.MipSlice = 0;
 
 		HOK( device.device->CreateDepthStencilView
@@ -400,8 +314,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	// Viewports
 	{			
-		gbuffer0.viewport.Width = float(settings.width);
-		gbuffer0.viewport.Height = float(settings.height);
+		gbuffer0.viewport.Width = float(device.width);
+		gbuffer0.viewport.Height = float(device.height);
 		gbuffer0.viewport.MinDepth = 0.0f;
 		gbuffer0.viewport.MaxDepth = 1.0f;
 		gbuffer0.viewport.TopLeftX = 0.0f;
@@ -410,8 +324,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		backbuffer.viewport = lbuffer.viewport = zbuffer.viewport 
 			= gbuffer1.viewport = gbuffer0.viewport;
 	   
-		shadowmap.viewport.Width = float(shadowmap_resolution);
-		shadowmap.viewport.Height = float(shadowmap_resolution);
+		shadowmap.viewport.Width = float(device.shadowmap_size);
+		shadowmap.viewport.Height = float(device.shadowmap_size);
 		shadowmap.viewport.MinDepth = 0.0f;
 		shadowmap.viewport.MaxDepth = 1.0f;
 		shadowmap.viewport.TopLeftX = 0.0f;
@@ -421,10 +335,10 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	}
 
 	//Geometry
-	vinfo.geoms.push_back( read_geom(device, "geometry//plane.geom") );
-	vinfo.geoms.push_back( read_geom(device, "geometry//icosphere.geom") );
+	vinfo.geoms.push_back( read_geom(device.device, "geometry//plane.geom") );
+	vinfo.geoms.push_back( read_geom(device.device, "geometry//icosphere.geom") );
 
-	HOK( state.var.z_near->SetFloat( z_near ) );
+	HOK( state.var.z_near->SetFloat( device.z_near ) );
 }
 
 } // namespace Devora

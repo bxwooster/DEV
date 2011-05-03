@@ -23,7 +23,6 @@ struct GraphicsState
 	struct
 	{
 		ID3DX11EffectMatrixVariable* world_lightview_lightproj;
-		ID3DX11EffectMatrixVariable* world_lightview;
 		ID3DX11EffectMatrixVariable* world_view_proj;
 		ID3DX11EffectMatrixVariable* world_view;
 		ID3DX11EffectMatrixVariable* view_i;
@@ -34,10 +33,10 @@ struct GraphicsState
 		ID3DX11EffectVectorVariable* light_pos;
 		ID3DX11EffectVectorVariable* light_colour;
 
-		ID3DX11EffectScalarVariable* field_of_view;
-		ID3DX11EffectScalarVariable* aspect_ratio;
 		ID3DX11EffectScalarVariable* aperture;
 		ID3DX11EffectScalarVariable* z_near;
+		ID3DX11EffectVectorVariable* xy_to_ray;
+		ID3DX11EffectVectorVariable* ambient;
 
 		ID3DX11EffectShaderResourceVariable* lbuffer;
 		ID3DX11EffectShaderResourceVariable* gbuffer0;

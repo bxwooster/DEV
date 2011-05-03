@@ -14,7 +14,7 @@ namespace Devora {
 void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer, 
 	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, Camera& camera)
 {
-	HOK( state.var.light_colour->SetRawValue
+	HOK( state.var.ambient->SetRawValue
 		( (void*)info.ambient.data(), 0, sizeof(Vector3f) ) );
 	Matrix4f view_i( camera.view.inverse() );
 	HOK( state.var.view_i->SetMatrix( view_i.data() ));

@@ -92,8 +92,6 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 					HOK( state.var.cubeproj->SetMatrixArray((float*) cubeproj, 0, 6));
 				}
 				
-				Matrix4f world_lightview = lightview * transforms[caster.index];
-				HOK( state.var.world_lightview->SetMatrix( world_lightview.data() ));
 				HOK( state.var.shadowcube->SetResource( NULL ) );
 				HOK( state.pass_render_cube_z->Apply( 0, state.context ) );
 				state.context->OMSetRenderTargets(0, NULL, shadowcube.dsv);

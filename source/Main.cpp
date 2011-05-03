@@ -38,7 +38,7 @@ void InitPhysics(PhysicsState& state);
 void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	PlayerState& player, TimingData& timing);
 
-void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera);
+void DeriveCamera(Transforms& transforms, PlayerState& player, DeviceState& state, Camera& camera);
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
 
 void Present(DeviceState& state);
@@ -92,7 +92,7 @@ void run()
 		GetInput(input);
 		DerivePlayerState(player, input, timing);
 		CrunchPhysics(physics, transforms, player, timing);
-		DeriveCamera(transforms, player, camera);
+		DeriveCamera(transforms, player, device, camera);
 
 		RenderVisuals(graphics, vinfo, transforms, visuals,
 			camera, gbuffer0, gbuffer1, zbuffer);

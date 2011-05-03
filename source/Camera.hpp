@@ -8,9 +8,10 @@ namespace Devora {
 struct Camera
 {
 	Matrix4f view;
+	Matrix4f proj;
+	Vector2f xy_to_ray;
 
-	float field_of_view;
-	float aspect_ratio;
+	float vertical_fov;
 	float aperture;
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW

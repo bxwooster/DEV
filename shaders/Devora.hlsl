@@ -1,10 +1,16 @@
+cbuffer rare
+{
+	float2 xy_to_ray;
+	//float field_of_view;
+	//float aspect_ratio;
+	float z_near;
+};
+
 cbuffer frame	
 {
 	float4x4 view_i;
-	float z_near;
+	float3 ambient;
 	float aperture;
-	float field_of_view;
-	float aspect_ratio;
 };
 
 cbuffer object
@@ -15,8 +21,12 @@ cbuffer object
 
 cbuffer object_z
 {
-	float4x4 world_lightview;
 	float4x4 world_lightview_lightproj;
+};
+
+cbuffer object_cube_z
+{
+	float4x4 cubeproj[6];
 };
 
 cbuffer light
@@ -27,7 +37,9 @@ cbuffer light
 	float4x4 reproject;
 };
 
-float4x4 cubeproj[6];
+static const float bias = 0.2;
+static const float light_scale = 200.0;
+static const float eps = 3e-7;
 
 Texture2D gbuffer0;
 Texture2D gbuffer1;
@@ -37,9 +49,6 @@ TextureCube shadowcube;
 Texture2D lbuffer;
 
 sampler smp;
-static const float bias = 0.2;
-static const float light_scale = 200.0;
-static const float eps = 3e-7;
 
 RasterizerState rs_default
 {
@@ -104,9 +113,7 @@ struct GSOutput
 
 float2 uv_to_ray(float2 uv)
 {
-	float alpha = radians(field_of_view) * 0.5;
-	uv = uv * 2.0 - 1.0;
-	return uv * float2(-aspect_ratio, 1.0) * tan(alpha);
+	return (2 * uv - 1) * xy_to_ray;
 }
 
 void vs_render( Vertex vertex, out Pixel pixel )
@@ -235,9 +242,9 @@ float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float mult = max(0.0, dot( view_i[2].xyz, normal));
-	float4 ambient = float4(mult * light_colour * colour, 1.0);
+	float4 amb = float4(mult * ambient * colour, 1.0);
 
-	return (ambient + lbuffer.Sample(smp, uv)) / aperture;
+	return (amb + lbuffer.Sample(smp, uv)) / aperture;
 }
 
 technique11 render

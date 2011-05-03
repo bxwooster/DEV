@@ -46,6 +46,7 @@
     <ClCompile Include="..\source\Present.cpp" />
     <ClCompile Include="..\source\RenderLights.cpp" />
     <ClCompile Include="..\source\RenderVisuals.cpp" />
+    <ClCompile Include="..\source\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\Devora.hlsl" />

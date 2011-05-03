@@ -24,8 +24,10 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state.context->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
 	HOK( state.var.aperture->SetFloat( camera.aperture ) );
-	HOK( state.var.field_of_view->SetFloat( camera.field_of_view ) );
-	HOK( state.var.aspect_ratio->SetFloat( camera.aspect_ratio ) );
+	HOK( state.var.xy_to_ray->SetRawValue
+		( (void*)camera.xy_to_ray.data(), 0, sizeof(Vector2f) ) );
+	//HOK( state.var.field_of_view->SetFloat( camera.field_of_view ) );
+	//HOK( state.var.aspect_ratio->SetFloat( camera.aspect_ratio ) );
 
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
 	state.context->OMSetRenderTargets(2, targets, zbuffer.dsv);
@@ -39,7 +41,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 		Visual& visual = visuals[i];
 
 		Matrix4f world_view = camera.view * transforms[visual.index];
-		Matrix4f world_view_proj = info.proj * world_view;
+		Matrix4f world_view_proj = camera.proj * world_view;
 	
 		HOK( state.var.world_view->SetMatrix( world_view.data() ));
 		HOK( state.var.world_view_proj->SetMatrix( world_view_proj.data() ));
