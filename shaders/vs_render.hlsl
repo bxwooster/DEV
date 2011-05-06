@@ -1,4 +1,4 @@
-cbuffer object: register(b1)
+cbuffer object: register(b0)
 #include "cbuffer/object"
 
 #include "struct/Vertex"

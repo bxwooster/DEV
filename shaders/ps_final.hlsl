@@ -4,7 +4,7 @@ cbuffer frame: register(b0)
 Texture2D gbuffer0: register(t0);
 Texture2D gbuffer1: register(t1);
 Texture2D zbuffer: register(t2);
-Texture2D lbuffer: register(t5);
+Texture2D lbuffer: register(t3);
 
 sampler sm_point : register(s0);
 

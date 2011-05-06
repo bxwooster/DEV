@@ -47,7 +47,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		state->IASetInputLayout( vinfo.layout );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 		state->RSSetViewports( 1, &shadowmap.viewport );
-		state->VSSetConstantBuffers(2, 1, &cb_object_z);
+		state->VSSetConstantBuffers(0, 1, &cb_object_z);
 
 		state->VSSetShader( info.vs_render_z, NULL, 0 );
 		state->GSSetShader( NULL, NULL, 0 );
@@ -74,7 +74,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		data.light_pos = (camera.view * transforms[light.index].col(3)).head<3>();
 		data.light_colour = light.colour;
 
-		ID3D11Buffer* buffers[5] = { cb_frame, NULL, NULL, NULL, cb_light };
+		ID3D11Buffer* buffers[5] = { cb_frame, cb_light };
 		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowmap.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
@@ -82,7 +82,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state->RSSetViewports( 1, &lbuffer.viewport );
-		state->PSSetConstantBuffers(0, 5, buffers);
+		state->PSSetConstantBuffers(0, 2, buffers);
 		state->PSSetShaderResources(0, 4, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
@@ -113,7 +113,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		state->IASetInputLayout( vinfo.layout );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 		state->RSSetViewports( 6, viewports );
-		state->GSSetConstantBuffers(3, 1, &cb_object_cube_z);
+		state->GSSetConstantBuffers(0, 1, &cb_object_cube_z);
 
 		state->VSSetShader( info.vs_render_cube_z, NULL, 0 );
 		state->GSSetShader( info.gs_render_cube_z, NULL, 0 );
@@ -143,16 +143,16 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		data.light_pos = (camera.view * transforms[light.index].col(3)).head<3>();
 		data.light_colour = light.colour;
 
-		ID3D11Buffer* buffers[5] = { cb_frame, NULL, NULL, NULL, cb_light };
-		ID3D11ShaderResourceView* views[5] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, NULL, shadowcube.srv };
+		ID3D11Buffer* buffers[2] = { cb_frame, cb_light };
+		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowcube.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
 		state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state->RSSetViewports( 1, &lbuffer.viewport );
-		state->PSSetConstantBuffers(0, 5, buffers);
-		state->PSSetShaderResources(0, 5, views);
+		state->PSSetConstantBuffers(0, 2, buffers);
+		state->PSSetShaderResources(0, 4, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
 		state->VSSetShader( info.vs_noop, NULL, 0 );

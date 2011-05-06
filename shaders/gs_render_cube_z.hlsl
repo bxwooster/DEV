@@ -1,4 +1,4 @@
-cbuffer object_cube_z: register(b3)
+cbuffer object_cube_z: register(b0)
 #include "cbuffer/object_cube_z"
 
 #include "struct/GSInput"

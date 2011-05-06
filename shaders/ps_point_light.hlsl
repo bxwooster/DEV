@@ -1,12 +1,12 @@
 cbuffer frame: register(b0)
 #include "cbuffer/frame"
-cbuffer light: register(b4)
+cbuffer light: register(b1)
 #include "cbuffer/light"
 
 Texture2D gbuffer0: register(t0);
 Texture2D gbuffer1: register(t1);
 Texture2D zbuffer: register(t2);
-TextureCube shadowcube: register(t4);
+TextureCube shadowcube: register(t3);
 
 sampler sm_point : register(s0);
 

@@ -17,7 +17,7 @@ void PostProcess(GraphicsState& state, ZBuffer& zbuffer, PostProcessInfo& info,
 {
 	state->ClearState();
 
-	ID3D11ShaderResourceView* resources[6] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, NULL, NULL, lbuffer.srv };
+	ID3D11ShaderResourceView* resources[6] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, lbuffer.srv };
 	
 	state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 	state->RSSetViewports( 1, &backbuffer.viewport );
@@ -27,7 +27,7 @@ void PostProcess(GraphicsState& state, ZBuffer& zbuffer, PostProcessInfo& info,
 	state->GSSetShader(info.gs_fullscreen, NULL, 0);
 	state->PSSetShader(info.ps_final, NULL, 0);
 	state->PSSetConstantBuffers(0, 1, &cb_frame);
-	state->PSSetShaderResources(0, 6, resources);
+	state->PSSetShaderResources(0, 4, resources);
 	state->PSSetSamplers(0, 1, &info.sm_point);
 
 	state->Draw( 1, 0 );

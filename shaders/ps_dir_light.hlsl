@@ -1,6 +1,6 @@
 cbuffer frame: register(b0)
 #include "cbuffer/frame"
-cbuffer light: register(b4)
+cbuffer light: register(b1)
 #include "cbuffer/light"
 
 Texture2D gbuffer0: register(t0);

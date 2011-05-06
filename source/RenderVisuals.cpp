@@ -32,7 +32,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state->OMSetBlendState( NULL, 0, 0xffffffff);
 	state->OMSetDepthStencilState( NULL, 0 );
 	state->RSSetState( info.rs_default );
-	state->VSSetConstantBuffers(1, 1, &cb_object);
+	state->VSSetConstantBuffers(0, 1, &cb_object);
 	state->VSSetShader(info.vs_render, NULL, 0);
 	state->PSSetShader(info.ps_render, NULL, 0);
 
