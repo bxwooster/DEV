@@ -49,7 +49,7 @@ void DeriveCamera(Transforms& transforms, PlayerState& player,
 	CBufferLayouts::frame data = 
 		{ camera.view.inverse(), camera.aperture, xy_to_ray, device.z_near };
 
-	state.context->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0);
+	state.context->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0); //! //!  WHAT
 }
 
 } // namespace Devora

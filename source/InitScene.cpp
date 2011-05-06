@@ -60,28 +60,26 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 	//}
 
 	t.col(3) = Vector4f(0, 0, 5, 1);
-	Light light = { Vector3f(1, 1, 0), transforms.size(), LightType::point };
+	Light light = { Vector3f(1, 1, 0), transforms.size() };
 	Visual visual = { transforms.size(), 1 };
 	transforms.push_back( t );
-	lights.push_back(light);
+	lights.point.push_back(light);
 	visuals.push_back( visual );
 
 	t.col(3) = Vector4f(0, 7, 1, 1);
 	transforms.push_back( t );
 	visual.index = light.index = transforms.size();
 	light.colour = Vector3f(1, 0, 0);
-	light.type = LightType::directional;
 	transforms.push_back( t );
-	lights.push_back(light);
+	lights.dir.push_back(light);
 	visuals.push_back( visual );
 
 	t.col(3) = Vector4f(0, -7, 1, 1);
 	transforms.push_back( t );
 	visual.index = light.index = transforms.size();
 	light.colour = Vector3f(0, 1, 0);
-	light.type = LightType::directional;
 	transforms.push_back( t );
-	lights.push_back(light);
+	lights.dir.push_back(light);
 	visuals.push_back( visual );
 
 	btScalar mass(1);

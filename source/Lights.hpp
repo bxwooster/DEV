@@ -5,23 +5,17 @@
 
 namespace Devora {
 
-namespace LightType
-{
-	enum Enum
-	{
-		point,
-		directional
-	};
-};
-
 struct Light
 {
 	Vector3f colour;
 	int index;
-	int type;
 };
 
-typedef btAlignedObjectArray<Light> Lights;
+struct Lights
+{
+	btAlignedObjectArray<Light> dir;
+	btAlignedObjectArray<Light> point;
+};
 
 } // namespace Devora
 
