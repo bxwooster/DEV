@@ -27,36 +27,8 @@ TextureCube shadowcube: register(t4);
 Texture2D lbuffer: register(t5);
 
 
-sampler sm_point : register(s0)
-{
-	Filter = MIN_MAG_MIP_POINT;
-};
+sampler sm_point : register(s0);
 
-RasterizerState rs_default
-{
-	FrontCounterClockwise = true; 
-};
-
-RasterizerState rs_shadow
-{
-	FrontCounterClockwise = true; 
-	DepthBias = 0;
-	SlopeScaledDepthBias = 1.0;
-};
-
-BlendState bs_default;
-BlendState bs_additive
-{
-	BlendEnable[0] = true;
-	DestBlend = one;
-};
-
-DepthStencilState ds_default;
-DepthStencilState ds_nowrite
-{
-	DepthWriteMask = zero;
-	DepthFunc = less_equal;
-};
 
 struct Vertex
 {
@@ -225,82 +197,4 @@ float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 	float4 ambient = float4(mult * float3(0.02, 0.02, 0.02) * colour, 1.0);
 
 	return (ambient + lbuffer.Sample(sm_point, uv)) / aperture;
-}
-
-technique11 render
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_render() ) );
-		SetGeometryShader( NULL );
-		SetPixelShader( CompileShader( ps_4_1, ps_render() ) );
-		SetRasterizerState( rs_default );
-		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_default, 0 );
-	}
-}
-
-technique11 render_z
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_render_z() ) );
-		SetGeometryShader( NULL );
-		SetPixelShader( NULL );
-		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_default, 0 );
-		SetRasterizerState( rs_shadow );
-	}
-}
-
-technique11 render_cube_z
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_render_cube_z() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_render_cube_z() ) );
-		SetPixelShader( NULL );
-		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_default, 0 );
-		SetRasterizerState( rs_shadow );
-	}
-}
-
-technique11 directional_light
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_noop() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_dir_light() ) );
-		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_nowrite, 0 );
-		SetRasterizerState( rs_default );
-	}
-}
-
-technique11 point_light
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_noop() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_point_light() ) );
-		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_nowrite, 0 );
-		SetRasterizerState( rs_default );
-	}
-}
-
-technique11 final
-{
-	pass
-	{
-		SetVertexShader( CompileShader( vs_4_1, vs_noop() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_final() ) );
-		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_default, 0 );
-		SetRasterizerState( rs_default );
-	}
 }

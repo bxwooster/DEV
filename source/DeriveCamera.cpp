@@ -40,19 +40,13 @@ void DeriveCamera(Transforms& transforms, PlayerState& player,
 	camera.view = view_axis * rotate * transforms[0].inverse();
 	SetProjectionMatrix(camera.proj, camera.vertical_fov, aspect_ratio, device.z_near);
 
-	HOK( state.var.aperture->SetFloat( camera.aperture ) );
-	HOK( state.var.xy_to_ray->SetRawValue
-		( (void*)xy_to_ray.data(), 0, sizeof(Vector2f) ) );
-	Matrix4f view_i( camera.view.inverse() );
-	HOK( state.var.view_i->SetMatrix( view_i.data() ));
-
 	CBufferLayouts::frame data;
 	data.aperture = camera.aperture;
 	data.view_i = camera.view.inverse();
 	data.xy_to_ray = xy_to_ray;
 	data.z_near = device.z_near;
 
-	state.context->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0); //! //!  WHAT
+	state->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0); //! //!  WHAT
 }
 
 } // namespace Devora

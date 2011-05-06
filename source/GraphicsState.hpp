@@ -4,48 +4,10 @@
 #include "IPtr.h"
 
 #include <d3d11.h>
-#include <d3dx11effect.h>
 
 namespace Devora {
 
-struct GraphicsState
-{
-	IPtr<ID3D11DeviceContext> context;
-	IPtr<ID3DX11Effect> effect;
-
-	ID3DX11EffectPass* pass_render;
-	ID3DX11EffectPass* pass_render_z;
-	ID3DX11EffectPass* pass_render_cube_z;
-	ID3DX11EffectPass* pass_directional_light;
-	ID3DX11EffectPass* pass_point_light;
-	ID3DX11EffectPass* pass_final;
-
-	struct
-	{
-		ID3DX11EffectMatrixVariable* world_lightview_lightproj;
-		ID3DX11EffectMatrixVariable* world_view_proj;
-		ID3DX11EffectMatrixVariable* world_view;
-		ID3DX11EffectMatrixVariable* view_i;
-		ID3DX11EffectMatrixVariable* reproject;
-		ID3DX11EffectMatrixVariable* cubeproj;
-
-		ID3DX11EffectMatrixVariable* light_matrix;
-		ID3DX11EffectVectorVariable* light_pos;
-		ID3DX11EffectVectorVariable* light_colour;
-
-		ID3DX11EffectScalarVariable* aperture;
-		ID3DX11EffectScalarVariable* z_near;
-		ID3DX11EffectVectorVariable* xy_to_ray;
-		ID3DX11EffectVectorVariable* ambient;
-
-		ID3DX11EffectShaderResourceVariable* lbuffer;
-		ID3DX11EffectShaderResourceVariable* gbuffer0;
-		ID3DX11EffectShaderResourceVariable* gbuffer1;
-		ID3DX11EffectShaderResourceVariable* zbuffer;
-		ID3DX11EffectShaderResourceVariable* shadowmap;
-		ID3DX11EffectShaderResourceVariable* shadowcube;
-	} var;
-};
+typedef IPtr<ID3D11DeviceContext> GraphicsState;
 
 } // namespace Devora
 

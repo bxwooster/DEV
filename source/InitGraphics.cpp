@@ -126,7 +126,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 #endif
 		HOK( D3D11CreateDevice
 			( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flag,
-			NULL, 0, D3D11_SDK_VERSION, &device.device, &feature_level, &state.context ) );
+			NULL, 0, D3D11_SDK_VERSION, &device.device, &feature_level, &state ) );
 
 		HOK( device.device->QueryInterface
 			( __uuidof(IDXGIDevice1), (void**)&dxgi_device ) );
@@ -169,70 +169,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 		HOK( device.device->CreateRenderTargetView
 			( backbuffer.texture, NULL, &backbuffer.rtv ));
-	}
-
-	// Effect, Variables, Passes
-	{
-		IPtr<ID3DX11Effect> effect;
-		IPtr<ID3D10Blob> code;
-
-		CompileShader( "shaders/Devora.hlsl", NULL, "fx_5_0", &code );
-		HOK( D3DX11CreateEffectFromMemory( code->GetBufferPointer(),
-			code->GetBufferSize(), 0, device.device, &effect ));
-
-		state.effect = effect;
-
-		state.pass_render = effect->GetTechniqueByName("render")->GetPassByIndex(0);
-		state.pass_render_z = effect->GetTechniqueByName("render_z")->GetPassByIndex(0);
-		state.pass_render_cube_z = effect->GetTechniqueByName("render_cube_z")->GetPassByIndex(0);
-		state.pass_directional_light = effect->GetTechniqueByName("directional_light")->GetPassByIndex(0);
-		state.pass_point_light = effect->GetTechniqueByName("point_light")->GetPassByIndex(0);
-		state.pass_final = effect->GetTechniqueByName("final")->GetPassByIndex(0);
-
-		state.var.lbuffer = effect->GetVariableByName("lbuffer")->AsShaderResource();
-		state.var.zbuffer = effect->GetVariableByName("zbuffer")->AsShaderResource();
-		state.var.shadowmap = effect->GetVariableByName("shadowmap")->AsShaderResource();
-		state.var.shadowcube = effect->GetVariableByName("shadowcube")->AsShaderResource();
-		state.var.gbuffer0 = effect->GetVariableByName("gbuffer0")->AsShaderResource();
-		state.var.gbuffer1 = effect->GetVariableByName("gbuffer1")->AsShaderResource();
-		state.var.aperture = effect->GetVariableByName("aperture")->AsScalar();
-		state.var.ambient = effect->GetVariableByName("ambient")->AsVector();
-		state.var.z_near = effect->GetVariableByName("z_near")->AsScalar();
-		state.var.xy_to_ray = effect->GetVariableByName("xy_to_ray")->AsVector();
-		state.var.light_colour = effect->GetVariableByName("light_colour")->AsVector();
-		state.var.light_pos = effect->GetVariableByName("light_pos")->AsVector();
-		state.var.light_matrix = effect->GetVariableByName("light_matrix")->AsMatrix();
-		state.var.view_i = effect->GetVariableByName("view_i")->AsMatrix();
-		state.var.reproject = effect->GetVariableByName("reproject")->AsMatrix();
-		state.var.cubeproj = effect->GetVariableByName("cubeproj")->AsMatrix();
-		state.var.world_view = effect->GetVariableByName("world_view")->AsMatrix();
-		state.var.world_view_proj = effect->GetVariableByName("world_view_proj")->AsMatrix();
-		state.var.world_lightview_lightproj = effect->GetVariableByName("world_lightview_lightproj")->AsMatrix();
-	}
-
-	// Layout
-	{
-		D3DX11_PASS_DESC desc;
-		HOK( state.pass_render->GetDesc( &desc ) );
-        
-		D3D11_INPUT_ELEMENT_DESC element[2] =
-		{
-			{
-				"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,
-				0, D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA, 0
-			},
-
-			{
-				"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,
-				0, D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA, 0
-			}
-		};
-
-		HOK( device.device->CreateInputLayout
-			( element, 2, desc.pIAInputSignature,
-				desc.IAInputSignatureSize, &vinfo.layout ) );
 	}
 
 	// Textures
@@ -350,15 +286,12 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//plane.geom") );
 	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//icosphere.geom") );
 
+	IPtr<ID3D10Blob> code;
 	// Shaders
 	{
 		IPtr<ID3D11ClassLinkage> linkage;
-		IPtr<ID3D10Blob> code;
 		HOK( device.device->CreateClassLinkage( &linkage ));
 
-		CompileShader( "shaders/Devora.hlsl", "vs_render", "vs_5_0", &code );
-		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &vinfo.vs_render));
 		CompileShader( "shaders/Devora.hlsl", "ps_render", "ps_5_0", &code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &vinfo.ps_render));
@@ -392,8 +325,34 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &pinfo.ps_final));
 
+		CompileShader( "shaders/Devora.hlsl", "vs_render", "vs_5_0", &code );
+		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
+			code->GetBufferSize(), linkage, &vinfo.vs_render));
+
 		pinfo.vs_noop = linfo.vs_noop;
 		pinfo.gs_fullscreen = linfo.gs_fullscreen;
+	}
+
+	// Layout
+	{       
+		D3D11_INPUT_ELEMENT_DESC element[2] =
+		{
+			{
+				"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,
+				0, D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA, 0
+			},
+
+			{
+				"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,
+				0, D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA, 0
+			}
+		};
+
+		HOK( device.device->CreateInputLayout
+			( element, 2, code->GetBufferPointer(),
+			code->GetBufferSize(), &vinfo.layout ) );
 	}
 
 	// States
@@ -493,8 +452,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.ByteWidth = sizeof( CBufferLayouts::light );
 		HOK( device.device->CreateBuffer( &desc, NULL, &cb_light ));
 	}
-
-	HOK( state.var.z_near->SetFloat( device.z_near ) ); //!
 }
 
 } // namespace Devora
