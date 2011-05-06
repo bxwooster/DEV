@@ -136,7 +136,7 @@ void ps_render( Pixel pixel,
 	g1.xyz = 1.0; // some colour
 }
 
-void vs_dummy( out Empty empty )
+void vs_fullscreen( out Empty empty )
 {
 
 }
@@ -221,9 +221,9 @@ float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 	float3 normal = gbuffer0.Sample(smp, uv).xyz;
 	float3 colour = gbuffer1.Sample(smp, uv).xyz;
 	float mult = max(0.0, dot( view_i[2].xyz, normal));
-	float4 amb = float4(mult * ambient * colour, 1.0);
+	float4 ambient = float4(mult * float3(0.02, 0.02, 0.02) * colour, 1.0);
 
-	return (amb + lbuffer.Sample(smp, uv)) / aperture;
+	return (ambient + lbuffer.Sample(smp, uv)) / aperture;
 }
 
 technique11 render
@@ -269,7 +269,7 @@ technique11 directional_light
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
+		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_directional_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
@@ -282,7 +282,7 @@ technique11 point_light
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
+		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_point_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
@@ -295,7 +295,7 @@ technique11 final
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
+		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_final() ) );
 		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
@@ -303,27 +303,3 @@ technique11 final
 		SetRasterizerState( rs_default );
 	}
 }
-
-
-
-//float2 mod = (uv % 0.25) / 0.25 * 2 - 1;
-//float x = mod.x;
-//float y = mod.y;
-//int n = 0;
-//if (uv.x > 0.25) n++;
-//if (uv.x > 0.5) n++;
-//if (uv.x > 0.75) n++;
-//if (uv.y > 0.25) n+=4;
-//if (uv.y > 0.5) n+=4;
-//if (uv.y > 0.75) n+=4;
-//float3 t;
-//if (n==4)
-//	t = float3(1, -y, x);
-//else if (n==5)
-//	t = float3(-x, -y, 1);
-//else if (n==6)
-//	t = float3(-1, -y, -x);
-//else if (n==7)
-//	t = float3(x, -y, -1);
-//else return 0;
-//return (shadowcube.Gather(smp, t) - 0.95) / 0.05;

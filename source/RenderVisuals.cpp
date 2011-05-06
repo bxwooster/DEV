@@ -18,20 +18,18 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	Transforms& transforms, Visuals& visuals, Camera& camera,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object)
 {
+	OK( gbuffer0.viewport == gbuffer1.viewport);
+	OK( gbuffer0.viewport == zbuffer.viewport);
+
 	state.context->ClearState();
 
 	const float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	state.context->ClearRenderTargetView(gbuffer0.rtv, black);
-	state.context->ClearRenderTargetView(gbuffer1.rtv, black);
+	//state.context->ClearRenderTargetView(gbuffer0.rtv, black);
+	//state.context->ClearRenderTargetView(gbuffer1.rtv, black);
 	state.context->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
-
-	HOK( state.var.aperture->SetFloat( camera.aperture ) );
-	HOK( state.var.xy_to_ray->SetRawValue
-		( (void*)camera.xy_to_ray.data(), 0, sizeof(Vector2f) ) );
 
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
 	state.context->OMSetRenderTargets(2, targets, zbuffer.dsv);
-	OK( gbuffer0.viewport == gbuffer1.viewport );
 	state.context->RSSetViewports( 1, &gbuffer0.viewport );
 	state.context->IASetInputLayout( info.layout );
 	state.context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );

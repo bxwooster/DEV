@@ -6,10 +6,10 @@
 #include "GraphicsState.hpp"
 #include "InputData.hpp"
 #include "LightRenderInfo.hpp"
+#include "PostProcessInfo.hpp"
 #include "Lights.hpp"
 #include "PhysicsState.hpp"
 #include "PlayerState.hpp"
-#include "PostProcessInfo.hpp"
 #include "TimingData.hpp"
 #include "Transforms.hpp"
 #include "VisualRenderInfo.hpp"
@@ -23,7 +23,7 @@
 namespace Devora {
 
 void InitGraphics(GraphicsState& state, DeviceState& device,
-	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, 
+	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera,
 	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z,
@@ -41,7 +41,8 @@ void InitPhysics(PhysicsState& state);
 void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	PlayerState& player, TimingData& timing);
 
-void DeriveCamera(Transforms& transforms, PlayerState& player, DeviceState& state, Camera& camera);
+void DeriveCamera(Transforms& transforms, PlayerState& player, 
+	DeviceState& device, Camera& camera, GraphicsState& state);
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
 
 void Present(DeviceState& state);
@@ -55,8 +56,8 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer);
 
-void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer, 
-	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, Camera& camera);
+void PostProcess(GraphicsState& state, ZBuffer& zbuffer, 
+	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer);
 
 void run()
 {
@@ -98,13 +99,13 @@ void run()
 		GetInput(input);
 		DerivePlayerState(player, input, timing);
 		CrunchPhysics(physics, transforms, player, timing);
-		DeriveCamera(transforms, player, device, camera);
+		DeriveCamera(transforms, player, device, camera, graphics); //!
 
 		RenderVisuals(graphics, vinfo, transforms, visuals,
 			camera, gbuffer0, gbuffer1, zbuffer, cb_object);
 		RenderLights(graphics, vinfo, linfo, transforms, lights, visuals,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer);
-		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, camera);
+		PostProcess(graphics, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer);
 		Present(device);
 	}
 }

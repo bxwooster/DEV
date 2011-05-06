@@ -1,6 +1,7 @@
 #include "Transforms.hpp"
 #include "PlayerState.hpp"
 #include "DeviceState.hpp"
+#include "GraphicsState.hpp"
 #include "Camera.hpp"
 
 #include <d3dx10math.h>
@@ -12,7 +13,8 @@ void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float 
 
 }; using namespace Tools;
 
-void DeriveCamera(Transforms& transforms, PlayerState& player, DeviceState& device, Camera& camera)
+void DeriveCamera(Transforms& transforms, PlayerState& player, 
+	DeviceState& device, Camera& camera, GraphicsState& state)
 {
 	Matrix4f rotate;
 	D3DXMatrixRotationYawPitchRoll
@@ -35,6 +37,12 @@ void DeriveCamera(Transforms& transforms, PlayerState& player, DeviceState& devi
 
 	camera.view = view_axis * rotate * transforms[0].inverse();
 	SetProjectionMatrix(camera.proj, camera.vertical_fov, aspect_ratio, device.z_near);
+
+	HOK( state.var.aperture->SetFloat( camera.aperture ) );
+	HOK( state.var.xy_to_ray->SetRawValue
+		( (void*)camera.xy_to_ray.data(), 0, sizeof(Vector2f) ) );
+	Matrix4f view_i( camera.view.inverse() );
+	HOK( state.var.view_i->SetMatrix( view_i.data() ));
 }
 
 } // namespace Devora

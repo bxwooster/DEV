@@ -12,6 +12,17 @@ struct LightRenderInfo
 
 	IPtr<ID3D11InputLayout> layout;
 
+	IPtr<ID3D11VertexShader> vshader_z;
+
+	IPtr<ID3D11VertexShader> vshader_cube_z;
+	IPtr<ID3D11GeometryShader> gshader_cube_z;
+
+	IPtr<ID3D11VertexShader> vshader_fs;
+	IPtr<ID3D11GeometryShader> gshader_fs;
+	
+	IPtr<ID3D11PixelShader> pshader_directional;
+	IPtr<ID3D11PixelShader> pshader_point;
+
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 

@@ -54,13 +54,13 @@ void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
 }
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
-	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, 
+	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera,
 	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, 
 	CBuffer& cb_light, CBuffer& cb_frame)
 {
-	device.z_near = 0.1f;
+	device.z_near = 0.2f;
 	device.shadowmap_size = 512;
 	device.width = device.height = 960;
 
@@ -109,7 +109,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 				0, 0, 0, 1;
 
 		SetProjectionMatrix(linfo.proj, 90, 1.0, device.z_near);
-		pinfo.ambient = Vector3f(0.02f, 0.02f, 0.02f);
 	}
 
 	// Device, Factory
@@ -362,6 +361,27 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	CompileShader( "shaders/Devora.hlsl", "ps_render", "ps_5_0", &code );
 	HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 		code->GetBufferSize(), linkage, &vinfo.pshader));
+
+	CompileShader( "shaders/Devora.hlsl", "vs_render_z", "vs_5_0", &code );
+	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &linfo.vshader_z));
+
+	CompileShader( "shaders/Devora.hlsl", "vs_render_cube_z", "vs_5_0", &code );
+	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &linfo.vshader_cube_z));
+	CompileShader( "shaders/Devora.hlsl", "gs_render_cube_z", "gs_5_0", &code );
+	HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &linfo.gshader_cube_z));
+
+	CompileShader( "shaders/Devora.hlsl", "vs_fullscreen", "vs_5_0", &code );
+	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &linfo.vshader_fs));
+	CompileShader( "shaders/Devora.hlsl", "gs_fullscreen", "gs_5_0", &code );
+	HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &linfo.gshader_fs));
+
+	pinfo.vshader_fs = linfo.vshader_fs;
+	pinfo.gshader_fs = linfo.gshader_fs;
 
 	// States
 

@@ -19,6 +19,8 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer)
 {
+	state.context->ClearState();
+
 	const float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	state.context->ClearRenderTargetView(lbuffer.rtv, black);
 

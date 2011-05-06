@@ -33,9 +33,6 @@
     <ClInclude Include="..\source\PlayerState.hpp">
       <Filter>Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PostProcessInfo.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\TimingData.hpp">
       <Filter>Data</Filter>
     </ClInclude>
@@ -76,6 +73,9 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="..\source\CBufferLayouts.hpp" />
+    <ClInclude Include="..\source\PostProcessInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp">
