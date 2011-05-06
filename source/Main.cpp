@@ -54,7 +54,8 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Camera& camera,
 	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer);
+	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
+	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light);
 
 void PostProcess(GraphicsState& state, ZBuffer& zbuffer, PostProcessInfo& info,
 	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, CBuffer& cb_frame);
@@ -104,7 +105,8 @@ void run()
 		RenderVisuals(graphics, vinfo, transforms, visuals,
 			camera, gbuffer0, gbuffer1, zbuffer, cb_object);
 		RenderLights(graphics, vinfo, linfo, transforms, lights, visuals,
-			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer);
+			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
+			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
 		PostProcess(graphics, zbuffer, pinfo, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);
 		Present(device);
 	}

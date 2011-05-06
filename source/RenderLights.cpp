@@ -7,6 +7,8 @@
 #include "Visuals.hpp"
 #include "ZBuffer.hpp"
 #include "Buffer.hpp"
+#include "CBuffer.hpp"
+#include "CBufferLayouts.hpp"
 
 #include <d3dx11.h>
 
@@ -17,7 +19,8 @@ typedef unsigned int uint;
 void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Camera& camera,
 	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer)
+	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
+	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light)
 {
 	state.context->ClearState();
 
@@ -57,17 +60,21 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		for (uint i = 0; i < casters.size(); i++)
 		{
 			Visual& caster = casters[i];
-
-			Matrix4f world_lightview_lightproj = lightview_lightproj * transforms[caster.index];
-			HOK( state.var.world_lightview_lightproj->SetMatrix( world_lightview_lightproj.data() ));
-			HOK( state.var.shadowmap->SetResource( NULL ) );
-			HOK( state.pass_render_z->Apply( 0, state.context ) );
-			state.context->OMSetRenderTargets(0, NULL, shadowmap.dsv);
-		
 			Geometry& geom = vinfo.geoms[caster.type];
 
-			state.context->IASetVertexBuffers
-				(0, 1, &geom.buffer, &geom.stride, &geom.offset);
+			CBufferLayouts::object_z data =
+			{ lightview_lightproj * transforms[caster.index] };
+
+			state.context->UpdateSubresource(cb_object_z, 0, NULL, (void*)&data, sizeof(data), 0);
+			state.context->VSSetConstantBuffers(2, 1, &cb_object_z);
+			state.context->VSSetShader( info.vs_render_z, NULL, 0 );
+			state.context->GSSetShader( NULL, NULL, 0 );
+			state.context->PSSetShader( NULL, NULL, 0 );
+			state.context->RSSetState( info.rs_shadow );
+			state.context->OMSetBlendState( NULL, NULL, 0xffffffff );
+			state.context->OMSetDepthStencilState( NULL, 0u );
+			state.context->OMSetRenderTargets(0, NULL, shadowmap.dsv);
+			state.context->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
 			state.context->Draw( geom.count, 0 );
 		}
 
