@@ -3,6 +3,8 @@
 #include "DeviceState.hpp"
 #include "GraphicsState.hpp"
 #include "Camera.hpp"
+#include "CBuffer.hpp"
+#include "CBufferLayouts.hpp"
 
 #include <d3dx10math.h>
 
@@ -14,7 +16,7 @@ void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float 
 }; using namespace Tools;
 
 void DeriveCamera(Transforms& transforms, PlayerState& player, 
-	DeviceState& device, Camera& camera, GraphicsState& state)
+	DeviceState& device, Camera& camera, GraphicsState& state, CBuffer& cb_frame)
 {
 	Matrix4f rotate;
 	D3DXMatrixRotationYawPitchRoll
@@ -33,16 +35,21 @@ void DeriveCamera(Transforms& transforms, PlayerState& player,
 	float aspect_ratio = float(device.width) / device.height;
 
 	float alpha = float(camera.vertical_fov * M_PI / 180 * 0.5);
-	camera.xy_to_ray = Vector2f(-aspect_ratio, 1.0) * tan(alpha);
+	Vector2f xy_to_ray = Vector2f(-aspect_ratio, 1.0) * tan(alpha);
 
 	camera.view = view_axis * rotate * transforms[0].inverse();
 	SetProjectionMatrix(camera.proj, camera.vertical_fov, aspect_ratio, device.z_near);
 
 	HOK( state.var.aperture->SetFloat( camera.aperture ) );
 	HOK( state.var.xy_to_ray->SetRawValue
-		( (void*)camera.xy_to_ray.data(), 0, sizeof(Vector2f) ) );
+		( (void*)xy_to_ray.data(), 0, sizeof(Vector2f) ) );
 	Matrix4f view_i( camera.view.inverse() );
 	HOK( state.var.view_i->SetMatrix( view_i.data() ));
+
+	CBufferLayouts::frame data = 
+		{ camera.view.inverse(), camera.aperture, xy_to_ray, device.z_near };
+
+	state.context->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0);
 }
 
 } // namespace Devora

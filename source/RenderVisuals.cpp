@@ -39,10 +39,11 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	for (uint i = 0; i < visuals.size(); i++)
 	{
 		Geometry& geom = info.geoms[visuals[i].type];
-		CBufferLayouts::object data;
 
+		CBufferLayouts::object data;
 		data.world_view = camera.view * transforms[visuals[i].index];
 		data.world_view_proj = camera.proj * data.world_view;
+
 		state.context->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 		state.context->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
 		state.context->Draw( geom.count, 0 );

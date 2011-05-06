@@ -9,7 +9,6 @@ struct Camera
 {
 	Matrix4f view;
 	Matrix4f proj;
-	Vector2f xy_to_ray;
 
 	float vertical_fov;
 	float aperture;

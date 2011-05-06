@@ -21,10 +21,10 @@ cbuffer light: register(b4)
 
 Texture2D gbuffer0: register(u0);
 Texture2D gbuffer1: register(u1);
-Texture2D zbuffer: register(u2);
-Texture2D shadowmap: register(u3);
-TextureCube shadowcube: register(u4);
-Texture2D lbuffer: register(u5);
+Texture2D lbuffer: register(u2);
+Texture2D zbuffer: register(u3);
+Texture2D shadowmap: register(u4);
+TextureCube shadowcube: register(u5);
 
 
 sampler sm_point : register(s0)
@@ -191,7 +191,6 @@ float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Targe
 	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
-	//reprojected /= reprojected.w;
 
 	float4 s = z_near / (1.0 - shadowcube.Gather(sm_point, reprojected.xyz));
 

@@ -412,6 +412,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		//
 		desc.FrontCounterClockwise = true;
 		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rs_default));
+		pinfo.rs_default = vinfo.rs_default;
 
 		desc.SlopeScaledDepthBias = 1.0f;
 		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_shadow));
@@ -472,14 +473,25 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	// Constant Buffers
 	{
 		D3D11_BUFFER_DESC desc;
-		desc.ByteWidth = sizeof( CBufferLayouts::object );
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		desc.CPUAccessFlags = 0;
 		desc.MiscFlags = 0;
+
+		desc.ByteWidth = sizeof( CBufferLayouts::object );
 		HOK( device.device->CreateBuffer( &desc, NULL, &cb_object ));
 
-		// ... /!
+		desc.ByteWidth = sizeof( CBufferLayouts::frame );
+		HOK( device.device->CreateBuffer( &desc, NULL, &cb_frame ));
+
+		desc.ByteWidth = sizeof( CBufferLayouts::object_z );
+		HOK( device.device->CreateBuffer( &desc, NULL, &cb_object_z ));
+
+		desc.ByteWidth = sizeof( CBufferLayouts::object_cube_z );
+		HOK( device.device->CreateBuffer( &desc, NULL, &cb_object_cube_z ));
+
+		desc.ByteWidth = sizeof( CBufferLayouts::light );
+		HOK( device.device->CreateBuffer( &desc, NULL, &cb_light ));
 	}
 
 	HOK( state.var.z_near->SetFloat( device.z_near ) ); //!
