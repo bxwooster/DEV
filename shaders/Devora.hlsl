@@ -19,12 +19,12 @@ cbuffer light: register(b4)
 #include "cbuffer/light"
 
 
-Texture2D gbuffer0: register(u0);
-Texture2D gbuffer1: register(u1);
-Texture2D lbuffer: register(u2);
-Texture2D zbuffer: register(u3);
-Texture2D shadowmap: register(u4);
-TextureCube shadowcube: register(u5);
+Texture2D gbuffer0: register(t0);
+Texture2D gbuffer1: register(t1);
+Texture2D zbuffer: register(t2);
+Texture2D shadowmap: register(t3);
+TextureCube shadowcube: register(t4);
+Texture2D lbuffer: register(t5);
 
 
 sampler sm_point : register(s0)

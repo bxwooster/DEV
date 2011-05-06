@@ -25,8 +25,8 @@ void PostProcess(GraphicsState& state, ZBuffer& zbuffer, PostProcessInfo& info,
 	state.context->GSSetShader(info.gs_fullscreen, NULL, 0);
 	state.context->PSSetShader(info.ps_final, NULL, 0);
 	state.context->PSSetConstantBuffers(0, 1, &cb_frame);
-	ID3D11ShaderResourceView* resources[4] = { gbuffer0.srv, gbuffer1.srv, lbuffer.srv, zbuffer.srv };
-	state.context->PSSetShaderResources(0, 4, resources);
+	ID3D11ShaderResourceView* resources[6] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, NULL, NULL, lbuffer.srv };
+	state.context->PSSetShaderResources(0, 6, resources);
 	state.context->PSSetSamplers(0, 1, &info.sm_point);
 
 	state.context->Draw( 1, 0 );

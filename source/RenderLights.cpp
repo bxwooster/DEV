@@ -24,8 +24,11 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 {
 	state.context->ClearState();
 
+	const float blendf[4] = {1.0f, 1.0f, 1.0f, 0.0f};
 	const float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	state.context->ClearRenderTargetView(lbuffer.rtv, black);
+
+	state.context->PSSetSamplers(0, 1, &info.sm_point);
 
 	HOK( state.var.gbuffer0->SetResource( gbuffer0.srv ) );
 	HOK( state.var.gbuffer1->SetResource( gbuffer1.srv ) );
@@ -41,58 +44,59 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 	{
 		Light& light = lights.dir[k];
 
-		state.context->IASetInputLayout( vinfo.layout );
-		state.context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
 		Matrix4f lightview = view_axis * transforms[light.index].inverse();
 		Matrix4f lightview_lightproj = info.proj * lightview;
 
-		Matrix4f light_matrix = lightview * camera.view.inverse();
-		HOK( state.var.light_matrix->SetMatrix( light_matrix.data() ));
-		Matrix4f reproject = info.proj * light_matrix;
-		HOK( state.var.reproject->SetMatrix( reproject.data() ));
-
-		state.context->ClearDepthStencilView
-			(shadowmap.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
-
+		state.context->ClearDepthStencilView(shadowmap.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
+		state.context->OMSetRenderTargets(0, NULL, shadowmap.dsv);
+		state.context->IASetInputLayout( vinfo.layout );
+		state.context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 		state.context->RSSetViewports( 1, &shadowmap.viewport );
+		state.context->VSSetConstantBuffers(2, 1, &cb_object_z);
+
+		state.context->VSSetShader( info.vs_render_z, NULL, 0 );
+		state.context->GSSetShader( NULL, NULL, 0 );
+		state.context->PSSetShader( NULL, NULL, 0 );
+		state.context->RSSetState( info.rs_shadow );
+		state.context->OMSetBlendState( NULL, blendf, 0xffffffff );
+		state.context->OMSetDepthStencilState( NULL, 0u );
 
 		for (uint i = 0; i < casters.size(); i++)
 		{
 			Visual& caster = casters[i];
 			Geometry& geom = vinfo.geoms[caster.type];
 
-			CBufferLayouts::object_z data =
-			{ lightview_lightproj * transforms[caster.index] };
+			CBufferLayouts::object_z data;
+			data.world_lightview_lightproj = lightview_lightproj * transforms[caster.index];
 
 			state.context->UpdateSubresource(cb_object_z, 0, NULL, (void*)&data, sizeof(data), 0);
-			state.context->VSSetConstantBuffers(2, 1, &cb_object_z);
-			state.context->VSSetShader( info.vs_render_z, NULL, 0 );
-			state.context->GSSetShader( NULL, NULL, 0 );
-			state.context->PSSetShader( NULL, NULL, 0 );
-			state.context->RSSetState( info.rs_shadow );
-			state.context->OMSetBlendState( NULL, NULL, 0xffffffff );
-			state.context->OMSetDepthStencilState( NULL, 0u );
-			state.context->OMSetRenderTargets(0, NULL, shadowmap.dsv);
 			state.context->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
 			state.context->Draw( geom.count, 0 );
 		}
 
+		CBufferLayouts::light data;
+		data.light_matrix = lightview * camera.view.inverse();
+		data.reproject = info.proj * data.light_matrix;
+		data.light_pos = (camera.view * transforms[light.index].col(3)).head<3>();
+		data.light_colour = light.colour;
+
+		ID3D11Buffer* buffers[5] = { cb_frame, NULL, NULL, NULL, cb_light };
+		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowmap.srv };
+
+		state.context->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
+		state.context->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
 		state.context->IASetInputLayout( NULL );
 		state.context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state.context->RSSetViewports( 1, &lbuffer.viewport );
-		state.context->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
+		state.context->PSSetConstantBuffers(0, 5, buffers);
+		state.context->PSSetShaderResources(0, 4, views);
 
-		Vector4f position(camera.view * transforms[light.index].col(3));
-		HOK( state.var.light_pos->SetRawValue
-			( (void*)position.data(), 0, sizeof(Vector3f) ) );
-
-		Vector3f& colour = light.colour;
-		HOK( state.var.light_colour->SetRawValue
-			( (void*)colour.data(), 0, sizeof(Vector3f) ) );
-		
-		HOK( state.var.shadowmap->SetResource( shadowmap.srv ) );
-		HOK( state.pass_directional_light->Apply( 0, state.context ) );
+		state.context->VSSetShader( info.vs_noop, NULL, 0 );
+		state.context->GSSetShader( info.gs_fullscreen, NULL, 0 );
+		state.context->PSSetShader( info.ps_dir_light, NULL, 0 );
+		state.context->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
+		state.context->OMSetDepthStencilState( info.ds_nowrite, 0 );
+		state.context->RSSetState( vinfo.rs_default );
 
 		state.context->Draw( 1, 0 );
 	}

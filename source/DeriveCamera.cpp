@@ -46,8 +46,11 @@ void DeriveCamera(Transforms& transforms, PlayerState& player,
 	Matrix4f view_i( camera.view.inverse() );
 	HOK( state.var.view_i->SetMatrix( view_i.data() ));
 
-	CBufferLayouts::frame data = 
-		{ camera.view.inverse(), camera.aperture, xy_to_ray, device.z_near };
+	CBufferLayouts::frame data;
+	data.aperture = camera.aperture;
+	data.view_i = camera.view.inverse();
+	data.xy_to_ray = xy_to_ray;
+	data.z_near = device.z_near;
 
 	state.context->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0); //! //!  WHAT
 }

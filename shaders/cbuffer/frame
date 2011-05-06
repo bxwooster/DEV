@@ -1,6 +1,6 @@
 {
 	float4x4 view_i;
 	float aperture;
-	float2 xy_to_ray;
 	float z_near;
+	float2 xy_to_ray;
 };
