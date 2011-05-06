@@ -1,0 +1,4 @@
+float2 uv_to_ray(float2 uv)
+{
+	return (2 * uv - 1) * xy_to_ray;
+}

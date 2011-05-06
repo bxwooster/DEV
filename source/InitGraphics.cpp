@@ -292,40 +292,40 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		IPtr<ID3D11ClassLinkage> linkage;
 		HOK( device.device->CreateClassLinkage( &linkage ));
 
-		CompileShader( "shaders/Devora.hlsl", "ps_render", "ps_5_0", &code );
+		CompileShader( "shaders/ps_render.hlsl", "ps_render", "ps_5_0", &code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &vinfo.ps_render));
 
-		CompileShader( "shaders/Devora.hlsl", "vs_render_z", "vs_5_0", &code );
+		CompileShader( "shaders/vs_render_z.hlsl", "vs_render_z", "vs_5_0", &code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.vs_render_z));
 
-		CompileShader( "shaders/Devora.hlsl", "vs_render_cube_z", "vs_5_0", &code );
+		CompileShader( "shaders/vs_render_cube_z.hlsl", "vs_render_cube_z", "vs_5_0", &code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.vs_render_cube_z));
-		CompileShader( "shaders/Devora.hlsl", "gs_render_cube_z", "gs_5_0", &code );
+		CompileShader( "shaders/gs_render_cube_z.hlsl", "gs_render_cube_z", "gs_5_0", &code );
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.gs_render_cube_z));
 
-		CompileShader( "shaders/Devora.hlsl", "vs_noop", "vs_5_0", &code );
+		CompileShader( "shaders/vs_noop.hlsl", "vs_noop", "vs_5_0", &code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.vs_noop));
-		CompileShader( "shaders/Devora.hlsl", "gs_fullscreen", "gs_5_0", &code );
+		CompileShader( "shaders/gs_fullscreen.hlsl", "gs_fullscreen", "gs_5_0", &code );
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.gs_fullscreen));
 
-		CompileShader( "shaders/Devora.hlsl", "ps_dir_light", "ps_5_0", &code );
+		CompileShader( "shaders/ps_dir_light.hlsl", "ps_dir_light", "ps_5_0", &code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.ps_dir_light));
-		CompileShader( "shaders/Devora.hlsl", "ps_point_light", "ps_5_0", &code );
+		CompileShader( "shaders/ps_point_light.hlsl", "ps_point_light", "ps_5_0", &code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.ps_point_light));
 
-		CompileShader( "shaders/Devora.hlsl", "ps_final", "ps_5_0", &code );
+		CompileShader( "shaders/ps_final.hlsl", "ps_final", "ps_5_0", &code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &pinfo.ps_final));
 
-		CompileShader( "shaders/Devora.hlsl", "vs_render", "vs_5_0", &code );
+		CompileShader( "shaders/vs_render.hlsl", "vs_render", "vs_5_0", &code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &vinfo.vs_render));
 

@@ -16,6 +16,12 @@
     <Filter Include="Shader\cbuffer">
       <UniqueIdentifier>{7dcbb083-88d7-483d-a2c8-55ea2de2c72b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\struct">
+      <UniqueIdentifier>{8707d6f4-976f-4389-b86e-731f2b858065}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\code">
+      <UniqueIdentifier>{14dda2f8-6dfa-40f7-8d94-0d909584415f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\GraphicsState.hpp">
@@ -124,9 +130,6 @@
     <ClCompile Include="..\source\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\Devora.hlsl">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="..\shaders\cbuffer\object">
       <Filter>Shader\cbuffer</Filter>
     </None>
@@ -141,6 +144,57 @@
     </None>
     <None Include="..\shaders\cbuffer\light">
       <Filter>Shader\cbuffer</Filter>
+    </None>
+    <None Include="..\shaders\struct\GSOutput">
+      <Filter>Shader\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\Pixel">
+      <Filter>Shader\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\ScreenPixel">
+      <Filter>Shader\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\Vertex">
+      <Filter>Shader\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\Empty">
+      <Filter>Shader\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\GSInput">
+      <Filter>Shader\struct</Filter>
+    </None>
+    <None Include="..\shaders\code\uv_to_ray">
+      <Filter>Shader\code</Filter>
+    </None>
+    <None Include="..\shaders\vs_render.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\ps_dir_light.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\ps_final.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\ps_point_light.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\ps_render.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\vs_noop.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\vs_render_cube_z.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\vs_render_z.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\gs_fullscreen.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\gs_render_cube_z.hlsl">
+      <Filter>Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

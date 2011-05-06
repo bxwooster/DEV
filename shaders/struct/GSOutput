@@ -1,0 +1,5 @@
+struct GSOutput
+{
+	float4 position : SV_Position;
+	uint index : SV_RenderTargetArrayIndex;
+};

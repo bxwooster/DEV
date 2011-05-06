@@ -56,7 +56,23 @@
     <None Include="..\shaders\cbuffer\object" />
     <None Include="..\shaders\cbuffer\object_cube_z" />
     <None Include="..\shaders\cbuffer\object_z" />
-    <None Include="..\shaders\Devora.hlsl" />
+    <None Include="..\shaders\code\uv_to_ray" />
+    <None Include="..\shaders\gs_fullscreen.hlsl" />
+    <None Include="..\shaders\gs_render_cube_z.hlsl" />
+    <None Include="..\shaders\ps_dir_light.hlsl" />
+    <None Include="..\shaders\ps_final.hlsl" />
+    <None Include="..\shaders\ps_point_light.hlsl" />
+    <None Include="..\shaders\ps_render.hlsl" />
+    <None Include="..\shaders\struct\Empty" />
+    <None Include="..\shaders\struct\GSInput" />
+    <None Include="..\shaders\struct\GSOutput" />
+    <None Include="..\shaders\struct\Pixel" />
+    <None Include="..\shaders\struct\ScreenPixel" />
+    <None Include="..\shaders\struct\Vertex" />
+    <None Include="..\shaders\vs_noop.hlsl" />
+    <None Include="..\shaders\vs_render.hlsl" />
+    <None Include="..\shaders\vs_render_cube_z.hlsl" />
+    <None Include="..\shaders\vs_render_z.hlsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{17005A34-EEA1-4F6A-994F-9756AC8F37A5}</ProjectGuid>
