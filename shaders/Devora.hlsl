@@ -1,41 +1,39 @@
-cbuffer rare
+cbuffer rare : register(b0)
 {
 	float2 xy_to_ray;
-	//float field_of_view;
-	//float aspect_ratio;
 	float z_near;
-};
+}
 
-cbuffer frame	
+cbuffer frame : register(b1)
 {
 	float4x4 view_i;
 	float3 ambient;
 	float aperture;
-};
+}
 
-cbuffer object
+cbuffer object : register(b2)
 {
 	float4x4 world_view_proj;
 	float4x4 world_view;
-};
+}
 
-cbuffer object_z
+cbuffer object_z : register(b3)
 {
 	float4x4 world_lightview_lightproj;
-};
+}
 
-cbuffer object_cube_z
+cbuffer object_cube_z : register(b4)
 {
 	float4x4 cubeproj[6];
-};
+}
 
-cbuffer light
+cbuffer light : register(b5)
 {
 	float3 light_pos;
 	float3 light_colour;
 	float4x4 light_matrix;
 	float4x4 reproject;
-};
+}
 
 static const float bias = 0.2;
 static const float light_scale = 200.0;
@@ -163,7 +161,7 @@ void vs_dummy( out Empty empty )
 }
 
 [maxvertexcount(3)]
-void gs_fullscreen(uniform float depth, point Empty empty[1], inout TriangleStream<ScreenPixel> stream)
+void gs_fullscreen(point Empty empty[1], inout TriangleStream<ScreenPixel> stream)
 {
 	ScreenPixel pixel;
 	float2 position;
@@ -173,7 +171,7 @@ void gs_fullscreen(uniform float depth, point Empty empty[1], inout TriangleStre
 		if (id == 1) position = float2(2, 0);
 		if (id == 2) position = float2(0, 2);
 
-		pixel.pos = float4(position * 2.0 - 1.0, depth, 1.0);
+		pixel.pos = float4(position * 2.0 - 1.0, 0.0, 1.0);
 		pixel.uv = float2(position.x, 1.0 - position.y);
 
 		stream.Append(pixel);
@@ -291,7 +289,7 @@ technique11 directional_light
 	pass
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_directional_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
@@ -304,7 +302,7 @@ technique11 point_light
 	pass
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_point_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
@@ -317,7 +315,7 @@ technique11 final
 	pass
 	{
 		SetVertexShader( CompileShader( vs_4_1, vs_dummy() ) );
-		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen(0.0) ) );
+		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_final() ) );
 		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );

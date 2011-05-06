@@ -82,11 +82,9 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 
 			for (uint i = 0; i < casters.size(); i++)
 			{
-				Visual& caster = casters[i];
-
 				{
 					Matrix4f p = info.proj;
-					Matrix4f w = lightview * transforms[caster.index];
+					Matrix4f w = lightview * transforms[casters[i].index];
 					Matrix4f cubeproj[6];
 					for (int f = 0; f < 6; f++) cubeproj[f] = p * info.cubematrices[f] * w;
 					HOK( state.var.cubeproj->SetMatrixArray((float*) cubeproj, 0, 6));
@@ -96,7 +94,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 				HOK( state.pass_render_cube_z->Apply( 0, state.context ) );
 				state.context->OMSetRenderTargets(0, NULL, shadowcube.dsv);
 		
-				Geometry& geom = vinfo.geoms[caster.type];
+				Geometry& geom = vinfo.geoms[casters[i].type];
 
 				state.context->IASetVertexBuffers
 					(0, 1, &geom.buffer, &geom.stride, &geom.offset);

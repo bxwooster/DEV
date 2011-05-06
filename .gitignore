@@ -5,3 +5,5 @@
 *.sdf
 *.suo
 *.vcxproj.user
+*.exe
+*.dll
