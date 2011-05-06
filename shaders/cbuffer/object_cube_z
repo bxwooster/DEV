@@ -1,0 +1,3 @@
+{
+	float4x4 cubeproj[6];
+}

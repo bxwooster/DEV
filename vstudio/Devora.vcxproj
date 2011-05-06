@@ -49,6 +49,12 @@
     <ClCompile Include="..\source\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\shaders\cbuffer\frame" />
+    <None Include="..\shaders\cbuffer\light" />
+    <None Include="..\shaders\cbuffer\object" />
+    <None Include="..\shaders\cbuffer\object_cube_z" />
+    <None Include="..\shaders\cbuffer\object_z" />
+    <None Include="..\shaders\cbuffer\rare" />
     <None Include="..\shaders\Devora.hlsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

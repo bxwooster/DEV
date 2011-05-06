@@ -13,6 +13,9 @@
     <Filter Include="Header">
       <UniqueIdentifier>{a42bfd3a-d5ff-4083-9e21-539215fc41fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\cbuffer">
+      <UniqueIdentifier>{7dcbb083-88d7-483d-a2c8-55ea2de2c72b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\GraphicsState.hpp">
@@ -119,6 +122,24 @@
   <ItemGroup>
     <None Include="..\shaders\Devora.hlsl">
       <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\cbuffer\object">
+      <Filter>Shader\cbuffer</Filter>
+    </None>
+    <None Include="..\shaders\cbuffer\object_cube_z">
+      <Filter>Shader\cbuffer</Filter>
+    </None>
+    <None Include="..\shaders\cbuffer\object_z">
+      <Filter>Shader\cbuffer</Filter>
+    </None>
+    <None Include="..\shaders\cbuffer\rare">
+      <Filter>Shader\cbuffer</Filter>
+    </None>
+    <None Include="..\shaders\cbuffer\frame">
+      <Filter>Shader\cbuffer</Filter>
+    </None>
+    <None Include="..\shaders\cbuffer\light">
+      <Filter>Shader\cbuffer</Filter>
     </None>
   </ItemGroup>
 </Project>

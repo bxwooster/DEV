@@ -1,52 +1,37 @@
-cbuffer rare : register(b0)
-{
-	float2 xy_to_ray;
-	float z_near;
-}
-
-cbuffer frame : register(b1)
-{
-	float4x4 view_i;
-	float3 ambient;
-	float aperture;
-}
-
-cbuffer object : register(b2)
-{
-	float4x4 world_view_proj;
-	float4x4 world_view;
-}
-
-cbuffer object_z : register(b3)
-{
-	float4x4 world_lightview_lightproj;
-}
-
-cbuffer object_cube_z : register(b4)
-{
-	float4x4 cubeproj[6];
-}
-
-cbuffer light : register(b5)
-{
-	float3 light_pos;
-	float3 light_colour;
-	float4x4 light_matrix;
-	float4x4 reproject;
-}
-
 static const float bias = 0.2;
 static const float light_scale = 200.0;
 static const float eps = 3e-7;
 
-Texture2D gbuffer0;
-Texture2D gbuffer1;
-Texture2D zbuffer;
-Texture2D shadowmap;
-TextureCube shadowcube;
-Texture2D lbuffer;
 
-sampler smp;
+cbuffer rare : register(b0)
+#include "cbuffer/rare"
+
+cbuffer frame: register(b1)
+#include "cbuffer/frame"
+
+cbuffer object: register(b2)
+#include "cbuffer/object"
+
+cbuffer object_z: register(b3)
+#include "cbuffer/object_z"
+
+cbuffer object_cube_z: register(b4)
+#include "cbuffer/object_cube_z"
+
+cbuffer light: register(b5)
+#include "cbuffer/light"
+
+
+Texture2D gbuffer0: register(u0);
+Texture2D gbuffer1: register(u1);
+Texture2D zbuffer: register(u2);
+Texture2D shadowmap: register(u3);
+TextureCube shadowcube: register(u4);
+Texture2D lbuffer: register(u5);
+
+
+sampler smp : register(s0);
+
 
 RasterizerState rs_default
 {

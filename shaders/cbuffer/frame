@@ -1,0 +1,5 @@
+{
+	float4x4 view_i;
+	float3 ambient;
+	float aperture;
+}

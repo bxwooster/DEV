@@ -1,0 +1,4 @@
+{
+	float2 xy_to_ray;
+	float z_near;
+}
