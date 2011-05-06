@@ -7,9 +7,9 @@ namespace Devora {
 
 struct PostProcessInfo
 {
-	IPtr<ID3D11VertexShader> vshader_fs;
-	IPtr<ID3D11GeometryShader> gshader_fs;
-	IPtr<ID3D11PixelShader> pshader;
+	IPtr<ID3D11VertexShader> vs_noop;
+	IPtr<ID3D11GeometryShader> gs_fullscreen;
+	IPtr<ID3D11PixelShader> ps_final;
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

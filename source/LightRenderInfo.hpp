@@ -11,17 +11,21 @@ struct LightRenderInfo
 	Matrix4f cubematrices[6];
 
 	IPtr<ID3D11InputLayout> layout;
+	IPtr<ID3D11RasterizerState> rs_default;
+	IPtr<ID3D11RasterizerState> rs_shadow;
+	IPtr<ID3D11BlendState> bs_additive;
+	IPtr<ID3D11DepthStencilState> ds_nowrite;
 
-	IPtr<ID3D11VertexShader> vshader_z;
+	IPtr<ID3D11VertexShader> vs_render_z;
 
-	IPtr<ID3D11VertexShader> vshader_cube_z;
-	IPtr<ID3D11GeometryShader> gshader_cube_z;
+	IPtr<ID3D11VertexShader> vs_render_cube_z;
+	IPtr<ID3D11GeometryShader> gs_render_cube_z;
 
-	IPtr<ID3D11VertexShader> vshader_fs;
-	IPtr<ID3D11GeometryShader> gshader_fs;
+	IPtr<ID3D11VertexShader> vs_noop;
+	IPtr<ID3D11GeometryShader> gs_fullscreen;
 	
-	IPtr<ID3D11PixelShader> pshader_directional;
-	IPtr<ID3D11PixelShader> pshader_point;
+	IPtr<ID3D11PixelShader> ps_dir_light;
+	IPtr<ID3D11PixelShader> ps_point_light;
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

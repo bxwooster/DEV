@@ -136,7 +136,7 @@ void ps_render( Pixel pixel,
 	g1.xyz = 1.0; // some colour
 }
 
-void vs_fullscreen( out Empty empty )
+void vs_noop( out Empty empty )
 {
 
 }
@@ -159,7 +159,7 @@ void gs_fullscreen(point Empty empty[1], inout TriangleStream<ScreenPixel> strea
 	}
 }
 
-float4 ps_directional_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
+float4 ps_dir_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
 	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
@@ -269,9 +269,9 @@ technique11 directional_light
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen() ) );
+		SetVertexShader( CompileShader( vs_4_1, vs_noop() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
-		SetPixelShader( CompileShader( ps_4_1, ps_directional_light() ) );
+		SetPixelShader( CompileShader( ps_4_1, ps_dir_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
 		SetDepthStencilState( ds_nowrite, 0 );
 		SetRasterizerState( rs_default );
@@ -282,7 +282,7 @@ technique11 point_light
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen() ) );
+		SetVertexShader( CompileShader( vs_4_1, vs_noop() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_point_light() ) );
 		SetBlendState( bs_additive, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
@@ -295,11 +295,11 @@ technique11 final
 {
 	pass
 	{
-		SetVertexShader( CompileShader( vs_4_1, vs_fullscreen() ) );
+		SetVertexShader( CompileShader( vs_4_1, vs_noop() ) );
 		SetGeometryShader( CompileShader( gs_4_1, gs_fullscreen() ) );
 		SetPixelShader( CompileShader( ps_4_1, ps_final() ) );
 		SetBlendState( bs_default, float4(1.0, 1.0, 1.0, 0.0), 0xffffffff );
-		SetDepthStencilState( ds_nowrite, 0 );
+		SetDepthStencilState( ds_default, 0 );
 		SetRasterizerState( rs_default );
 	}
 }

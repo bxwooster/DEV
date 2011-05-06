@@ -357,31 +357,43 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	CompileShader( "shaders/Devora.hlsl", "vs_render", "vs_5_0", &code );
 	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-		code->GetBufferSize(), linkage, &vinfo.vshader));
+		code->GetBufferSize(), linkage, &vinfo.vs_render));
 	CompileShader( "shaders/Devora.hlsl", "ps_render", "ps_5_0", &code );
 	HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-		code->GetBufferSize(), linkage, &vinfo.pshader));
+		code->GetBufferSize(), linkage, &vinfo.ps_render));
 
 	CompileShader( "shaders/Devora.hlsl", "vs_render_z", "vs_5_0", &code );
 	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-		code->GetBufferSize(), linkage, &linfo.vshader_z));
+		code->GetBufferSize(), linkage, &linfo.vs_render_z));
 
 	CompileShader( "shaders/Devora.hlsl", "vs_render_cube_z", "vs_5_0", &code );
 	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-		code->GetBufferSize(), linkage, &linfo.vshader_cube_z));
+		code->GetBufferSize(), linkage, &linfo.vs_render_cube_z));
 	CompileShader( "shaders/Devora.hlsl", "gs_render_cube_z", "gs_5_0", &code );
 	HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-		code->GetBufferSize(), linkage, &linfo.gshader_cube_z));
+		code->GetBufferSize(), linkage, &linfo.gs_render_cube_z));
 
-	CompileShader( "shaders/Devora.hlsl", "vs_fullscreen", "vs_5_0", &code );
+	CompileShader( "shaders/Devora.hlsl", "vs_noop", "vs_5_0", &code );
 	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-		code->GetBufferSize(), linkage, &linfo.vshader_fs));
+		code->GetBufferSize(), linkage, &linfo.vs_noop));
 	CompileShader( "shaders/Devora.hlsl", "gs_fullscreen", "gs_5_0", &code );
 	HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-		code->GetBufferSize(), linkage, &linfo.gshader_fs));
+		code->GetBufferSize(), linkage, &linfo.gs_fullscreen));
 
-	pinfo.vshader_fs = linfo.vshader_fs;
-	pinfo.gshader_fs = linfo.gshader_fs;
+	CompileShader( "shaders/Devora.hlsl", "ps_dir_light", "ps_5_0", &code );
+	HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &linfo.ps_dir_light));
+	CompileShader( "shaders/Devora.hlsl", "ps_point_light", "ps_5_0", &code );
+	HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &linfo.ps_point_light));
+
+	CompileShader( "shaders/Devora.hlsl", "ps_final", "ps_5_0", &code );
+	HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &pinfo.ps_final));
+
+
+	pinfo.vs_noop = linfo.vs_noop;
+	pinfo.gs_fullscreen = linfo.gs_fullscreen;
 
 	// States
 
@@ -392,7 +404,24 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.CullMode = D3D11_CULL_BACK;
 		desc.FrontCounterClockwise = true;
 		desc.DepthClipEnable = true;
-		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rasterizerstate));
+		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rs_default));
+
+		desc.SlopeScaledDepthBias = 1.0f;
+		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_shadow));
+	}
+
+	{
+		D3D11_BLEND_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		//... /!
+		HOK( device.device->CreateBlendState( &desc, &linfo.bs_additive));
+	}
+
+	{
+		D3D11_DEPTH_STENCIL_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		//... /!
+		HOK( device.device->CreateDepthStencilState( &desc, &linfo.ds_nowrite));
 	}
 
 	// Constant Buffers

@@ -17,9 +17,9 @@ struct Geometry
 struct VisualRenderInfo
 {
 	IPtr<ID3D11InputLayout> layout;
-	IPtr<ID3D11RasterizerState> rasterizerstate;
-	IPtr<ID3D11VertexShader> vshader;
-	IPtr<ID3D11PixelShader> pshader;
+	IPtr<ID3D11RasterizerState> rs_default;
+	IPtr<ID3D11VertexShader> vs_render;
+	IPtr<ID3D11PixelShader> ps_render;
 
 	std::vector<Geometry> geoms;
 };

@@ -22,10 +22,6 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	OK( gbuffer0.viewport == zbuffer.viewport);
 
 	state.context->ClearState();
-
-	const float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	//state.context->ClearRenderTargetView(gbuffer0.rtv, black);
-	//state.context->ClearRenderTargetView(gbuffer1.rtv, black);
 	state.context->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
@@ -35,10 +31,10 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state.context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 	state.context->OMSetBlendState( NULL, 0, 0xffffffff);
 	state.context->OMSetDepthStencilState( NULL, 0 );
-	state.context->RSSetState( info.rasterizerstate );
+	state.context->RSSetState( info.rs_default );
 	state.context->VSSetConstantBuffers(1, 1, &cb_object);
-	state.context->VSSetShader(info.vshader, NULL, 0);
-	state.context->PSSetShader(info.pshader, NULL, 0);
+	state.context->VSSetShader(info.vs_render, NULL, 0);
+	state.context->PSSetShader(info.ps_render, NULL, 0);
 
 	for (uint i = 0; i < visuals.size(); i++)
 	{
