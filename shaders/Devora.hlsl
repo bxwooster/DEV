@@ -3,22 +3,19 @@ static const float light_scale = 200.0;
 static const float eps = 3e-7;
 
 
-cbuffer rare : register(b0)
-#include "cbuffer/rare"
-
-cbuffer frame: register(b1)
+cbuffer frame: register(b0)
 #include "cbuffer/frame"
 
-cbuffer object: register(b2)
+cbuffer object: register(b1)
 #include "cbuffer/object"
 
-cbuffer object_z: register(b3)
+cbuffer object_z: register(b2)
 #include "cbuffer/object_z"
 
-cbuffer object_cube_z: register(b4)
+cbuffer object_cube_z: register(b3)
 #include "cbuffer/object_cube_z"
 
-cbuffer light: register(b5)
+cbuffer light: register(b4)
 #include "cbuffer/light"
 
 
@@ -74,7 +71,6 @@ struct Pixel
 struct ScreenPixel
 {
 	float2 uv : Position;
-	//float2 view_ray : Ray;
 	float4 pos : SV_Position;
 };
 

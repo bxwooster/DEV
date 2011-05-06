@@ -13,6 +13,8 @@
   <ItemGroup>
     <ClInclude Include="..\source\Camera.hpp" />
     <ClInclude Include="..\source\Buffer.hpp" />
+    <ClInclude Include="..\source\CBuffer.hpp" />
+    <ClInclude Include="..\source\CBufferLayouts.hpp" />
     <ClInclude Include="..\source\DeviceState.hpp" />
     <ClInclude Include="..\source\GraphicsState.hpp" />
     <ClInclude Include="..\source\InputData.hpp" />
@@ -54,7 +56,6 @@
     <None Include="..\shaders\cbuffer\object" />
     <None Include="..\shaders\cbuffer\object_cube_z" />
     <None Include="..\shaders\cbuffer\object_z" />
-    <None Include="..\shaders\cbuffer\rare" />
     <None Include="..\shaders\Devora.hlsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -86,14 +87,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(DXSDK_DIR)Samples\C++\Effects11\$(Configuration);$(SolutionDir)..\..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(DXSDK_DIR)Samples\C++\Effects11\$(Configuration);$(SolutionDir)..\..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Samples\C++\Effects11\Inc;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
     <SourcePath>$(SourcePath)</SourcePath>

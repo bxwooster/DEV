@@ -8,12 +8,13 @@
 
 namespace Devora {
 
-using namespace Devora;
 typedef unsigned int uint;
 
-void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near)
+namespace Tools {
+
+void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near)
 {
-	float ys = 1 / tanf( y_fov * M_PI / 180 * 0.5 );
+	float ys = 1 / tanf( y_fov * float(M_PI) / 180 * 0.5f );
 	float xs = ys / aspect_ratio;
 	proj << xs, 0, 0, 0,
 			0, ys, 0, 0,
@@ -21,7 +22,7 @@ void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_
 			0, 0, -1, 0;
 }
 
-Geometry read_geom(ID3D11Device* device, const std::string& filename)
+Geometry ReadGeometry(ID3D11Device* device, const std::string& filename)
 {
 	using std::ifstream;
 
@@ -78,6 +79,8 @@ Geometry read_geom(ID3D11Device* device, const std::string& filename)
 	delete[] vertices;
 
 	return geometry;
+}
+
 }
 
 } // namespace Devora

@@ -2,4 +2,6 @@
 	float4x4 view_i;
 	float3 ambient;
 	float aperture;
-}
+	float2 xy_to_ray;
+	float z_near;
+};

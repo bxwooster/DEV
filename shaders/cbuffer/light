@@ -3,4 +3,4 @@
 	float3 light_colour;
 	float4x4 light_matrix;
 	float4x4 reproject;
-}
+};

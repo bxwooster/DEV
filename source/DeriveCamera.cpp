@@ -6,8 +6,11 @@
 #include <d3dx10math.h>
 
 namespace Devora {
+namespace Tools {
 
-void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
+void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
+
+}; using namespace Tools;
 
 void DeriveCamera(Transforms& transforms, PlayerState& player, DeviceState& device, Camera& camera)
 {
@@ -31,7 +34,7 @@ void DeriveCamera(Transforms& transforms, PlayerState& player, DeviceState& devi
 	camera.xy_to_ray = Vector2f(-aspect_ratio, 1.0) * tan(alpha);
 
 	camera.view = view_axis * rotate * transforms[0].inverse();
-	projection_matrix(camera.proj, camera.vertical_fov, aspect_ratio, device.z_near);
+	SetProjectionMatrix(camera.proj, camera.vertical_fov, aspect_ratio, device.z_near);
 }
 
 } // namespace Devora

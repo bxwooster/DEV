@@ -72,6 +72,10 @@
     <ClInclude Include="..\source\DeviceState.hpp">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\CBuffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CBufferLayouts.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp">
@@ -130,9 +134,6 @@
       <Filter>Shader\cbuffer</Filter>
     </None>
     <None Include="..\shaders\cbuffer\object_z">
-      <Filter>Shader\cbuffer</Filter>
-    </None>
-    <None Include="..\shaders\cbuffer\rare">
       <Filter>Shader\cbuffer</Filter>
     </None>
     <None Include="..\shaders\cbuffer\frame">

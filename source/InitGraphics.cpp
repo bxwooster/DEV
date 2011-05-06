@@ -6,13 +6,18 @@
 #include "PostProcessInfo.hpp"
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
+#include "CBuffer.hpp"
+#include "CBufferLayouts.hpp"
 
 #include <D3DX11.h>
 
 namespace Devora {
+namespace Tools {
 
-void projection_matrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
-Devora::Geometry read_geom(ID3D11Device* device, const std::string& filename);
+void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
+Geometry ReadGeometry(ID3D11Device* device, const std::string& filename);
+
+}; using namespace Tools;
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
@@ -34,10 +39,26 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 	return DefWindowProc(handle, msg, w, l);
 }
 
+void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
+{
+	IPtr<ID3D10Blob> info;
+
+	unsigned int shader_flags = D3D10_SHADER_ENABLE_STRICTNESS |
+	D3D10_SHADER_OPTIMIZATION_LEVEL0 |
+	D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
+
+	HOK_EX( D3DX11CompileFromFile( file,
+	NULL, NULL, entry, profile, shader_flags,
+	0, NULL, code, &info, NULL ),
+	*&info ? (char*)info->GetBufferPointer() : "" );
+}
+
 void InitGraphics(GraphicsState& state, DeviceState& device, 
 	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, 
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera)
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera,
+	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, 
+	CBuffer& cb_light, CBuffer& cb_frame)
 {
 	device.z_near = 0.1f;
 	device.shadowmap_size = 512;
@@ -87,7 +108,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 				0, 0,-1, 0,
 				0, 0, 0, 1;
 
-		projection_matrix(linfo.proj, 90, 1.0, device.z_near);
+		SetProjectionMatrix(linfo.proj, 90, 1.0, device.z_near);
 		pinfo.ambient = Vector3f(0.02f, 0.02f, 0.02f);
 	}
 
@@ -153,18 +174,10 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	// Effect, Variables, Passes
 	{
-		IPtr<ID3D10Blob> code;
-		IPtr<ID3D10Blob> info;
 		IPtr<ID3DX11Effect> effect;
+		IPtr<ID3D10Blob> code;
 
-		unsigned int flags = D3D10_SHADER_ENABLE_STRICTNESS |
-		D3D10_SHADER_OPTIMIZATION_LEVEL0 |
-		D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
-
-		HOK_EX( D3DX11CompileFromFile( "shaders/Devora.hlsl",
-		NULL, NULL, NULL, "fx_5_0", flags,
-		0, NULL, &code, &info, NULL ), (char*)info->GetBufferPointer() );
-	
+		CompileShader( "shaders/Devora.hlsl", NULL, "fx_5_0", &code );
 		HOK( D3DX11CreateEffectFromMemory( code->GetBufferPointer(),
 			code->GetBufferSize(), 0, device.device, &effect ));
 
@@ -334,11 +347,48 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		shadowcube.viewport = shadowmap.viewport;
 	}
 
-	//Geometry
-	vinfo.geoms.push_back( read_geom(device.device, "geometry//plane.geom") );
-	vinfo.geoms.push_back( read_geom(device.device, "geometry//icosphere.geom") );
+	// Geometry
+	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//plane.geom") );
+	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//icosphere.geom") );
 
-	HOK( state.var.z_near->SetFloat( device.z_near ) );
+	// Shaders
+	IPtr<ID3D11ClassLinkage> linkage;
+	IPtr<ID3D10Blob> code;
+	HOK( device.device->CreateClassLinkage( &linkage ));
+
+	CompileShader( "shaders/Devora.hlsl", "vs_render", "vs_5_0", &code );
+	HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &vinfo.vshader));
+	CompileShader( "shaders/Devora.hlsl", "ps_render", "ps_5_0", &code );
+	HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
+		code->GetBufferSize(), linkage, &vinfo.pshader));
+
+	// States
+
+	{
+		D3D11_RASTERIZER_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.FillMode = D3D11_FILL_SOLID;
+		desc.CullMode = D3D11_CULL_BACK;
+		desc.FrontCounterClockwise = true;
+		desc.DepthClipEnable = true;
+		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rasterizerstate));
+	}
+
+	// Constant Buffers
+	{
+		D3D11_BUFFER_DESC desc;
+		desc.ByteWidth = sizeof( CBufferLayouts::object );
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+		HOK( device.device->CreateBuffer( &desc, NULL, &cb_object ));
+
+		// ... /!
+	}
+
+	HOK( state.var.z_near->SetFloat( device.z_near ) ); //!
 }
 
 } // namespace Devora

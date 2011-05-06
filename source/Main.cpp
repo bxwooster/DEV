@@ -15,6 +15,7 @@
 #include "VisualRenderInfo.hpp"
 #include "Visuals.hpp"
 #include "ZBuffer.hpp"
+#include "CBuffer.hpp"
 
 #include <exception>
 #include <Windows.h>
@@ -24,7 +25,9 @@ namespace Devora {
 void InitGraphics(GraphicsState& state, DeviceState& device,
 	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, 
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera);
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera,
+	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z,
+	CBuffer& cb_light, CBuffer& cb_frame);
 
 void InitInput(InputData& input);
 void GetInput(InputData& input);
@@ -45,7 +48,7 @@ void Present(DeviceState& state);
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Camera& camera,
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer);
+	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object);
 
 void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Camera& camera,
@@ -78,9 +81,12 @@ void run()
 	Visuals visuals;
 	Lights lights;
 
+	CBuffer cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame;
+
 	// Code
 	InitGraphics(graphics, device, vinfo, linfo, pinfo, gbuffer0, gbuffer1,
-		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera);
+		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera,
+		cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame);
 	InitPhysics(physics);
 	InitTiming(timing);
 	InitInput(input);
@@ -95,7 +101,7 @@ void run()
 		DeriveCamera(transforms, player, device, camera);
 
 		RenderVisuals(graphics, vinfo, transforms, visuals,
-			camera, gbuffer0, gbuffer1, zbuffer);
+			camera, gbuffer0, gbuffer1, zbuffer, cb_object);
 		RenderLights(graphics, vinfo, linfo, transforms, lights, visuals,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer);
 		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, camera);

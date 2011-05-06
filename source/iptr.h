@@ -2,21 +2,22 @@
 #define __IPtr_h__
 
 template <typename Interface>
-struct IPtr
+class IPtr
 {  
-    IPtr()
-    : pointer(nullptr)
-    {}
+	Interface* pointer;
+
+public:
+    IPtr() : pointer(nullptr) {}
+
+	~IPtr()
+    {
+        if (pointer) pointer->Release();
+    }
     
     IPtr(const IPtr& other)
     : pointer( other.pointer )
     {
         if (pointer) pointer->AddRef();
-    }
-    
-    ~IPtr()
-    {
-        if (pointer) pointer->Release();
     }
     
     const IPtr& operator=(const IPtr& other)
@@ -30,11 +31,6 @@ struct IPtr
         return *this;
     }   
     
-	Interface* self()
-	{
-		return pointer;
-	}
-
     operator Interface*()
     {
         return pointer;
@@ -49,9 +45,6 @@ struct IPtr
     {
         return pointer;
     }
-    
-  private:
-    Interface* pointer;
 };
 
 #endif
