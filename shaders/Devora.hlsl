@@ -27,8 +27,10 @@ TextureCube shadowcube: register(u4);
 Texture2D lbuffer: register(u5);
 
 
-sampler smp : register(s0);
-
+sampler sm_point : register(s0)
+{
+	Filter = MIN_MAG_MIP_POINT;
+};
 
 RasterizerState rs_default
 {
@@ -161,7 +163,7 @@ void gs_fullscreen(point Empty empty[1], inout TriangleStream<ScreenPixel> strea
 
 float4 ps_dir_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
+	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	float in_front = reprojected.w > 0;
@@ -169,15 +171,15 @@ float4 ps_dir_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 	float inside_cone = length(reprojected.xy) < 1;
 	clip(in_front * inside_cone - 1);
 	float2 s_uv = float2(reprojected.x, -reprojected.y) * 0.5 + 0.5;
-	float4 s = z_near / (1.0 - shadowmap.Gather(smp, s_uv));
+	float4 s = z_near / (1.0 - shadowmap.Gather(sm_point, s_uv));
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
 	float p = dot(light_matrix[2].xyz, lightvec);
 	float lighted = dot(p - bias <= s, 0.25);
 
-	float3 normal = gbuffer0.Sample(smp, uv).xyz;
-	float3 colour = gbuffer1.Sample(smp, uv).xyz;
+	float3 normal = gbuffer0.Sample(sm_point, uv).xyz;
+	float3 colour = gbuffer1.Sample(sm_point, uv).xyz;
 
     float radiance = lighted * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
@@ -186,12 +188,12 @@ float4 ps_dir_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 
 float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	float z_neg = -z_near / (1.0 - zbuffer.Sample(smp, uv).x);
+	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(reproject, surface_pos);
 	//reprojected /= reprojected.w;
 
-	float4 s = z_near / (1.0 - shadowcube.Gather(smp, reprojected.xyz));
+	float4 s = z_near / (1.0 - shadowcube.Gather(sm_point, reprojected.xyz));
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
@@ -199,8 +201,8 @@ float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Targe
 	float m = max(p.x, max(p.y, p.z));
 	float lighted = dot(m - bias <= s, 0.25);
 
-	float3 normal = gbuffer0.Sample(smp, uv).xyz;
-	float3 colour = gbuffer1.Sample(smp, uv).xyz;
+	float3 normal = gbuffer0.Sample(sm_point, uv).xyz;
+	float3 colour = gbuffer1.Sample(sm_point, uv).xyz;
 
     float radiance = lighted * max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
@@ -209,7 +211,7 @@ float4 ps_point_light(float2 uv : Position, float4 pos : SV_Position) : SV_Targe
 
 float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 {
-	if (zbuffer.Sample(smp, uv).x == 1.0) //sky
+	if (zbuffer.Sample(sm_point, uv).x == 1.0) //sky
 	{
 		float4 horizon = float4(0.6, 0.75, 0.9, 1.0);
 		float4 zenith = float4(0.25, 0.35, 0.9, 1.0);
@@ -218,12 +220,12 @@ float4 ps_final(float2 uv : Position, float4 pos : SV_Position) : SV_Target0
 		return lerp(horizon, zenith, -world_ray.z );
 	}
 	
-	float3 normal = gbuffer0.Sample(smp, uv).xyz;
-	float3 colour = gbuffer1.Sample(smp, uv).xyz;
+	float3 normal = gbuffer0.Sample(sm_point, uv).xyz;
+	float3 colour = gbuffer1.Sample(sm_point, uv).xyz;
 	float mult = max(0.0, dot( view_i[2].xyz, normal));
 	float4 ambient = float4(mult * float3(0.02, 0.02, 0.02) * colour, 1.0);
 
-	return (ambient + lbuffer.Sample(smp, uv)) / aperture;
+	return (ambient + lbuffer.Sample(sm_point, uv)) / aperture;
 }
 
 technique11 render

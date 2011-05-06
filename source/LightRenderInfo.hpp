@@ -27,6 +27,8 @@ struct LightRenderInfo
 	IPtr<ID3D11PixelShader> ps_dir_light;
 	IPtr<ID3D11PixelShader> ps_point_light;
 
+	IPtr<ID3D11SamplerState> sm_point;
+
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
