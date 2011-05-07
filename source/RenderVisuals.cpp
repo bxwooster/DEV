@@ -21,7 +21,6 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	OK( gbuffer0.viewport == zbuffer.viewport);
 
 	state->ClearState();
-	state->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
 	state->OMSetRenderTargets(2, targets, zbuffer.dsv);

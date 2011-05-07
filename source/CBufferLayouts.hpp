@@ -32,6 +32,9 @@ struct light
 struct frame
 #include "shaders/cbuffer/frame"
 
+struct tracy
+#include "shaders/cbuffer/tracy"
+
 #pragma pack(push)
 
 }

@@ -70,7 +70,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		data.light_world_view_proj = camera.proj * camera.view * transforms[light.transform];
 		data.radius = 30; //!
 
-		ID3D11Buffer* buffers[5] = { cb_frame, cb_light };
+		ID3D11Buffer* buffers[] = { cb_frame, cb_light };
 		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowmap.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
@@ -112,7 +112,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		state->IASetInputLayout( info.layout );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-		state->RSSetViewports( 6, viewports );
+		state->RSSetViewports( 6, viewports ); //!
 		state->OMSetRenderTargets(0, NULL, shadowcube.dsv);
 
 		state->RSSetState( info.rs_shadow );
@@ -148,7 +148,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		data.light_world_view_proj = camera.proj * camera.view * transforms[light.transform];
 		data.radius = 30; //!
 
-		ID3D11Buffer* buffers[2] = { cb_frame, cb_light };
+		ID3D11Buffer* buffers[] = { cb_frame, cb_light };
 		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowcube.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);

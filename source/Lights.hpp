@@ -1,6 +1,8 @@
 #ifndef __Devora_Lights__
 #define __Devora_Lights__
 
+#include "Matrix.h"
+
 #include <LinearMath/btAlignedObjectArray.h>
 
 namespace Devora {

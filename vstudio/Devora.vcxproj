@@ -27,6 +27,7 @@
     <ClInclude Include="..\source\PhysicsState.hpp" />
     <ClInclude Include="..\source\PlayerState.hpp" />
     <ClInclude Include="..\source\PostProcessInfo.hpp" />
+    <ClInclude Include="..\source\RayTracingInfo.hpp" />
     <ClInclude Include="..\source\TimingData.hpp" />
     <ClInclude Include="..\source\Transforms.hpp" />
     <ClInclude Include="..\source\VisualRenderInfo.hpp" />
@@ -48,6 +49,7 @@
     <ClCompile Include="..\source\PostProcess.cpp" />
     <ClCompile Include="..\source\Prepare.cpp" />
     <ClCompile Include="..\source\Present.cpp" />
+    <ClCompile Include="..\source\RayTrace.cpp" />
     <ClCompile Include="..\source\RenderLights.cpp" />
     <ClCompile Include="..\source\RenderVisuals.cpp" />
     <ClCompile Include="..\source\Tools.cpp" />
@@ -58,6 +60,7 @@
     <None Include="..\shaders\cbuffer\object" />
     <None Include="..\shaders\cbuffer\object_cube_z" />
     <None Include="..\shaders\cbuffer\object_z" />
+    <None Include="..\shaders\cbuffer\tracy" />
     <None Include="..\shaders\code\uv_to_ray" />
     <None Include="..\shaders\gs_point_light.hlsl" />
     <None Include="..\shaders\gs_dir_light.hlsl" />
@@ -67,6 +70,7 @@
     <None Include="..\shaders\ps_final.hlsl" />
     <None Include="..\shaders\ps_point_light.hlsl" />
     <None Include="..\shaders\ps_render.hlsl" />
+    <None Include="..\shaders\ps_tracy.hlsl" />
     <None Include="..\shaders\struct\Empty" />
     <None Include="..\shaders\struct\Pixel" />
     <None Include="..\shaders\struct\ScreenPixel" />

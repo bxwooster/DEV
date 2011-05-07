@@ -1,0 +1,9 @@
+{
+	float4x4 view;
+	float4x4 viewI;
+	float3 eye;
+	float interp;
+	float threshold;
+	float eps;
+	int steps;
+};

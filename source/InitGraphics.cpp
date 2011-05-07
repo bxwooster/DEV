@@ -4,6 +4,7 @@
 #include "VisualRenderInfo.hpp"
 #include "LightRenderInfo.hpp"
 #include "PostProcessInfo.hpp"
+#include "RayTracingInfo.hpp"
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
 #include "CBuffer.hpp"
@@ -54,11 +55,11 @@ void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
 }
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
-	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo,
+	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, RayTracingInfo& rinfo,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera,
 	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, 
-	CBuffer& cb_light, CBuffer& cb_frame)
+	CBuffer& cb_light, CBuffer& cb_frame, CBuffer& cb_tracy)
 {
 	// Camera
 	camera.z_near = 0.1f;
@@ -333,12 +334,16 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &pinfo.ps_final));
 
+		CompileShader( "shaders/ps_tracy.hlsl", "ps_tracy", "ps_5_0", &code );
+		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
+			code->GetBufferSize(), linkage, &rinfo.ps_tracy));
+
 		CompileShader( "shaders/vs_render.hlsl", "vs_render", "vs_5_0", &code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &vinfo.vs_render));
 
-		pinfo.vs_noop = linfo.vs_noop;
-		pinfo.gs_fullscreen = linfo.gs_fullscreen;
+		rinfo.vs_noop = pinfo.vs_noop = linfo.vs_noop;
+		rinfo.gs_fullscreen = pinfo.gs_fullscreen = linfo.gs_fullscreen;
 	}
 
 	// Layout
@@ -381,7 +386,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		//
 		desc.FrontCounterClockwise = true;
 		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rs_default));
-		linfo.rs_default = pinfo.rs_default = vinfo.rs_default;
+		rinfo.rs_default = linfo.rs_default = pinfo.rs_default = vinfo.rs_default;
 
 		desc.CullMode = D3D11_CULL_NONE;
 		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_both_sides));
@@ -463,6 +468,9 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 		desc.ByteWidth = sizeof( CBufferLayouts::light );
 		HOK( device.device->CreateBuffer( &desc, NULL, &cb_light ));
+
+		desc.ByteWidth = sizeof( CBufferLayouts::tracy );
+		HOK( device.device->CreateBuffer( &desc, NULL, &cb_tracy ));
 	}
 }
 
