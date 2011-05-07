@@ -10,7 +10,6 @@ struct DeviceState
 {
 	IPtr<ID3D11Device> device;
 	IPtr<IDXGISwapChain> swap_chain;
-	HWND window;
 };
 
 } // namespace Devora

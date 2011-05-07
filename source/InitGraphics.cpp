@@ -17,7 +17,7 @@ namespace Tools {
 void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
 
 }; using namespace Tools;
-
+namespace {
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
 	switch (msg) 
@@ -51,6 +51,7 @@ void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
 	0, NULL, code, &info, NULL ),
 	*&info ? (char*)info->GetBufferPointer() : "" );
 }
+}
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
 	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo,
@@ -74,7 +75,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	window_class.lpfnWndProc = WindowProc;  
 	RegisterClassEx( &window_class );
 
-	OK( device.window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
+	HWND window;
+	OK( window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
 		WS_SYSMENU | WS_OVERLAPPED | WS_VISIBLE, CW_USEDEFAULT,
 		CW_USEDEFAULT, width, height, NULL, NULL, NULL, 0 ) );
 
@@ -148,7 +150,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.BufferDesc.Width = width;
 		desc.BufferDesc.Height = height;
 		desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		desc.OutputWindow = device.window;
+		desc.OutputWindow = window;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Windowed = 1;
