@@ -36,12 +36,19 @@ namespace {
 
 void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, PhysicsState& state)
 {
+	Matrix4f view_axis;
+	view_axis << 0, 1, 0, 0,
+				 0, 0, 1, 0,
+				 1, 0, 0, 0,
+				 0, 0, 0, 1; //!
+	view_axis = view_axis.inverse().eval();
+
 	Matrix4f t = Matrix4f::Identity();
 	t.col(3) = Vector4f(5, 5, 5, 1);
 
 	Visual v = { transforms.size(), 1 };
 	transforms.push_back( t ); // player
-	visuals.push_back( v ); // 
+	visuals.push_back( v ); //!
 
 	v.index = transforms.size();
 	v.type = 0;
@@ -62,7 +69,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 	t.col(3) = Vector4f(0, 0, 5, 1);
 	Light light = { Vector3f(1, 1, 0), transforms.size() };
 	Visual visual = { transforms.size(), 1 };
-	transforms.push_back( t );
+	transforms.push_back( t * view_axis );
 	lights.point.push_back(light);
 	visuals.push_back( visual );
 
@@ -70,7 +77,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 	transforms.push_back( t );
 	visual.index = light.index = transforms.size();
 	light.colour = Vector3f(1, 0, 0);
-	transforms.push_back( t );
+	transforms.push_back( t * view_axis );
 	lights.dir.push_back(light);
 	visuals.push_back( visual );
 
@@ -78,7 +85,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 	transforms.push_back( t );
 	visual.index = light.index = transforms.size();
 	light.colour = Vector3f(0, 1, 0);
-	transforms.push_back( t );
+	transforms.push_back( t * view_axis );
 	lights.dir.push_back(light);
 	visuals.push_back( visual );
 

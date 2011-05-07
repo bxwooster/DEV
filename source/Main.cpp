@@ -51,7 +51,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	Transforms& transforms, Visuals& visuals, Camera& camera,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object);
 
-void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo& info,
+void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Camera& camera,
 	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
@@ -104,7 +104,7 @@ void run()
 
 		RenderVisuals(graphics, vinfo, transforms, visuals,
 			camera, gbuffer0, gbuffer1, zbuffer, cb_object);
-		RenderLights(graphics, vinfo, linfo, transforms, lights, visuals,
+		RenderLights(graphics, linfo, transforms, lights, visuals,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
 		PostProcess(graphics, zbuffer, pinfo, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);

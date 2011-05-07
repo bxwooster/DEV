@@ -193,5 +193,8 @@
     <None Include="..\shaders\gs_dir_light.hlsl">
       <Filter>Shader</Filter>
     </None>
+    <None Include="..\shaders\gs_cube_light.hlsl">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

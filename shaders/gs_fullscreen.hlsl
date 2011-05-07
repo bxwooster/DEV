@@ -10,15 +10,12 @@ void gs_fullscreen
 ){
 	ScreenPixel pixel;
 	float2 position;
+	float2 positions[3] = { {0, 0}, {2, 0}, {0, 2} };
+
 	for (uint id = 0; id < 3; id++)
 	{
-		if (id == 0) position = float2(0, 0);
-		if (id == 1) position = float2(2, 0);
-		if (id == 2) position = float2(0, 2);
-
-		pixel.pos = float4(position * 2.0 - 1.0, 0.0, 1.0);
-		pixel.uv = float2(position.x, 1.0 - position.y);
-
+		position = positions[id];
+		pixel.pos = float4(position * 2 - 1, 0, 1);
 		stream.Append(pixel);
 	}
 }

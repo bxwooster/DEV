@@ -45,6 +45,7 @@ void DeriveCamera(Transforms& transforms, PlayerState& player,
 	data.view_i = camera.view.inverse();
 	data.xy_to_ray = xy_to_ray;
 	data.z_near = device.z_near;
+	data.rcpres = Vector2f( 1 / float(device.width), 1 / float(device.height) );
 
 	state->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0); //! //!  WHAT
 }

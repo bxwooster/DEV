@@ -13,10 +13,11 @@ sampler sm_point : register(s0);
 
 float4 ps_final
 (
-	float2 uv : Position,
 	float4 pos : SV_Position
 ) : SV_Target0
 {
+	float2 uv = pos.xy * rcpres;
+
 	if (zbuffer.Sample(sm_point, uv).x == 1.0) //sky
 	{
 		float4 horizon = float4(0.6, 0.75, 0.9, 1.0);

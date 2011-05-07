@@ -286,6 +286,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//plane.geom") );
 	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//icosphere.geom") );
 
+	linfo.geoms = vinfo.geoms;
+
 	IPtr<ID3D10Blob> code;
 	// Shaders
 	{
@@ -357,6 +359,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		HOK( device.device->CreateInputLayout
 			( element, 2, code->GetBufferPointer(),
 			code->GetBufferSize(), &vinfo.layout ) );
+
+		linfo.layout = vinfo.layout;
 	}
 
 	// States
@@ -375,13 +379,11 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		//
 		desc.FrontCounterClockwise = true;
 		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rs_default));
-		pinfo.rs_default = vinfo.rs_default;
+		linfo.rs_default = pinfo.rs_default = vinfo.rs_default;
 
-		desc.FrontCounterClockwise = false;
 		desc.CullMode = D3D11_CULL_NONE;
 		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_both_sides));
 
-		desc.FrontCounterClockwise = true;
 		desc.CullMode = D3D11_CULL_BACK;
 		desc.SlopeScaledDepthBias = 1.0f;
 		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_shadow));

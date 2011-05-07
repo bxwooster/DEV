@@ -4,7 +4,7 @@ cbuffer object_z: register(b0)
 #include "struct/Empty"
 #include "struct/ScreenPixel"
 
-[maxvertexcount(18)]
+[maxvertexcount(36)]
 void gs_dir_light
 (
 	point Empty empty[1],
@@ -12,26 +12,25 @@ void gs_dir_light
 ){
 	ScreenPixel pixel;
 
-	float3 vertices[5] =
+	float3 vertices[8] =
 	{
-		{ 0, 0, 0 },
-		{ 0, 1, 1 },
-		{ 1, 0, 1 },
-		{ 0,-1, 1 },
-		{-1, 0, 1 }
+		{-1,-1,-1 },
+		{-1,-1, 1 },
+		{-1, 1,-1 },
+		{-1, 1, 1 },
+		{ 1,-1,-1 },
+		{ 1,-1, 1 },
+		{ 1, 1,-1 },
+		{ 1, 1, 1 }
 	};
 
-	uint3 indices[6] =
+	uint3 indices[12] =
 	{
-		{ 0, 2, 1 },
-		{ 0, 3, 2 },
-		{ 0, 4, 3 },
-		{ 0, 1, 4 },
-		{ 1, 2, 3 },
-		{ 1, 3, 4 }
+		{ 0, 1, 2 },
+		{ 1, 2, 3 }
 	};
 
-	for (uint id = 0; id < 6; id++)
+	for (uint id = 0; id < 12; id++)
 	{
 		for (uint v = 0; v < 3; v++)
 		{

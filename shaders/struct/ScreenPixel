@@ -1,5 +1,4 @@
 struct ScreenPixel
 {
-	float2 uv : Position;
 	float4 pos : SV_Position;
 };

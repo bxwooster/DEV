@@ -1,8 +1,10 @@
 {
-	float4x4 light_matrix;
-	float4x4 reproject;
+	float4x4 viewI_light_view;
+	float4x4 viewI_light_view_proj;
+	float4x4 light_world_view_proj;
 
 	float3 light_pos;
 	float _; //!
 	float3 light_colour;
+	float radius;
 };

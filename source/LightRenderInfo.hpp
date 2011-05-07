@@ -1,6 +1,7 @@
 #ifndef __Devora_LightRenderInfo__
 #define __Devora_LightRenderInfo__
 
+#include "VisualRenderInfo.hpp"
 #include "Matrix.h"
 
 namespace Devora {
@@ -10,7 +11,10 @@ struct LightRenderInfo
 	Matrix4f proj;
 	Matrix4f cubematrices[6];
 
+	std::vector<Geometry> geoms;
+
 	IPtr<ID3D11InputLayout> layout;
+	IPtr<ID3D11RasterizerState> rs_default;
 	IPtr<ID3D11RasterizerState> rs_shadow;
 	IPtr<ID3D11RasterizerState> rs_both_sides;
 	IPtr<ID3D11BlendState> bs_additive;
