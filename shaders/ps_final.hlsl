@@ -18,7 +18,7 @@ float4 ps_final
 {
 	float2 uv = pos.xy * rcpres;
 
-	return (zbuffer.Sample(sm_point, uv).x - 0.97) / 0.1;
+	//return (zbuffer.Sample(sm_point, uv).x - 0.97) / 0.1;
 
 	if (zbuffer.Sample(sm_point, uv).x == 1.0) //sky
 	{

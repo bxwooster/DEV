@@ -25,7 +25,7 @@ void RayTrace(GraphicsState& state, RayTracingInfo& info,
 
 	CBufferLayouts::tracy data;
 	data.steps = 64;
-	data.interp = 0.0f;
+	data.interp = 0.95f;
 	data.threshold = 0.0025f;
 	data.eps = 1e-3f;
 	data.view = camera.view;

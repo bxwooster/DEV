@@ -32,6 +32,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z,
 	CBuffer& cb_light, CBuffer& cb_frame, CBuffer& cb_tracy);
 
+void InitPlayer(PlayerState& state);
 void InitInput(InputData& input);
 void GetInput(InputData& input);
 
@@ -102,6 +103,7 @@ void run()
 	InitPhysics(physics);
 	InitTiming(timing);
 	InitInput(input);
+	InitPlayer(player);
 	InitScene(transforms, visuals, lights, geometries, physics, device);
 
 	for (;;)

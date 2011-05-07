@@ -40,8 +40,8 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 
 	state.jump = ( input.keys_held.find(SPACE) != end );
 
-	state.camera.yaw = input.mouse.x * 0.25f; //! mouse sens
-	state.camera.pitch = input.mouse.y * 0.25f;
+	state.camera.yaw += input.mouse.x * 0.25f; //! mouse sens
+	state.camera.pitch += input.mouse.y * 0.25f;
 	state.camera.pitch = std::max(-90.0f, std::min(state.camera.pitch, 90.0f));
 }
 

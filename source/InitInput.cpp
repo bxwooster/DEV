@@ -8,9 +8,6 @@ namespace Devora {
 
 void InitInput(InputData& input)
 {
-	input.mouse.x = 0;
-	input.mouse.y = 0;
-
 	RAWINPUTDEVICE info[2];
 	info[0].dwFlags = 0;
 	info[0].hwndTarget = NULL;

@@ -43,6 +43,7 @@
     <ClCompile Include="..\source\InitGraphics.cpp" />
     <ClCompile Include="..\source\InitInput.cpp" />
     <ClCompile Include="..\source\InitPhysics.cpp" />
+    <ClCompile Include="..\source\InitPlayer.cpp" />
     <ClCompile Include="..\source\InitScene.cpp" />
     <ClCompile Include="..\source\InitTiming.cpp" />
     <ClCompile Include="..\source\Main.cpp" />

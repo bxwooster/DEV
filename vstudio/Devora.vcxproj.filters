@@ -140,6 +140,9 @@
     <ClCompile Include="..\source\RayTrace.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\InitPlayer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\cbuffer\object">

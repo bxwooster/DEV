@@ -7,6 +7,9 @@ namespace Devora {
 
 void GetInput(InputData& input)
 {
+	input.mouse.x = 0;
+	input.mouse.y = 0;
+
 	input.keys_up.clear();
 	input.keys_down.clear();
 

@@ -55,7 +55,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	view_axis = view_axis.inverse().eval();
 
 	Matrix4f t = Matrix4f::Identity();
-	t.col(3) = Vector4f(5, 5, 5, 1);
+	t.col(3) = Vector4f(10, 0, 5, 1);
 
 	Visual v = { transforms.size(), 1 };
 	transforms.push_back( t ); // player
@@ -84,7 +84,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	lights.point.push_back(light);
 	visuals.push_back( visual );
 
-	t.col(3) = Vector4f(0, 7, 1, 1);
+	t.col(3) = Vector4f(5, 3, 1, 1);
 	transforms.push_back( t );
 	visual.transform = light.transform = transforms.size();
 	light.colour = Vector3f(1, 0, 0);
@@ -92,7 +92,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	lights.dir.push_back(light);
 	visuals.push_back( visual );
 
-	t.col(3) = Vector4f(0, -7, 1, 1);
+	t.col(3) = Vector4f(5, -3, 1, 1);
 	transforms.push_back( t );
 	visual.transform = light.transform = transforms.size();
 	light.colour = Vector3f(0, 1, 0);
