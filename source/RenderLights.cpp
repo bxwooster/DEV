@@ -1,17 +1,14 @@
-#include "Transforms.hpp"
 #include "GraphicsState.hpp"
 #include "LightRenderInfo.hpp"
-#include "VisualRenderInfo.hpp"
 #include "Lights.hpp"
+#include "Visuals.hpp"
+#include "Transforms.hpp"
 #include "Geometries.hpp"
 #include "Camera.hpp"
-#include "Visuals.hpp"
 #include "ZBuffer.hpp"
 #include "Buffer.hpp"
 #include "CBuffer.hpp"
 #include "CBufferLayouts.hpp"
-
-#include <d3dx11.h>
 
 namespace Devora {
 

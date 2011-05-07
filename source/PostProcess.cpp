@@ -1,10 +1,10 @@
-#include "Transforms.hpp"
 #include "GraphicsState.hpp"
+#include "PostProcessInfo.hpp"
 #include "ZBuffer.hpp"
 #include "Buffer.hpp"
 #include "CBuffer.hpp"
 #include "Camera.hpp"
-#include "PostProcessInfo.hpp"
+
 
 #include "OK.h"
 
@@ -12,7 +12,7 @@
 
 namespace Devora {
 
-void PostProcess(GraphicsState& state, ZBuffer& zbuffer, PostProcessInfo& info,
+void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer, 
 	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, CBuffer& cb_frame)
 {
 	state->ClearState();

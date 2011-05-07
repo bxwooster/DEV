@@ -59,9 +59,13 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, 
 	CBuffer& cb_light, CBuffer& cb_frame)
 {
-	device.z_near = 0.2f;
-	device.shadowmap_size = 512;
-	device.width = device.height = 960;
+	// Camera
+	camera.z_near = 0.1f;
+	int width = camera.screen.w = 960;
+	int height = camera.screen.h = 960;
+	camera.aspect_ratio = float(camera.screen.w) / camera.screen.h;
+
+	int shadowmap_size = 512;
 
 	WNDCLASSEX window_class;
 	ZeroMemory( &window_class, sizeof( WNDCLASSEX ) );
@@ -72,7 +76,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	OK( device.window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
 		WS_SYSMENU | WS_OVERLAPPED | WS_VISIBLE, CW_USEDEFAULT,
-		CW_USEDEFAULT, device.width, device.height, NULL, NULL, NULL, 0 ) );
+		CW_USEDEFAULT, width, height, NULL, NULL, NULL, 0 ) );
 
 	//Misc
 	{
@@ -107,7 +111,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 				0, 0,-1, 0,
 				0, 0, 0, 1;
 
-		SetProjectionMatrix(linfo.proj, 90, 1.0, device.z_near);
+		SetProjectionMatrix(linfo.proj, 90, 1.0, camera.z_near); //!
 	}
 
 	// Device, Factory
@@ -141,8 +145,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		DXGI_SWAP_CHAIN_DESC desc = {};
 		desc.BufferCount = 2;
 		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		desc.BufferDesc.Width = device.width;
-		desc.BufferDesc.Height = device.height;
+		desc.BufferDesc.Width = width;
+		desc.BufferDesc.Height = height;
 		desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 		desc.OutputWindow = device.window;
 		desc.SampleDesc.Count = 1;
@@ -174,8 +178,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(desc) );
-		desc.Width = device.shadowmap_size;
-		desc.Height = device.shadowmap_size;
+		desc.Width = shadowmap_size;
+		desc.Height = shadowmap_size;
 		desc.Format = DXGI_FORMAT_R16_TYPELESS;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
 		desc.ArraySize = 6;
@@ -190,8 +194,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.MiscFlags = 0;
 		HOK( device.device->CreateTexture2D( &desc, NULL, &shadowmap.texture ) );
 
-		desc.Width = device.width;
-		desc.Height = device.height;
+		desc.Width = width;
+		desc.Height = height;
 		HOK( device.device->CreateTexture2D( &desc, NULL, &zbuffer.texture ) );
 
 		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -261,8 +265,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	// Viewports
 	{			
-		gbuffer0.viewport.Width = float(device.width);
-		gbuffer0.viewport.Height = float(device.height);
+		gbuffer0.viewport.Width = float(width);
+		gbuffer0.viewport.Height = float(height);
 		gbuffer0.viewport.MinDepth = 0.0f;
 		gbuffer0.viewport.MaxDepth = 1.0f;
 		gbuffer0.viewport.TopLeftX = 0.0f;
@@ -271,8 +275,8 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		backbuffer.viewport = lbuffer.viewport = zbuffer.viewport 
 			= gbuffer1.viewport = gbuffer0.viewport;
 	   
-		shadowmap.viewport.Width = float(device.shadowmap_size);
-		shadowmap.viewport.Height = float(device.shadowmap_size);
+		shadowmap.viewport.Width = float(shadowmap_size);
+		shadowmap.viewport.Height = float(shadowmap_size);
 		shadowmap.viewport.MinDepth = 0.0f;
 		shadowmap.viewport.MaxDepth = 1.0f;
 		shadowmap.viewport.TopLeftX = 0.0f;

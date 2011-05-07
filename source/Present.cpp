@@ -4,9 +4,9 @@
 
 namespace Devora {
 
-void Present(DeviceState& state)
+void Present(DeviceState& device)
 {
-	HOK( state.swap_chain->Present(0, 0) );
+	HOK( device.swap_chain->Present(0, 0) );
 }
 
 } // namespace Devora

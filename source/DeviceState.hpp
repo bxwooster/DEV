@@ -11,10 +11,6 @@ struct DeviceState
 	IPtr<ID3D11Device> device;
 	IPtr<IDXGISwapChain> swap_chain;
 	HWND window;
-	int width;
-	int height;
-	int shadowmap_size;
-	float z_near;
 };
 
 } // namespace Devora

@@ -44,11 +44,10 @@ void InitPhysics(PhysicsState& state);
 void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	PlayerState& player, TimingData& timing);
 
-void DeriveCamera(Transforms& transforms, PlayerState& player, 
-	DeviceState& device, Camera& camera, GraphicsState& state, CBuffer& cb_frame);
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
-
+void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera);
 void Present(DeviceState& state);
+void Prepare(GraphicsState& state, CBuffer& cb_frame, Camera& camera);
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
@@ -60,7 +59,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light);
 
-void PostProcess(GraphicsState& state, ZBuffer& zbuffer, PostProcessInfo& info,
+void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
 	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, CBuffer& cb_frame);
 
 void run()
@@ -104,14 +103,15 @@ void run()
 		GetInput(input);
 		DerivePlayerState(player, input, timing);
 		CrunchPhysics(physics, transforms, player, timing);
-		DeriveCamera(transforms, player, device, camera, graphics, cb_frame); //!
+		DeriveCamera(transforms, player, camera);
 
+		Prepare(graphics, cb_frame, camera);
 		RenderVisuals(graphics, vinfo, transforms, visuals, geometries,
 			camera, gbuffer0, gbuffer1, zbuffer, cb_object);
 		RenderLights(graphics, linfo, transforms, lights, visuals, geometries,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
-		PostProcess(graphics, zbuffer, pinfo, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);
+		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);
 		Present(device);
 	}
 }

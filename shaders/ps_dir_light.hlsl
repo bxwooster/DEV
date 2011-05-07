@@ -19,7 +19,6 @@ float4 ps_dir_light
 	ScreenPixel pixel
 ) : SV_Target0
 {
-return 0.25;
 	float2 uv = pixel.pos.xy * rcpres;
 	float light_scale = 10.0;
 	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
@@ -43,5 +42,6 @@ return 0.25;
     float radiance = lighted * smoothstep(radius, radius * 0.9, l) *
 		max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
+	//return 0.25 * smoothstep(radius, radius * 0.9, l);
 	return float4(radiance * light_colour * colour, 1.0);
 }
