@@ -1,17 +1,25 @@
 cbuffer object_cube_z: register(b0)
 #include "cbuffer/object_cube_z"
 
-#include "struct/GSInput"
-#include "struct/GSOutput"
+struct Input
+{
+	float4 position : POSITION;
+};
+
+struct Output
+{
+	float4 position : SV_Position;
+	uint index : SV_RenderTargetArrayIndex;
+};
 
 
 [maxvertexcount(18)]
 void gs_render_cube_z
 (
-	triangle GSInput input[3],
-	inout TriangleStream<GSOutput> stream
+	triangle Input input[3],
+	inout TriangleStream<Output> stream
 ){
-	GSOutput output;
+	Output output;
 	for (int i = 0; i < 6; i++)
 	{
 		output.index = i;

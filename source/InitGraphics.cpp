@@ -314,6 +314,10 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.gs_fullscreen));
 
+		CompileShader( "shaders/gs_dir_light.hlsl", "gs_dir_light", "gs_5_0", &code );
+		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
+			code->GetBufferSize(), linkage, &linfo.gs_dir_light));
+
 		CompileShader( "shaders/ps_dir_light.hlsl", "ps_dir_light", "ps_5_0", &code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.ps_dir_light));
@@ -373,6 +377,12 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rs_default));
 		pinfo.rs_default = vinfo.rs_default;
 
+		desc.FrontCounterClockwise = false;
+		desc.CullMode = D3D11_CULL_NONE;
+		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_both_sides));
+
+		desc.FrontCounterClockwise = true;
+		desc.CullMode = D3D11_CULL_BACK;
 		desc.SlopeScaledDepthBias = 1.0f;
 		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_shadow));
 	}
@@ -402,9 +412,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 		desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 		//
-		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-		HOK( device.device->CreateDepthStencilState( &desc, &linfo.ds_nowrite));
+		// No DSS yet
 	}
 
 	// Samplers

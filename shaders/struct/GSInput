@@ -1,4 +1,0 @@
-struct GSInput
-{
-	float4 position : POSITION;
-};

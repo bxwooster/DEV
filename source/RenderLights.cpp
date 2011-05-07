@@ -61,7 +61,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 			Geometry& geom = vinfo.geoms[casters[i].type];
 
 			CBufferLayouts::object_z data;
-			data.world_lightview_lightproj = lightview_lightproj * transforms[casters[i].index];
+			data.world_view_proj = lightview_lightproj * transforms[casters[i].index];
 
 			state->UpdateSubresource(cb_object_z, 0, NULL, (void*)&data, sizeof(data), 0);
 			state->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
@@ -90,7 +90,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		state->GSSetShader( info.gs_fullscreen, NULL, 0 );
 		state->PSSetShader( info.ps_dir_light, NULL, 0 );
 		state->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
-		state->OMSetDepthStencilState( info.ds_nowrite, 0 );
+		state->OMSetDepthStencilState( NULL, 0 );
 		state->RSSetState( vinfo.rs_default );
 
 		state->Draw( 1, 0 );
@@ -159,7 +159,7 @@ void RenderLights(GraphicsState& state, VisualRenderInfo& vinfo, LightRenderInfo
 		state->GSSetShader( info.gs_fullscreen, NULL, 0 );
 		state->PSSetShader( info.ps_point_light, NULL, 0 );
 		state->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
-		state->OMSetDepthStencilState( info.ds_nowrite, 0 );
+		state->OMSetDepthStencilState( NULL, 0 );
 		state->RSSetState( vinfo.rs_default );
 
 		state->Draw( 1, 0 );

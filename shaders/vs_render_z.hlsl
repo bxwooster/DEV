@@ -9,5 +9,5 @@ void vs_render_z
 	Vertex vertex,
 	out float4 position : SV_Position
 ){
-	position = mul( world_lightview_lightproj, vertex.position );
+	position = mul( world_view_proj, vertex.position );
 }

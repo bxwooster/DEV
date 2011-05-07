@@ -145,9 +145,6 @@
     <None Include="..\shaders\cbuffer\light">
       <Filter>Shader\cbuffer</Filter>
     </None>
-    <None Include="..\shaders\struct\GSOutput">
-      <Filter>Shader\struct</Filter>
-    </None>
     <None Include="..\shaders\struct\Pixel">
       <Filter>Shader\struct</Filter>
     </None>
@@ -158,9 +155,6 @@
       <Filter>Shader\struct</Filter>
     </None>
     <None Include="..\shaders\struct\Empty">
-      <Filter>Shader\struct</Filter>
-    </None>
-    <None Include="..\shaders\struct\GSInput">
       <Filter>Shader\struct</Filter>
     </None>
     <None Include="..\shaders\code\uv_to_ray">
@@ -194,6 +188,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="..\shaders\gs_render_cube_z.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\shaders\gs_dir_light.hlsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

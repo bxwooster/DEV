@@ -18,6 +18,8 @@ float4 ps_dir_light
 	float4 pos : SV_Position
 ) : SV_Target0
 {
+	return float4(1, 0, 0, 1);
+
 	float light_scale = 200.0;
 	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
