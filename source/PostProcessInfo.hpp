@@ -1,7 +1,8 @@
 #ifndef __Devora_PostProcessInfo__
 #define __Devora_PostProcessInfo__
 
-#include "Matrix.h"
+#include "IPtr.h"
+#include <D3D11.h>
 
 namespace Devora {
 
@@ -12,9 +13,6 @@ struct PostProcessInfo
 	IPtr<ID3D11PixelShader> ps_final;
 	IPtr<ID3D11RasterizerState> rs_default;
 	IPtr<ID3D11SamplerState> sm_point;
-	
-
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace Devora

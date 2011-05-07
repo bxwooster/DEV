@@ -1,7 +1,8 @@
 #ifndef __Devora_VisualRenderInfo__
 #define __Devora_VisualRenderInfo__
 
-#include <vector>
+#include "IPtr.h"
+#include <D3D11.h>
 
 namespace Devora {
 

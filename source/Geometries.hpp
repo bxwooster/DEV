@@ -2,7 +2,6 @@
 #define __Devora_Geometries__
 
 #include "IPtr.h"
-
 #include <D3D11.h>
 #include <vector>
 

@@ -1,6 +1,9 @@
 #ifndef __Devora_ZBuffer__
 #define __Devora_ZBuffer__
 
+#include "IPtr.h"
+#include <D3D11.h>
+
 namespace Devora {
 
 struct ZBuffer

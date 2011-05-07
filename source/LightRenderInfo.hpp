@@ -1,8 +1,9 @@
 #ifndef __Devora_LightRenderInfo__
 #define __Devora_LightRenderInfo__
 
-#include "VisualRenderInfo.hpp"
 #include "Matrix.h"
+#include "IPtr.h"
+#include <D3D11.h>
 
 namespace Devora {
 

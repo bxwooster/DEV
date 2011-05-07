@@ -2,7 +2,6 @@
 #define __Devora_DeviceState__
 
 #include "IPtr.h"
-
 #include <d3d11.h>
 
 namespace Devora {
