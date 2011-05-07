@@ -7,8 +7,8 @@ namespace Devora {
 
 struct Visual
 {
-	int index;
-	int type;
+	int transform;
+	int geometry;
 };
 
 typedef std::vector<Visual> Visuals;

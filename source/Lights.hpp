@@ -8,7 +8,7 @@ namespace Devora {
 struct Light
 {
 	Vector3f colour;
-	int index;
+	int transform;
 };
 
 struct Lights

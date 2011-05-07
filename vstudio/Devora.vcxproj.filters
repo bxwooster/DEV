@@ -82,6 +82,9 @@
     <ClInclude Include="..\source\PostProcessInfo.hpp">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\Geometries.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp">

@@ -1,7 +1,7 @@
 #define NOMINMAX
 
 #include "DeviceState.hpp"
-#include "VisualRenderInfo.hpp"
+#include "Geometries.hpp"
 
 #include "Matrix.h"
 #include <fstream>

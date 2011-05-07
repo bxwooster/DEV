@@ -16,6 +16,7 @@
     <ClInclude Include="..\source\CBuffer.hpp" />
     <ClInclude Include="..\source\CBufferLayouts.hpp" />
     <ClInclude Include="..\source\DeviceState.hpp" />
+    <ClInclude Include="..\source\Geometries.hpp" />
     <ClInclude Include="..\source\GraphicsState.hpp" />
     <ClInclude Include="..\source\InputData.hpp" />
     <ClInclude Include="..\source\IPtr.h" />

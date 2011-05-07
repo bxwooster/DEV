@@ -11,8 +11,6 @@ struct LightRenderInfo
 	Matrix4f proj;
 	Matrix4f cubematrices[6];
 
-	std::vector<Geometry> geoms;
-
 	IPtr<ID3D11InputLayout> layout;
 	IPtr<ID3D11RasterizerState> rs_default;
 	IPtr<ID3D11RasterizerState> rs_shadow;

@@ -1,7 +1,9 @@
 #include "Transforms.hpp"
 #include "Visuals.hpp"
 #include "Lights.hpp"
+#include "Geometries.hpp"
 #include "PhysicsState.hpp"
+#include "DeviceState.hpp"
 
 #include <btBulletDynamicsCommon.h>
 
@@ -33,9 +35,18 @@ namespace {
 		}
 	};
 }
+namespace Tools {
 
-void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, PhysicsState& state)
+Geometry ReadGeometry(ID3D11Device* device, const std::string& filename);
+
+}; using namespace Tools;
+
+void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
+	Geometries& geometries, PhysicsState& state, DeviceState& device)
 {
+	geometries.push_back( ReadGeometry(device.device, "geometry//plane.geom") );
+	geometries.push_back( ReadGeometry(device.device, "geometry//icosphere.geom") );
+
 	Matrix4f view_axis;
 	view_axis << 0, 1, 0, 0,
 				 0, 0, 1, 0,
@@ -50,8 +61,8 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 	transforms.push_back( t ); // player
 	visuals.push_back( v ); //!
 
-	v.index = transforms.size();
-	v.type = 0;
+	v.transform = transforms.size();
+	v.geometry = 0;
 	transforms.push_back( Matrix4f::Identity() );
 	visuals.push_back( v ); // plane
 
@@ -75,7 +86,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 
 	t.col(3) = Vector4f(0, 7, 1, 1);
 	transforms.push_back( t );
-	visual.index = light.index = transforms.size();
+	visual.transform = light.transform = transforms.size();
 	light.colour = Vector3f(1, 0, 0);
 	transforms.push_back( t * view_axis );
 	lights.dir.push_back(light);
@@ -83,7 +94,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights, Physics
 
 	t.col(3) = Vector4f(0, -7, 1, 1);
 	transforms.push_back( t );
-	visual.index = light.index = transforms.size();
+	visual.transform = light.transform = transforms.size();
 	light.colour = Vector3f(0, 1, 0);
 	transforms.push_back( t * view_axis );
 	lights.dir.push_back(light);

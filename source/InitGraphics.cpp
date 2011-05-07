@@ -15,7 +15,6 @@ namespace Devora {
 namespace Tools {
 
 void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
-Geometry ReadGeometry(ID3D11Device* device, const std::string& filename);
 
 }; using namespace Tools;
 
@@ -281,12 +280,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 		shadowcube.viewport = shadowmap.viewport;
 	}
-
-	// Geometry
-	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//plane.geom") );
-	vinfo.geoms.push_back( ReadGeometry(device.device, "geometry//icosphere.geom") );
-
-	linfo.geoms = vinfo.geoms;
 
 	IPtr<ID3D10Blob> code;
 	// Shaders

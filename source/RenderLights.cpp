@@ -3,6 +3,7 @@
 #include "LightRenderInfo.hpp"
 #include "VisualRenderInfo.hpp"
 #include "Lights.hpp"
+#include "Geometries.hpp"
 #include "Camera.hpp"
 #include "Visuals.hpp"
 #include "ZBuffer.hpp"
@@ -17,8 +18,8 @@ namespace Devora {
 typedef unsigned int uint;
 
 void RenderLights(GraphicsState& state, LightRenderInfo& info,
-	Transforms& transforms, Lights& lights, Visuals& casters, Camera& camera,
-	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
+	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
+	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light)
 {
@@ -31,7 +32,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	{
 		Light& light = lights.dir[k];
 
-		Matrix4f lightview = transforms[light.index].inverse();
+		Matrix4f lightview = transforms[light.transform].inverse();
 		Matrix4f lightview_lightproj = info.proj * lightview;
 
 		state->ClearDepthStencilView(shadowmap.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
@@ -54,10 +55,10 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		for (uint i = 0; i < casters.size(); i++)
 		{
-			Geometry& geom = info.geoms[casters[i].type];
+			Geometry& geom = geometries[casters[i].geometry];
 
 			CBufferLayouts::object_z data;
-			data.world_view_proj = lightview_lightproj * transforms[casters[i].index];
+			data.world_view_proj = lightview_lightproj * transforms[casters[i].transform];
 
 			state->UpdateSubresource(cb_object_z, 0, NULL, (void*)&data, sizeof(data), 0);
 			state->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
@@ -67,9 +68,9 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		CBufferLayouts::light data;
 		data.viewI_light_view = lightview * camera.view.inverse();
 		data.viewI_light_view_proj = info.proj * data.viewI_light_view;
-		data.light_pos = (camera.view * transforms[light.index].col(3)).head<3>();
+		data.light_pos = (camera.view * transforms[light.transform].col(3)).head<3>();
 		data.light_colour = light.colour;
-		data.light_world_view_proj = camera.proj * camera.view * transforms[light.index];
+		data.light_world_view_proj = camera.proj * camera.view * transforms[light.transform];
 		data.radius = 30; //!
 
 		ID3D11Buffer* buffers[5] = { cb_frame, cb_light };
@@ -103,7 +104,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	{
 		Light& light = lights.point[k];
 
-		Matrix4f lightview = transforms[light.index].inverse();
+		Matrix4f lightview = transforms[light.transform].inverse();
 		Matrix4f lightview_lightproj = info.proj * lightview;
 
 		D3D11_VIEWPORT& v = shadowcube.viewport;
@@ -129,10 +130,10 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		for (uint i = 0; i < casters.size(); i++)
 		{
-			Geometry& geom = info.geoms[casters[i].type];
+			Geometry& geom = geometries[casters[i].geometry];
 
 			Matrix4f& p = info.proj;
-			Matrix4f w = lightview * transforms[casters[i].index];
+			Matrix4f w = lightview * transforms[casters[i].transform];
 
 			CBufferLayouts::object_cube_z data;
 			for (int f = 0; f < 6; f++) data.cubeproj[f] = p * info.cubematrices[f] * w;	
@@ -145,9 +146,9 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		CBufferLayouts::light data;
 		data.viewI_light_view = lightview * camera.view.inverse();
 		data.viewI_light_view_proj = info.proj * data.viewI_light_view;
-		data.light_pos = (camera.view * transforms[light.index].col(3)).head<3>();
+		data.light_pos = (camera.view * transforms[light.transform].col(3)).head<3>();
 		data.light_colour = light.colour;
-		data.light_world_view_proj = camera.proj * camera.view * transforms[light.index];
+		data.light_world_view_proj = camera.proj * camera.view * transforms[light.transform];
 		data.radius = 30; //!
 
 		ID3D11Buffer* buffers[2] = { cb_frame, cb_light };

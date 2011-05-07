@@ -7,6 +7,7 @@
 #include "Buffer.hpp"
 #include "CBuffer.hpp"
 #include "CBufferLayouts.hpp"
+#include "Geometries.hpp"
 
 #include <d3dx11.h>
 
@@ -15,7 +16,7 @@ namespace Devora {
 typedef unsigned int uint;
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
-	Transforms& transforms, Visuals& visuals, Camera& camera,
+	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object)
 {
 	OK( gbuffer0.viewport == gbuffer1.viewport);
@@ -38,10 +39,10 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 	for (uint i = 0; i < visuals.size(); i++)
 	{
-		Geometry& geom = info.geoms[visuals[i].type];
+		Geometry& geom = geometries[visuals[i].geometry];
 
 		CBufferLayouts::object data;
-		data.world_view = camera.view * transforms[visuals[i].index];
+		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
