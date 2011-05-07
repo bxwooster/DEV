@@ -19,6 +19,7 @@ float4 ps_dir_light
 	ScreenPixel pixel
 ) : SV_Target0
 {
+return 0.25;
 	float2 uv = pixel.pos.xy * rcpres;
 	float light_scale = 10.0;
 	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);

@@ -319,6 +319,9 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		CompileShader( "shaders/gs_dir_light.hlsl", "gs_dir_light", "gs_5_0", &code );
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
 			code->GetBufferSize(), linkage, &linfo.gs_dir_light));
+		CompileShader( "shaders/gs_point_light.hlsl", "gs_point_light", "gs_5_0", &code );
+		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
+			code->GetBufferSize(), linkage, &linfo.gs_point_light));
 
 		CompileShader( "shaders/ps_dir_light.hlsl", "ps_dir_light", "ps_5_0", &code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),

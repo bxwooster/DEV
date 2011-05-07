@@ -36,18 +36,21 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		state->ClearDepthStencilView(shadowmap.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 		state->ClearState();
+
 		state->OMSetRenderTargets(0, NULL, shadowmap.dsv);
 		state->IASetInputLayout( info.layout );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 		state->RSSetViewports( 1, &shadowmap.viewport );
-		state->VSSetConstantBuffers(0, 1, &cb_object_z);
+
+		state->RSSetState( info.rs_shadow );
+		state->OMSetBlendState( NULL, blendf, 0xffffffff );
+		state->OMSetDepthStencilState( NULL, 0u );
 
 		state->VSSetShader( info.vs_render_z, NULL, 0 );
 		state->GSSetShader( NULL, NULL, 0 );
 		state->PSSetShader( NULL, NULL, 0 );
-		state->RSSetState( info.rs_shadow );
-		state->OMSetBlendState( NULL, blendf, 0xffffffff );
-		state->OMSetDepthStencilState( NULL, 0u );
+
+		state->VSSetConstantBuffers(0, 1, &cb_object_z);
 
 		for (uint i = 0; i < casters.size(); i++)
 		{
@@ -73,6 +76,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowmap.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
+
 		state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
@@ -90,7 +94,6 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->PSSetConstantBuffers(0, 2, buffers);
 		state->PSSetShaderResources(0, 4, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
-		
 
 		state->Draw( 1, 0 );
 	}
@@ -108,18 +111,21 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		state->ClearDepthStencilView(shadowcube.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 		state->ClearState();
-		state->OMSetRenderTargets(0, NULL, shadowcube.dsv);
+
 		state->IASetInputLayout( info.layout );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 		state->RSSetViewports( 6, viewports );
-		state->GSSetConstantBuffers(0, 1, &cb_object_cube_z);
+		state->OMSetRenderTargets(0, NULL, shadowcube.dsv);
+
+		state->RSSetState( info.rs_shadow );
+		state->OMSetBlendState( NULL, blendf, 0xffffffff );
+		state->OMSetDepthStencilState( NULL, 0u );
 
 		state->VSSetShader( info.vs_render_cube_z, NULL, 0 );
 		state->GSSetShader( info.gs_render_cube_z, NULL, 0 );
 		state->PSSetShader( NULL, NULL, 0 );
-		state->RSSetState( info.rs_shadow );
-		state->OMSetBlendState( NULL, blendf, 0xffffffff );
-		state->OMSetDepthStencilState( NULL, 0u );
+
+		state->GSSetConstantBuffers(0, 1, &cb_object_cube_z);
 
 		for (uint i = 0; i < casters.size(); i++)
 		{
@@ -141,26 +147,31 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		data.viewI_light_view_proj = info.proj * data.viewI_light_view;
 		data.light_pos = (camera.view * transforms[light.index].col(3)).head<3>();
 		data.light_colour = light.colour;
+		data.light_world_view_proj = camera.proj * camera.view * transforms[light.index];
 		data.radius = 30; //!
 
 		ID3D11Buffer* buffers[2] = { cb_frame, cb_light };
 		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowcube.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
-		state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
+
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state->RSSetViewports( 1, &lbuffer.viewport );
+		state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
+
+		state->RSSetState( info.rs_default );
+		state->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
+		state->OMSetDepthStencilState( NULL, 0 );
+
+		state->VSSetShader( info.vs_noop, NULL, 0 );
+		state->GSSetShader( info.gs_point_light, NULL, 0 );
+		state->PSSetShader( info.ps_point_light, NULL, 0 );
+
+		state->GSSetConstantBuffers(0, 1, &cb_light);
 		state->PSSetConstantBuffers(0, 2, buffers);
 		state->PSSetShaderResources(0, 4, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
-
-		state->VSSetShader( info.vs_noop, NULL, 0 );
-		state->GSSetShader( info.gs_fullscreen, NULL, 0 );
-		state->PSSetShader( info.ps_point_light, NULL, 0 );
-		state->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
-		state->OMSetDepthStencilState( NULL, 0 );
-		state->RSSetState( info.rs_default );
 
 		state->Draw( 1, 0 );
 	}

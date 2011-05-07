@@ -12,7 +12,7 @@ void gs_dir_light
 ){
 	ScreenPixel pixel;
 
-	float3 vertices[5] =
+	float3 vertices[] =
 	{
 		{ 0, 0, 0 },
 		{ 0, 1, 1 },
@@ -21,7 +21,7 @@ void gs_dir_light
 		{-1, 0, 1 }
 	};
 
-	uint3 indices[6] =
+	uint3 indices[] =
 	{
 		{ 0, 2, 1 },
 		{ 0, 3, 2 },

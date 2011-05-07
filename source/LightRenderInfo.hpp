@@ -26,6 +26,7 @@ struct LightRenderInfo
 	IPtr<ID3D11VertexShader> vs_noop;
 	IPtr<ID3D11GeometryShader> gs_fullscreen;
 	IPtr<ID3D11GeometryShader> gs_dir_light;
+	IPtr<ID3D11GeometryShader> gs_point_light;
 	IPtr<ID3D11PixelShader> ps_dir_light;
 	IPtr<ID3D11PixelShader> ps_point_light;
 

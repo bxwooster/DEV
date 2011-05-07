@@ -5,14 +5,14 @@ cbuffer object_z: register(b0)
 #include "struct/ScreenPixel"
 
 [maxvertexcount(36)]
-void gs_dir_light
+void gs_point_light
 (
 	point Empty empty[1],
 	inout TriangleStream<ScreenPixel> stream
 ){
 	ScreenPixel pixel;
 
-	float3 vertices[8] =
+	float3 vertices[] =
 	{
 		{-1,-1,-1 },
 		{-1,-1, 1 },
@@ -24,10 +24,22 @@ void gs_dir_light
 		{ 1, 1, 1 }
 	};
 
-	uint3 indices[12] =
+	uint3 indices[] =
 	{
-		{ 0, 1, 2 },
-		{ 1, 2, 3 }
+		{ 0, 2, 1 },
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+		{ 5, 7, 6 },
+
+		{ 0, 1, 4 },
+		{ 4, 1, 5 },
+		{ 2, 6, 3 },
+		{ 3, 6, 7 },
+
+		{ 1, 3, 5 },
+		{ 5, 3, 7 },
+		{ 0, 4, 2 },
+		{ 4, 6, 2 }
 	};
 
 	for (uint id = 0; id < 12; id++)
