@@ -18,6 +18,9 @@ void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& 
 	LoadShader::Vertex(cache, device, "shaders/vs_render.hlsl", info.vs_render);
 	LoadShader::Pixel(cache, device, "shaders/ps_render.hlsl", info.ps_render);
 
+	LoadShader::Vertex(cache, device, "shaders/vs_noop.hlsl", info.vs_noop);
+	LoadShader::Geometry(cache, device, "shaders/gs_infinite_plane.hlsl", info.gs_infinite_plane);
+
 	{
 		D3D11_RASTERIZER_DESC desc = Tools::DefaultRasterizerDesc();
 		desc.FrontCounterClockwise = true;

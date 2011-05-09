@@ -71,6 +71,7 @@
     <None Include="..\shaders\cbuffer\object_z" />
     <None Include="..\shaders\cbuffer\tracy" />
     <None Include="..\shaders\code\uv_to_ray" />
+    <None Include="..\shaders\gs_infinite_plane.hlsl" />
     <None Include="..\shaders\gs_point_light.hlsl" />
     <None Include="..\shaders\gs_dir_light.hlsl" />
     <None Include="..\shaders\gs_fullscreen.hlsl" />

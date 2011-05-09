@@ -23,7 +23,7 @@ void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera)
 
 	camera.aperture = 1.0f;
 	camera.vertical_fov = 60;
-	camera.view = view_axis * rotate * transforms[0].inverse();
+	camera.view = view_axis * rotate * transforms[0].inverse(); //! player
 	Tools::SetProjectionMatrix(camera.proj, camera.vertical_fov, camera.aspect_ratio, camera.z_near);
 }
 

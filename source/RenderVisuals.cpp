@@ -34,11 +34,11 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state->VSSetShader(info.vs_render, NULL, 0);
 	state->PSSetShader(info.ps_render, NULL, 0);
 
+	CBufferLayouts::object data;
 	for (uint i = 0; i < visuals.size(); i++)
 	{
 		Geometry& geom = geometries[visuals[i].geometry];
 
-		CBufferLayouts::object data;
 		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;
 
@@ -46,6 +46,17 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 		state->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
 		state->Draw( geom.count, 0 );
 	}
+
+	data.world_view = camera.view * transforms[1]; //! plane
+	data.world_view_proj = camera.proj * data.world_view;
+
+	state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
+
+	state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
+	state->VSSetShader(info.vs_noop, NULL, 0);
+	state->GSSetShader(info.gs_infinite_plane, NULL, 0);
+	state->GSSetConstantBuffers(0, 1, &cb_object);
+	state->Draw( 1, 0 );
 }
 
 } // namespace Devora9

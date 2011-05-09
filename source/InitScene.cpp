@@ -38,7 +38,6 @@ public:
 void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	Geometries& geometries, PhysicsState& state, DeviceState& device)
 {
-	geometries.push_back( Tools::ReadGeometry(device.device, "geometry//plane.geom") );
 	geometries.push_back( Tools::ReadGeometry(device.device, "geometry//icosphere.geom") );
 
 	Matrix4f view_axis;
@@ -51,14 +50,13 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	Matrix4f t = Matrix4f::Identity();
 	t.col(3) = Vector4f(10, 0, 5, 1);
 
-	Visual v = { transforms.size(), 1 };
-	transforms.push_back( t ); // player
-	visuals.push_back( v ); //!
-
+	Visual v;
 	v.transform = transforms.size();
 	v.geometry = 0;
-	transforms.push_back( Matrix4f::Identity() );
-	visuals.push_back( v ); // plane
+	visuals.push_back( v ); //!
+
+	transforms.push_back( t ); // player
+	transforms.push_back( Matrix4f::Identity() ); // plane
 
 	//for (int i = -2; i <= 2; i++)
 	//{
@@ -73,26 +71,26 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 
 	t.col(3) = Vector4f(0, 0, 5, 1);
 	Light light = { Vector3f(1, 1, 0), transforms.size() };
-	Visual visual = { transforms.size(), 1 };
+	v.transform = transforms.size();
 	transforms.push_back( t * view_axis );
 	lights.point.push_back(light);
-	visuals.push_back( visual );
+	visuals.push_back( v );
 
 	t.col(3) = Vector4f(5, 3, 1, 1);
 	transforms.push_back( t );
-	visual.transform = light.transform = transforms.size();
+	v.transform = light.transform = transforms.size();
 	light.colour = Vector3f(1, 0, 0);
 	transforms.push_back( t * view_axis );
 	lights.dir.push_back(light);
-	visuals.push_back( visual );
+	visuals.push_back( v );
 
 	t.col(3) = Vector4f(5, -3, 1, 1);
 	transforms.push_back( t );
-	visual.transform = light.transform = transforms.size();
+	v.transform = light.transform = transforms.size();
 	light.colour = Vector3f(0, 1, 0);
 	transforms.push_back( t * view_axis );
 	lights.dir.push_back(light);
-	visuals.push_back( visual );
+	visuals.push_back( v );
 
 	btScalar mass(1);
 	btVector3 localInertia;
