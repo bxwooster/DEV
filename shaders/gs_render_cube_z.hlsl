@@ -14,7 +14,7 @@ struct Output
 
 
 [maxvertexcount(18)]
-void gs_render_cube_z
+void main
 (
 	triangle Input input[3],
 	inout TriangleStream<Output> stream

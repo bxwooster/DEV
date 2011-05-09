@@ -1,4 +1,7 @@
 #include "struct/Empty"
 
 
-void vs_noop( out Empty empty ) { }
+void main
+(
+	out Empty empty
+) { }

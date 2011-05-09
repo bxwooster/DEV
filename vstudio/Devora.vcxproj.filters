@@ -88,6 +88,9 @@
     <ClInclude Include="..\source\RayTracingInfo.hpp">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\ShaderCache.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp">
@@ -141,6 +144,24 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\source\InitPlayer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitCBuffer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitRayTracing.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitVisualRender.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitLightRender.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitPostProcess.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\LoadShader.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

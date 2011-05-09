@@ -1,8 +1,6 @@
 #ifndef __Devora_GraphicsState__
 #define __Devora_GraphicsState__
 
-#define NOMINMAX
-
 #include "IPtr.h"
 #include <d3d11.h>
 

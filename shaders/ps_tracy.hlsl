@@ -18,7 +18,7 @@ float dist(float3 world)
 	return lerp(cube, spheres, interp);
 }
 
-void ps_tracy
+void main
 (
 	ScreenPixel pixel,
 	out float4 g0 : SV_Target0,

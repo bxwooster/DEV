@@ -3,7 +3,7 @@
 
 
 [maxvertexcount(3)]
-void gs_fullscreen
+void main
 (
 	point Empty empty[1],
 	inout TriangleStream<ScreenPixel> stream

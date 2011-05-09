@@ -4,7 +4,7 @@ cbuffer object_z: register(b0)
 #include "struct/Vertex"
 
 
-void vs_render_z
+void main
 (
 	Vertex vertex,
 	out float4 position : SV_Position

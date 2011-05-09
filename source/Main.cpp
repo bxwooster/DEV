@@ -1,6 +1,5 @@
 #define NOMINMAX
 
-
 #include "DeviceState.hpp"
 #include "GraphicsState.hpp"
 #include "InputData.hpp"
@@ -19,18 +18,25 @@
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
 #include "CBuffer.hpp"
+#include "CBufferLayouts.hpp"
+#include "ShaderCache.hpp"
 
 #include <exception>
 #include <Windows.h>
 
 namespace Devora {
 
-void InitGraphics(GraphicsState& state, DeviceState& device,
+void InitGraphics(GraphicsState& state, DeviceState& device, 
 	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, RayTracingInfo& rinfo,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera,
-	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z,
-	CBuffer& cb_light, CBuffer& cb_frame, CBuffer& cb_tracy);
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera, ShaderCache& shadercache);
+
+void InitCBuffer(DeviceState& device, CBuffer& cb, size_t size);
+
+void InitVisualRender(DeviceState& device, ShaderCache& cache, VisualRenderInfo& info);
+void InitLightRender(DeviceState& device, ShaderCache& cache, LightRenderInfo& info);
+void InitPostProcess(DeviceState& device, ShaderCache& cache, PostProcessInfo& info);
+void InitRayTracing(DeviceState& device, ShaderCache& cache, RayTracingInfo& info);
 
 void InitPlayer(PlayerState& state);
 void InitInput(InputData& input);
@@ -75,6 +81,7 @@ void run()
 	GraphicsState graphics;
 	DeviceState device;
 	PhysicsState physics;
+	ShaderCache shadercache;
 
 	VisualRenderInfo vinfo;
 	LightRenderInfo linfo;
@@ -98,13 +105,25 @@ void run()
 
 	// Code
 	InitGraphics(graphics, device, vinfo, linfo, pinfo, rinfo, gbuffer0, gbuffer1,
-		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera,
-		cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame, cb_tracy);
+		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera, shadercache);
+	
+	InitVisualRender(device, shadercache, vinfo);
+	InitLightRender(device, shadercache, linfo);
+	InitPostProcess(device, shadercache, pinfo);
+	InitRayTracing(device, shadercache, rinfo);
+
 	InitPhysics(physics);
 	InitTiming(timing);
 	InitInput(input);
 	InitPlayer(player);
 	InitScene(transforms, visuals, lights, geometries, physics, device);
+
+	InitCBuffer(device, cb_object, sizeof( CBufferLayouts::object ));
+	InitCBuffer(device, cb_object_z, sizeof( CBufferLayouts::object_z ));
+	InitCBuffer(device, cb_object_cube_z, sizeof( CBufferLayouts::object_cube_z ));
+	InitCBuffer(device, cb_light, sizeof( CBufferLayouts::light ));
+	InitCBuffer(device, cb_frame, sizeof( CBufferLayouts::frame ));
+	InitCBuffer(device, cb_tracy, sizeof( CBufferLayouts::tracy ));
 
 	for (;;)
 	{

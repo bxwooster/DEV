@@ -1,8 +1,8 @@
-#include "GraphicsState.hpp"
 #include "Camera.hpp"
-#include "CBufferLayouts.hpp"
-#include "CBuffer.hpp"
+#include "GraphicsState.hpp"
 #include "ZBuffer.hpp"
+#include "CBuffer.hpp"
+#include "CBufferLayouts.hpp"
 
 #include "OK.h"
 

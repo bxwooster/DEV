@@ -28,6 +28,7 @@
     <ClInclude Include="..\source\PlayerState.hpp" />
     <ClInclude Include="..\source\PostProcessInfo.hpp" />
     <ClInclude Include="..\source\RayTracingInfo.hpp" />
+    <ClInclude Include="..\source\ShaderCache.hpp" />
     <ClInclude Include="..\source\TimingData.hpp" />
     <ClInclude Include="..\source\Transforms.hpp" />
     <ClInclude Include="..\source\VisualRenderInfo.hpp" />
@@ -40,12 +41,18 @@
     <ClCompile Include="..\source\DerivePlayerState.cpp" />
     <ClCompile Include="..\source\GetInput.cpp" />
     <ClCompile Include="..\source\GetTiming.cpp" />
+    <ClCompile Include="..\source\InitCBuffer.cpp" />
     <ClCompile Include="..\source\InitGraphics.cpp" />
     <ClCompile Include="..\source\InitInput.cpp" />
+    <ClCompile Include="..\source\InitLightRender.cpp" />
     <ClCompile Include="..\source\InitPhysics.cpp" />
     <ClCompile Include="..\source\InitPlayer.cpp" />
+    <ClCompile Include="..\source\InitPostProcess.cpp" />
+    <ClCompile Include="..\source\InitRayTracing.cpp" />
     <ClCompile Include="..\source\InitScene.cpp" />
     <ClCompile Include="..\source\InitTiming.cpp" />
+    <ClCompile Include="..\source\InitVisualRender.cpp" />
+    <ClCompile Include="..\source\LoadShader.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
     <ClCompile Include="..\source\PostProcess.cpp" />
     <ClCompile Include="..\source\Prepare.cpp" />

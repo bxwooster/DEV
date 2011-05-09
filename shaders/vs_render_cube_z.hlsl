@@ -5,7 +5,7 @@ cbuffer object_cube_z: register(b0)
 #include "struct/Pixel"
 
 
-void vs_render_cube_z
+void main
 (
 	Vertex vertex,
 	out float4 position : POSITION

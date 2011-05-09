@@ -5,7 +5,7 @@ cbuffer object: register(b0)
 #include "struct/Pixel"
 
 
-void vs_render
+void main
 (
 	Vertex vertex,
 	out Pixel pixel

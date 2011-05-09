@@ -1,9 +1,9 @@
+#include "Camera.hpp"
 #include "GraphicsState.hpp"
 #include "PostProcessInfo.hpp"
 #include "ZBuffer.hpp"
 #include "Buffer.hpp"
 #include "CBuffer.hpp"
-#include "Camera.hpp"
 
 
 #include "OK.h"

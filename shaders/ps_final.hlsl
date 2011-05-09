@@ -11,7 +11,7 @@ sampler sm_point : register(s0);
 #include "code/uv_to_ray"
 
 
-float4 ps_final
+float4 main
 (
 	float4 pos : SV_Position
 ) : SV_Target0

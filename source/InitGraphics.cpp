@@ -7,8 +7,7 @@
 #include "RayTracingInfo.hpp"
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
-#include "CBuffer.hpp"
-#include "CBufferLayouts.hpp"
+#include "ShaderCache.hpp"
 
 #include <D3DX11.h>
 
@@ -16,9 +15,17 @@ namespace Devora {
 namespace Tools {
 
 void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
+void CompileShader( char* file, char* profile, ID3D10Blob** code );
 
-}; using namespace Tools;
-namespace {
+};
+namespace LoadShader
+{
+	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
+	void Geometry(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11GeometryShader>& shader);
+	void Pixel(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11PixelShader>& shader);
+}
+
+
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
 	switch (msg) 
@@ -39,27 +46,10 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 	return DefWindowProc(handle, msg, w, l);
 }
 
-void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
-{
-	IPtr<ID3D10Blob> info;
-
-	unsigned int shader_flags = D3D10_SHADER_ENABLE_STRICTNESS |
-	D3D10_SHADER_OPTIMIZATION_LEVEL0 |
-	D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
-
-	HOK_EX( D3DX11CompileFromFile( file,
-	NULL, NULL, entry, profile, shader_flags,
-	0, NULL, code, ~info, NULL ),
-	*&info ? (char*)info->GetBufferPointer() : "" );
-}
-}
-
 void InitGraphics(GraphicsState& state, DeviceState& device, 
 	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, RayTracingInfo& rinfo,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera,
-	CBuffer& cb_object, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, 
-	CBuffer& cb_light, CBuffer& cb_frame, CBuffer& cb_tracy)
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera, ShaderCache& shadercache)
 {
 	// Camera
 	camera.z_near = 0.1f;
@@ -114,7 +104,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 				0, 0,-1, 0,
 				0, 0, 0, 1;
 
-		SetProjectionMatrix(linfo.proj, 90, 1.0, camera.z_near); //!
+		Tools::SetProjectionMatrix(linfo.proj, 90, 1.0, camera.z_near); //!
 	}
 
 	// Device, Factory
@@ -163,8 +153,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	// Back buffer, view
 	{
-		IPtr<ID3D11Texture2D> buffer;
-	
 		HOK( device.swap_chain->GetBuffer
 			( 0, __uuidof( ID3D11Texture2D ), ( void** )( &backbuffer.texture ) ));
 
@@ -288,66 +276,11 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		shadowcube.viewport = shadowmap.viewport;
 	}
 
-	IPtr<ID3D10Blob> code;
-	// Shaders
-	{
-		IPtr<ID3D11ClassLinkage> linkage;
-		HOK( device.device->CreateClassLinkage( ~linkage ));
-
-		CompileShader( "shaders/ps_render.hlsl", "ps_render", "ps_5_0", ~code );
-		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~vinfo.ps_render));
-
-		CompileShader( "shaders/vs_render_z.hlsl", "vs_render_z", "vs_5_0", ~code );
-		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.vs_render_z));
-
-		CompileShader( "shaders/vs_render_cube_z.hlsl", "vs_render_cube_z", "vs_5_0", ~code );
-		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.vs_render_cube_z));
-		CompileShader( "shaders/gs_render_cube_z.hlsl", "gs_render_cube_z", "gs_5_0", ~code );
-		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.gs_render_cube_z));
-
-		CompileShader( "shaders/vs_noop.hlsl", "vs_noop", "vs_5_0", ~code );
-		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.vs_noop));
-		CompileShader( "shaders/gs_fullscreen.hlsl", "gs_fullscreen", "gs_5_0", ~code );
-		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.gs_fullscreen));
-
-		CompileShader( "shaders/gs_dir_light.hlsl", "gs_dir_light", "gs_5_0", ~code );
-		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.gs_dir_light));
-		CompileShader( "shaders/gs_point_light.hlsl", "gs_point_light", "gs_5_0", ~code );
-		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.gs_point_light));
-
-		CompileShader( "shaders/ps_dir_light.hlsl", "ps_dir_light", "ps_5_0", ~code );
-		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.ps_dir_light));
-		CompileShader( "shaders/ps_point_light.hlsl", "ps_point_light", "ps_5_0", ~code );
-		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~linfo.ps_point_light));
-
-		CompileShader( "shaders/ps_final.hlsl", "ps_final", "ps_5_0", ~code );
-		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~pinfo.ps_final));
-
-		CompileShader( "shaders/ps_tracy.hlsl", "ps_tracy", "ps_5_0", ~code );
-		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~rinfo.ps_tracy));
-
-		CompileShader( "shaders/vs_render.hlsl", "vs_render", "vs_5_0", ~code );
-		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, ~vinfo.vs_render));
-
-		rinfo.vs_noop = pinfo.vs_noop = linfo.vs_noop;
-		rinfo.gs_fullscreen = pinfo.gs_fullscreen = linfo.gs_fullscreen;
-	}
-
 	// Layout
 	{       
+		IPtr<ID3D10Blob> code;
+		Tools::CompileShader( "shaders/vs_render.hlsl", "vs_5_0", ~code );
+
 		D3D11_INPUT_ELEMENT_DESC element[2] =
 		{
 			{
@@ -443,34 +376,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 		HOK( device.device->CreateSamplerState( &desc, ~linfo.sm_point));
 		pinfo.sm_point = linfo.sm_point;
-	}
-
-
-	// Constant Buffers
-	{
-		D3D11_BUFFER_DESC desc;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = 0;
-
-		desc.ByteWidth = sizeof( CBufferLayouts::object );
-		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_object ));
-
-		desc.ByteWidth = sizeof( CBufferLayouts::frame );
-		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_frame ));
-
-		desc.ByteWidth = sizeof( CBufferLayouts::object_z );
-		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_object_z ));
-
-		desc.ByteWidth = sizeof( CBufferLayouts::object_cube_z );
-		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_object_cube_z ));
-
-		desc.ByteWidth = sizeof( CBufferLayouts::light );
-		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_light ));
-
-		desc.ByteWidth = sizeof( CBufferLayouts::tracy );
-		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_tracy ));
 	}
 }
 

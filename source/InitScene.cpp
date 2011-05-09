@@ -8,38 +8,36 @@
 #include <btBulletDynamicsCommon.h>
 
 namespace Devora {
-
-namespace {
-	class MotionState : public btMotionState
-	{
-		Matrix4f& transform;
-
-	public:
-		MotionState(Matrix4f& transform_) :
-			transform(transform_)
-		{}
-
-		virtual ~MotionState()
-		{}
-
-		virtual void getWorldTransform(btTransform &t) const
-		{
-			Matrix4f transposed = transform.transpose();
-			t.setFromOpenGLMatrix( (btScalar*)transposed.data() );
-		}
-
-		virtual void setWorldTransform(const btTransform& t)
-		{
-			t.getOpenGLMatrix( (btScalar*)transform.data() );
-			transform.transposeInPlace();
-		}
-	};
-}
 namespace Tools {
 
 Geometry ReadGeometry(ID3D11Device* device, const std::string& filename);
 
 }; using namespace Tools;
+
+class MotionState : public btMotionState
+{
+	Matrix4f& transform;
+
+public:
+	MotionState(Matrix4f& transform_) :
+		transform(transform_)
+	{}
+
+	virtual ~MotionState()
+	{}
+
+	virtual void getWorldTransform(btTransform &t) const
+	{
+		Matrix4f transposed = transform.transpose();
+		t.setFromOpenGLMatrix( (btScalar*)transposed.data() );
+	}
+
+	virtual void setWorldTransform(const btTransform& t)
+	{
+		t.getOpenGLMatrix( (btScalar*)transform.data() );
+		transform.transposeInPlace();
+	}
+};
 
 void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	Geometries& geometries, PhysicsState& state, DeviceState& device)

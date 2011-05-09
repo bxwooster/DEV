@@ -1,7 +1,7 @@
 #include "struct/Pixel"
 
 
-void ps_render
+void main
 (
 	Pixel pixel,
 	out float4 g0 : SV_Target0,

@@ -14,7 +14,7 @@ sampler sm_point : register(s0);
 #include "struct/ScreenPixel"
 
 
-float4 ps_dir_light
+float4 main
 (
 	ScreenPixel pixel
 ) : SV_Target0

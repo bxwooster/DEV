@@ -1,9 +1,10 @@
-#define NOMINMAX
-
-#include "DeviceState.hpp"
-#include "Geometries.hpp"
-
 #include "Matrix.h"
+#include "ok.h"
+
+#include "Geometries.hpp"
+#include "DeviceState.hpp"
+
+#include <D3DX11.h>
 #include <fstream>
 
 namespace Devora {
@@ -11,6 +12,20 @@ namespace Devora {
 typedef unsigned int uint;
 
 namespace Tools {
+
+void CompileShader( char* file, char* profile, ID3D10Blob** code )
+{
+	IPtr<ID3D10Blob> info;
+
+	unsigned int shader_flags = D3D10_SHADER_ENABLE_STRICTNESS |
+	D3D10_SHADER_OPTIMIZATION_LEVEL0 |
+	D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
+
+	HOK_EX( D3DX11CompileFromFile( file,
+	NULL, NULL, "main", profile, shader_flags,
+	0, NULL, code, ~info, NULL ),
+	*&info ? (char*)info->GetBufferPointer() : "" );
+}
 
 void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near)
 {

@@ -5,7 +5,7 @@ cbuffer object_z: register(b0)
 #include "struct/ScreenPixel"
 
 [maxvertexcount(36)]
-void gs_point_light
+void main
 (
 	point Empty empty[1],
 	inout TriangleStream<ScreenPixel> stream
