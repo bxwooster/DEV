@@ -6,25 +6,37 @@ import collections
 def write(filename, mesh):
     ppack = Struct('fff') #float3
     npack = ppack
-    ipack = Struct('HHH') #ushort3
+    ipack = Struct('H') #ushort
     pbuffer = BytesIO()
     nbuffer = BytesIO()
     ibuffer = BytesIO()
 
+    reindex = {}
+    total = 0
+
+    vertices = mesh.vertices
     for face in mesh.faces:
-        I = face.vertices
-        if len(I) == 3:
-            ibuffer.write( ipack.pack(I[0], I[1], I[2]) )
-        elif len(I) == 4:
-            ibuffer.write( ipack.pack(I[0], I[1], I[2]) )
-            ibuffer.write( ipack.pack(I[2], I[3], I[0]) )
+        if len(face.vertices) == 3:        
+            if not face.use_smooth:
+                N = face.normal
+                for index in face.vertices:
+                    V = vertices[index].co
+                    pbuffer.write( ppack.pack(V.x, V.y, V.z) )
+                    nbuffer.write( npack.pack(N.x, N.y, N.z) )
+                    ibuffer.write( ipack.pack(total) )
+                    total += 1
+            else:
+                for index in face.vertices:
+                    if index not in reindex:
+                        reindex[index] = total
+                        total += 1
+                        V = vertices[index].co
+                        N = vertices[index].normal
+                        pbuffer.write( ppack.pack(V.x, V.y, V.z) )
+                        nbuffer.write( npack.pack(N.x, N.y, N.z) )
+                    ibuffer.write( ipack.pack( reindex[index] ) )
         else:
-            raise("WHAT!? 5 or more vertices in a face.")
-    for vertex in mesh.vertices:
-        N = vertex.normal # if face.use_smooth else face.normal
-        V = vertex.co     # non-smooth not supported so far with indexing
-        pbuffer.write( ppack.pack(V.x, V.y, V.z) )
-        nbuffer.write( npack.pack(N.x, N.y, N.z) )
+            raise Exception("Untriangulated face.")
 
     try:
         os.mkdir(filename)
