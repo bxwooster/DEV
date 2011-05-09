@@ -139,14 +139,17 @@ Geometry ReadGeometry(ID3D11Device* device, const std::string& path)
 	using std::ifstream;
 
 	Geometry geometry;
+	uint width;
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		char* name = i ? "normal" : "position";
+		char* name = "position";
+		if (i == 1) name = "normal";
+		if (i == 2) name = "index";
 		ifstream file( path + "\\" + name, ifstream::in | ifstream::binary | ifstream::ate );
 		file.exceptions( ifstream::eofbit | ifstream::failbit | ifstream::badbit );
 
-		uint width = uint(file.tellg());
+		width = uint(file.tellg());
     
 		std::vector<char> data(width);
 		file.seekg(0);
@@ -157,18 +160,20 @@ Geometry ReadGeometry(ID3D11Device* device, const std::string& path)
 
 		D3D11_BUFFER_DESC buffer_desc;
 		buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
-		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffer_desc.BindFlags = i == 2 ? D3D11_BIND_INDEX_BUFFER : D3D11_BIND_VERTEX_BUFFER;
 		buffer_desc.CPUAccessFlags = 0;
 		buffer_desc.MiscFlags = 0;
 		buffer_desc.ByteWidth = width;
 
 		HOK( device->CreateBuffer
 			( &buffer_desc, &init, ~geometry.buffers[i] ) );
-
-		geometry.strides[i] = 12;
-		geometry.offsets[i] = 0;
-		geometry.count = width / geometry.strides[i]; //! an equality check, perhaps?
 	}
+
+	geometry.strides[0] = 3 * sizeof(float);
+	geometry.strides[1] = 3 * sizeof(float);
+	geometry.offsets[0] = 0;
+	geometry.offsets[1] = 0;
+	geometry.count = width / sizeof(unsigned short);
 	
 	return geometry;
 }

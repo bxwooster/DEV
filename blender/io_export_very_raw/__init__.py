@@ -12,11 +12,11 @@ bl_info = {
     "category": "Import-Export"}
 
 if "bpy" in locals():
-    from imp import reload
     if "exporter" in locals():
         reload(exporter)
 
 import bpy
+from imp import reload
 from . import exporter
 from io_utils import ExportHelper
 
@@ -36,6 +36,7 @@ class Export(bpy.types.Operator, ExportHelper):
             raise Exception("filename not set")
         if not context.active_object:
             raise Exception('no object selected')
+        reload(exporter)        
         exporter.write(self.filepath, context.active_object.data)
         return {'FINISHED'}
 

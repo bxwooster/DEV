@@ -9,7 +9,7 @@ namespace Devora {
 
 struct Geometry
 {
-	IPtr<ID3D11Buffer> buffers[2];
+	IPtr<ID3D11Buffer> buffers[3]; //position, normal, index
 	unsigned int count;
 	unsigned int strides[2];
 	unsigned int offsets[2];

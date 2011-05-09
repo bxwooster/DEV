@@ -44,7 +44,8 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 		state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
-		state->Draw( geom.count, 0 );
+		state->IASetIndexBuffer( geom.buffers[2], DXGI_FORMAT_R16_UINT, 0 );
+		state->DrawIndexed( geom.count, 0, 0 );
 	}
 
 	data.world_view = camera.view * transforms[1]; //! plane

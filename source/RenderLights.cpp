@@ -59,7 +59,8 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 			state->UpdateSubresource(cb_object_z, 0, NULL, (void*)&data, sizeof(data), 0);
 			state->IASetVertexBuffers(0, 1, &*geom.buffers, geom.strides, geom.offsets);
-			state->Draw( geom.count, 0 );
+			state->IASetIndexBuffer( geom.buffers[2], DXGI_FORMAT_R16_UINT, 0 );
+			state->DrawIndexed( geom.count, 0, 0 );
 		}
 
 		CBufferLayouts::light data;
@@ -137,7 +138,8 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 			state->UpdateSubresource(cb_object_cube_z, 0, NULL, (void*)&data, sizeof(data), 0);
 			state->IASetVertexBuffers(0, 1, &*geom.buffers, geom.strides, geom.offsets);
-			state->Draw( geom.count, 0 );
+			state->IASetIndexBuffer( geom.buffers[2], DXGI_FORMAT_R16_UINT, 0 );
+			state->DrawIndexed( geom.count, 0, 0 );
 		}
 
 		CBufferLayouts::light data;
