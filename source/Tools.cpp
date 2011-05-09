@@ -162,7 +162,7 @@ Geometry ReadGeometry(ID3D11Device* device, const std::string& filename)
 	HOK( device->CreateBuffer
 		( &buffer_desc, &init, ~geometry.buffer ) );
 
-	geometry.stride = 28;
+	geometry.stride = 24;
 	geometry.count = width / geometry.stride;
 	geometry.offset = 0;
 	return geometry;

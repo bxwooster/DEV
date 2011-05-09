@@ -10,6 +10,6 @@ void main
 	Vertex vertex,
 	out Pixel pixel
 ){
-	pixel.pos = mul( world_view_proj, vertex.position );
+	pixel.pos = mul( world_view_proj, float4(vertex.position, 1.0) );
 	pixel.normal = normalize( mul( (float3x3)world_view, vertex.normal ) );
 }

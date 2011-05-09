@@ -21,14 +21,8 @@ from io_utils import ExportHelper
 Element = collections.namedtuple('Element', 'name index fmt')
 
 def write(filename, mesh):
-    packer = struct.Struct('fffffff')
+    packer = struct.Struct('ffffff')
     buffer = io.BytesIO()
-    elements = []
-    
-    elements.append( Element(b'POSITION', 0, 2) )
-    #DXGI_FORMAT_R32G32B32A32_FLOAT = 2
-    elements.append( Element(b'NORMAL', 0, 6) )
-    #DXGI_FORMAT_R32G32B32_FLOAT = 6
 
     for face in mesh.faces:
         indices = face.vertices
@@ -42,7 +36,7 @@ def write(filename, mesh):
             vertex = mesh.vertices[i]
             N = vertex.normal if face.use_smooth else face.normal
             V = vertex.co
-            data = (V.x, V.y, V.z, 1, N.x, N.y, N.z)
+            data = (V.x, V.y, V.z, N.x, N.y, N.z)
             buffer.write( packer.pack(*data) )
             
     out = open(filename, 'wb')     

@@ -3,7 +3,7 @@ cbuffer object_cube_z: register(b0)
 
 struct Input
 {
-	float4 position : POSITION;
+	float3 position : POSITION;
 };
 
 struct Output
@@ -25,7 +25,7 @@ void main
 		output.index = i;
 		for (int v = 0; v < 3; v++)
 		{
-			output.position = mul(cubeproj[i], input[v].position);
+			output.position = mul(cubeproj[i], float4(input[v].position, 1.0));
 
 			stream.Append( output );
 		}

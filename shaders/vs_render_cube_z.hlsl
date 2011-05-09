@@ -8,7 +8,7 @@ cbuffer object_cube_z: register(b0)
 void main
 (
 	Vertex vertex,
-	out float4 position : POSITION
+	out float3 position : POSITION
 ){
 	position = vertex.position;
 }
