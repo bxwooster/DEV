@@ -9,11 +9,10 @@ namespace Devora {
 
 struct Geometry
 {
-	typedef unsigned int uint;
 	IPtr<ID3D11Buffer> buffer;
-	uint stride;
-	uint offset;
-	uint count;
+	unsigned int count;
+	unsigned int stride;
+	unsigned int offset;
 };
 
 typedef std::vector<Geometry> Geometries;

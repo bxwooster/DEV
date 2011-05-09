@@ -45,16 +45,8 @@ def write(filename, mesh):
             data = (V.x, V.y, V.z, 1, N.x, N.y, N.z)
             buffer.write( packer.pack(*data) )
             
-    out = open(filename, 'wb')
-    out.write(b'the.geom' b'0003')
-    out.write(struct.pack('I', len(elements)))
-    for e in elements:
-        out.write(struct.pack('III', e.fmt, e.index, len(e.name)))
-        out.write(e.name)
-
-    raw = buffer.getvalue()        
-    out.write(struct.pack('II', packer.size, len(raw)))
-    out.write( raw )
+    out = open(filename, 'wb')     
+    out.write( buffer.getvalue() )
                 
     out.close()
 

@@ -1,4 +1,5 @@
 /geometry
+/blender/meshes
 /vstudio/ipch
 /vstudio/build
 *.opensdf
