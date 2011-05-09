@@ -1,4 +1,5 @@
 #include "Tools.hpp"
+#include "Camera.hpp"
 #include "LightRenderInfo.hpp"
 #include "DeviceState.hpp"
 #include "ShaderCache.hpp"
@@ -12,7 +13,7 @@ namespace LoadShader
 	void Pixel(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11PixelShader>& shader);
 }
 
-void InitLightRender(DeviceState& device, ShaderCache& cache, LightRenderInfo& info)
+void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& cache, Camera& camera)
 {
 	LoadShader::Vertex(cache, device, "shaders/vs_render_z.hlsl", info.vs_render_z);
 	LoadShader::Vertex(cache, device, "shaders/vs_render_cube_z.hlsl", info.vs_render_cube_z);
@@ -48,6 +49,67 @@ void InitLightRender(DeviceState& device, ShaderCache& cache, LightRenderInfo& i
 		desc.RenderTarget[0].BlendEnable = true;
 		desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 		HOK( device.device->CreateBlendState( &desc, ~info.bs_additive));
+	}
+
+	// Layout //!
+	{       
+		IPtr<ID3D10Blob> code;
+		Tools::CompileShader( "shaders/vs_render.hlsl", "vs_5_0", ~code );
+
+		D3D11_INPUT_ELEMENT_DESC element[2] =
+		{
+			{
+				"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,
+				0, D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA, 0
+			},
+
+			{
+				"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,
+				0, D3D11_APPEND_ALIGNED_ELEMENT,
+				D3D11_INPUT_PER_VERTEX_DATA, 0
+			}
+		};
+
+		HOK( device.device->CreateInputLayout
+			( element, 2, code->GetBufferPointer(),
+			code->GetBufferSize(), ~info.layout ) );
+	}
+
+	//Misc
+	{
+		info.cubematrices[0] <<
+				0, 0, 1, 0,
+				0, 1, 0, 0,
+				-1, 0, 0, 0,
+				0, 0, 0, 1;
+		info.cubematrices[1] <<
+				0, 0,-1, 0,
+				0, 1, 0, 0,
+				1, 0, 0, 0,
+				0, 0, 0, 1;
+		info.cubematrices[2] <<
+				1, 0, 0, 0,
+				0, 0, 1, 0,
+				0,-1, 0, 0,
+				0, 0, 0, 1;
+		info.cubematrices[3] <<
+				1, 0, 0, 0,
+				0, 0,-1, 0,
+				0, 1, 0, 0,
+				0, 0, 0, 1;
+		info.cubematrices[4] <<
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1;
+		info.cubematrices[5] <<
+				-1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0,-1, 0,
+				0, 0, 0, 1;
+
+		Tools::SetProjectionMatrix(info.proj, 90, 1.0, camera.z_near); //!
 	}
 }
 

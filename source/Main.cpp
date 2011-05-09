@@ -27,16 +27,15 @@
 namespace Devora {
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
-	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, RayTracingInfo& rinfo,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera, ShaderCache& shadercache);
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera);
 
 void InitCBuffer(DeviceState& device, CBuffer& cb, size_t size);
 
-void InitVisualRender(DeviceState& device, ShaderCache& cache, VisualRenderInfo& info);
-void InitLightRender(DeviceState& device, ShaderCache& cache, LightRenderInfo& info);
-void InitPostProcess(DeviceState& device, ShaderCache& cache, PostProcessInfo& info);
-void InitRayTracing(DeviceState& device, ShaderCache& cache, RayTracingInfo& info);
+void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& cache);
+void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& cache, Camera& camera);
+void InitPostProcess(PostProcessInfo& info, DeviceState& device, ShaderCache& cache);
+void InitRayTracing(RayTracingInfo& info, DeviceState& device, ShaderCache& cache);
 
 void InitPlayer(PlayerState& state);
 void InitInput(InputData& input);
@@ -104,13 +103,13 @@ void run()
 	CBuffer cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame, cb_tracy;
 
 	// Code
-	InitGraphics(graphics, device, vinfo, linfo, pinfo, rinfo, gbuffer0, gbuffer1,
-		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera, shadercache);
+	InitGraphics(graphics, device, gbuffer0, gbuffer1,
+		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera);
 	
-	InitVisualRender(device, shadercache, vinfo);
-	InitLightRender(device, shadercache, linfo);
-	InitPostProcess(device, shadercache, pinfo);
-	InitRayTracing(device, shadercache, rinfo);
+	InitVisualRender(vinfo, device, shadercache);
+	InitLightRender(linfo, device, shadercache, camera);
+	InitPostProcess(pinfo, device, shadercache);
+	InitRayTracing(rinfo, device, shadercache);
 
 	InitPhysics(physics);
 	InitTiming(timing);

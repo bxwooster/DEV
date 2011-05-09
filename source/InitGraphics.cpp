@@ -1,24 +1,13 @@
 #include "Camera.hpp"
 #include "DeviceState.hpp"
 #include "GraphicsState.hpp"
-#include "VisualRenderInfo.hpp"
-#include "LightRenderInfo.hpp"
-#include "PostProcessInfo.hpp"
-#include "RayTracingInfo.hpp"
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
-#include "ShaderCache.hpp"
 #include "Tools.hpp"
 
 #include <D3DX11.h>
 
 namespace Devora {
-namespace LoadShader
-{
-	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
-	void Geometry(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11GeometryShader>& shader);
-	void Pixel(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11PixelShader>& shader);
-}
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
@@ -41,9 +30,8 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 }
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
-	VisualRenderInfo& vinfo, LightRenderInfo& linfo, PostProcessInfo& pinfo, RayTracingInfo& rinfo,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera, ShaderCache& shadercache)
+	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera)
 {
 	// Camera
 	camera.z_near = 0.1f;
@@ -51,7 +39,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	int height = camera.screen.h = 960;
 	camera.aspect_ratio = float(camera.screen.w) / camera.screen.h;
 
-	int shadowmap_size = 512;
+	int const shadowmap_size = 512;
 
 	WNDCLASSEX window_class;
 	ZeroMemory( &window_class, sizeof( WNDCLASSEX ) );
@@ -64,42 +52,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	OK( window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
 		WS_SYSMENU | WS_OVERLAPPED | WS_VISIBLE, CW_USEDEFAULT,
 		CW_USEDEFAULT, width, height, NULL, NULL, NULL, 0 ) );
-
-	//Misc
-	{
-		linfo.cubematrices[0] <<
-				0, 0, 1, 0,
-				0, 1, 0, 0,
-				-1, 0, 0, 0,
-				0, 0, 0, 1;
-		linfo.cubematrices[1] <<
-				0, 0,-1, 0,
-				0, 1, 0, 0,
-				1, 0, 0, 0,
-				0, 0, 0, 1;
-		linfo.cubematrices[2] <<
-				1, 0, 0, 0,
-				0, 0, 1, 0,
-				0,-1, 0, 0,
-				0, 0, 0, 1;
-		linfo.cubematrices[3] <<
-				1, 0, 0, 0,
-				0, 0,-1, 0,
-				0, 1, 0, 0,
-				0, 0, 0, 1;
-		linfo.cubematrices[4] <<
-				1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1;
-		linfo.cubematrices[5] <<
-				-1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0,-1, 0,
-				0, 0, 0, 1;
-
-		Tools::SetProjectionMatrix(linfo.proj, 90, 1.0, camera.z_near); //!
-	}
 
 	// Device, Factory
 	{
@@ -268,33 +220,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		shadowmap.viewport.TopLeftY = 0.0f;
 
 		shadowcube.viewport = shadowmap.viewport;
-	}
-
-	// Layout
-	{       
-		IPtr<ID3D10Blob> code;
-		Tools::CompileShader( "shaders/vs_render.hlsl", "vs_5_0", ~code );
-
-		D3D11_INPUT_ELEMENT_DESC element[2] =
-		{
-			{
-				"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,
-				0, D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA, 0
-			},
-
-			{
-				"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT,
-				0, D3D11_APPEND_ALIGNED_ELEMENT,
-				D3D11_INPUT_PER_VERTEX_DATA, 0
-			}
-		};
-
-		HOK( device.device->CreateInputLayout
-			( element, 2, code->GetBufferPointer(),
-			code->GetBufferSize(), ~vinfo.layout ) );
-
-		linfo.layout = vinfo.layout;
 	}
 }
 

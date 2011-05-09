@@ -13,7 +13,7 @@ namespace LoadShader
 	void Pixel(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11PixelShader>& shader);
 }
 
-void InitPostProcess(DeviceState& device, ShaderCache& cache, PostProcessInfo& info)
+void InitPostProcess(PostProcessInfo& info, DeviceState& device, ShaderCache& cache)
 {
 	LoadShader::Vertex(cache, device, "shaders/vs_noop.hlsl", info.vs_noop);
 	LoadShader::Geometry(cache, device, "shaders/gs_fullscreen.hlsl", info.gs_fullscreen);
