@@ -134,37 +134,42 @@ void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float 
 			0, 0, -1, 0;
 }
 
-Geometry ReadGeometry(ID3D11Device* device, const std::string& filename)
+Geometry ReadGeometry(ID3D11Device* device, const std::string& path)
 {
 	using std::ifstream;
 
 	Geometry geometry;
 
-	ifstream file( filename, ifstream::in | ifstream::binary | ifstream::ate );
-	file.exceptions( ifstream::eofbit | ifstream::failbit | ifstream::badbit );
+	for (int i = 0; i < 2; i++)
+	{
+		char* name = i ? "normal" : "position";
+		ifstream file( path + "\\" + name, ifstream::in | ifstream::binary | ifstream::ate );
+		file.exceptions( ifstream::eofbit | ifstream::failbit | ifstream::badbit );
 
-	uint width = uint(file.tellg());
+		uint width = uint(file.tellg());
     
-	std::vector<char> data(width);
-	file.seekg(0);
-	file.read( &data[0], width ); 
+		std::vector<char> data(width);
+		file.seekg(0);
+		file.read( &data[0], width ); 
 
-	D3D11_SUBRESOURCE_DATA init;
-	init.pSysMem = &data[0];
+		D3D11_SUBRESOURCE_DATA init;
+		init.pSysMem = &data[0];
 
-	D3D11_BUFFER_DESC buffer_desc;
-	buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
-	buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	buffer_desc.CPUAccessFlags = 0;
-	buffer_desc.MiscFlags = 0;
-	buffer_desc.ByteWidth = width;
+		D3D11_BUFFER_DESC buffer_desc;
+		buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
+		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		buffer_desc.CPUAccessFlags = 0;
+		buffer_desc.MiscFlags = 0;
+		buffer_desc.ByteWidth = width;
 
-	HOK( device->CreateBuffer
-		( &buffer_desc, &init, ~geometry.buffer ) );
+		HOK( device->CreateBuffer
+			( &buffer_desc, &init, ~geometry.buffers[i] ) );
 
-	geometry.stride = 24;
-	geometry.count = width / geometry.stride;
-	geometry.offset = 0;
+		geometry.strides[i] = 12;
+		geometry.offsets[i] = 0;
+		geometry.count = width / geometry.strides[i]; //! an equality check, perhaps?
+	}
+	
 	return geometry;
 }
 

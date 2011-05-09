@@ -11,44 +11,20 @@ bl_info = {
     "tracker_url": "",
     "category": "Import-Export"}
 
-import struct
-import io
-import collections
+if "bpy" in locals():
+    from imp import reload
+    if "exporter" in locals():
+        reload(exporter)
 
 import bpy
+from . import exporter
 from io_utils import ExportHelper
-
-Element = collections.namedtuple('Element', 'name index fmt')
-
-def write(filename, mesh):
-    packer = struct.Struct('ffffff')
-    buffer = io.BytesIO()
-
-    for face in mesh.faces:
-        indices = face.vertices
-        if len(indices) == 3: pass
-        elif len(indices) == 4:
-            indices = [indices[0], indices[1], indices[2],
-                       indices[2], indices[3], indices[0]]
-        else:
-            raise("WHAT!? 5 or more vertices in a face.")
-        for i in indices:
-            vertex = mesh.vertices[i]
-            N = vertex.normal if face.use_smooth else face.normal
-            V = vertex.co
-            data = (V.x, V.y, V.z, N.x, N.y, N.z)
-            buffer.write( packer.pack(*data) )
-            
-    out = open(filename, 'wb')     
-    out.write( buffer.getvalue() )
-                
-    out.close()
 
 class Export(bpy.types.Operator, ExportHelper):
     '''Export a single object.'''
     bl_idname = "export.very_raw"
     bl_label = "Export"
-    filename_ext = ".vraw"
+    filename_ext = ""
 
     @classmethod
     def poll(cls, context):
@@ -60,7 +36,7 @@ class Export(bpy.types.Operator, ExportHelper):
             raise Exception("filename not set")
         if not context.active_object:
             raise Exception('no object selected')
-        write(self.filepath, context.active_object.data)
+        exporter.write(self.filepath, context.active_object.data)
         return {'FINISHED'}
 
     def invoke(self, context, event):

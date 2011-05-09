@@ -58,7 +58,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 			data.world_view_proj = lightview_lightproj * transforms[casters[i].transform];
 
 			state->UpdateSubresource(cb_object_z, 0, NULL, (void*)&data, sizeof(data), 0);
-			state->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
+			state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
 			state->Draw( geom.count, 0 );
 		}
 
@@ -136,7 +136,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 			for (int f = 0; f < 6; f++) data.cubeproj[f] = p * info.cubematrices[f] * w;	
 
 			state->UpdateSubresource(cb_object_cube_z, 0, NULL, (void*)&data, sizeof(data), 0);
-			state->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
+			state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
 			state->Draw( geom.count, 0 );
 		}
 

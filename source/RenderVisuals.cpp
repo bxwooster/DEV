@@ -43,7 +43,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 		data.world_view_proj = camera.proj * data.world_view;
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
-		state->IASetVertexBuffers(0, 1, &geom.buffer, &geom.stride, &geom.offset);
+		state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
 		state->Draw( geom.count, 0 );
 	}
 

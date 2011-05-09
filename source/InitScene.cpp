@@ -38,7 +38,7 @@ public:
 void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	Geometries& geometries, PhysicsState& state, DeviceState& device)
 {
-	geometries.push_back( Tools::ReadGeometry(device.device, "geometry//Sphere.vraw") );
+	geometries.push_back( Tools::ReadGeometry(device.device, "geometry//Sphere") );
 
 	Matrix4f view_axis;
 	view_axis << 0, 1, 0, 0,
