@@ -35,15 +35,26 @@ public:
     {
         return pointer;
     }
+
+	Interface* operator->()
+    {
+        return pointer;
+    }
     
-    Interface** operator&()
+    Interface* const* operator &()
     {
         return &pointer;
     }
-    
-    Interface* operator->()
+
+	// For intrusive operations
+	Interface** operator ~()
     {
-        return pointer;
+		if (pointer) 
+		{
+			pointer->Release();
+			pointer = nullptr;
+		}
+        return &pointer;
     }
 };
 

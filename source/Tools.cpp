@@ -74,7 +74,7 @@ Geometry ReadGeometry(ID3D11Device* device, const std::string& filename)
 	buffer_desc.ByteWidth = width;
 
 	HOK( device->CreateBuffer
-		( &buffer_desc, &data, &geometry.buffer ) );
+		( &buffer_desc, &data, ~geometry.buffer ) );
 
 	delete[] vertices;
 

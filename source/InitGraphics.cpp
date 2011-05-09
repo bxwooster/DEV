@@ -49,7 +49,7 @@ void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
 
 	HOK_EX( D3DX11CompileFromFile( file,
 	NULL, NULL, entry, profile, shader_flags,
-	0, NULL, code, &info, NULL ),
+	0, NULL, code, ~info, NULL ),
 	*&info ? (char*)info->GetBufferPointer() : "" );
 }
 }
@@ -132,7 +132,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 #endif
 		HOK( D3D11CreateDevice
 			( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flag,
-			NULL, 0, D3D11_SDK_VERSION, &device.device, &feature_level, &state ) );
+			NULL, 0, D3D11_SDK_VERSION, ~device.device, &feature_level, ~state ) );
 
 		HOK( device.device->QueryInterface
 			( __uuidof(IDXGIDevice1), (void**)&dxgi_device ) );
@@ -158,7 +158,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		HOK( dxgi_factory->CreateSwapChain
-			( device.device, &desc, &device.swap_chain ));
+			( device.device, &desc, ~device.swap_chain ));
 	}
 
 	// Back buffer, view
@@ -174,7 +174,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Texture2D.MipSlice = 0;
 
 		HOK( device.device->CreateRenderTargetView
-			( backbuffer.texture, NULL, &backbuffer.rtv ));
+			( backbuffer.texture, NULL, ~backbuffer.rtv ));
 	}
 
 	// Textures
@@ -192,24 +192,24 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.MipLevels = 1;
 		desc.MiscFlags = D3D10_RESOURCE_MISC_TEXTURECUBE;
 
-		HOK( device.device->CreateTexture2D( &desc, NULL, &shadowcube.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~shadowcube.texture ) );
 		desc.ArraySize = 1;
 		desc.MiscFlags = 0;
-		HOK( device.device->CreateTexture2D( &desc, NULL, &shadowmap.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~shadowmap.texture ) );
 
 		desc.Width = width;
 		desc.Height = height;
-		HOK( device.device->CreateTexture2D( &desc, NULL, &zbuffer.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~zbuffer.texture ) );
 
 		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 
-		HOK( device.device->CreateTexture2D( &desc, NULL, &gbuffer0.texture ) );
-		HOK( device.device->CreateTexture2D( &desc, NULL, &lbuffer.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~gbuffer0.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~lbuffer.texture ) );
 
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-		HOK( device.device->CreateTexture2D( &desc, NULL, &gbuffer1.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~gbuffer1.texture ) );
 	}
 
 	// Views
@@ -221,17 +221,17 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Texture2D.MostDetailedMip = 0;
 
 		HOK( device.device->CreateShaderResourceView
-			( shadowmap.texture, &desc, &shadowmap.srv ));
+			( shadowmap.texture, &desc, ~shadowmap.srv ));
 
 		HOK( device.device->CreateShaderResourceView
-			( zbuffer.texture, &desc, &zbuffer.srv ));
+			( zbuffer.texture, &desc, ~zbuffer.srv ));
 
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 		desc.TextureCube.MipLevels = 1;
 		desc.TextureCube.MostDetailedMip = 0;
 
 		HOK( device.device->CreateShaderResourceView
-		  ( shadowcube.texture, &desc, &shadowcube.srv ));
+		  ( shadowcube.texture, &desc, ~shadowcube.srv ));
 	}
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
@@ -240,10 +240,10 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Texture2D.MipSlice = 0;
 
 		HOK( device.device->CreateDepthStencilView
-			( shadowmap.texture, &desc, &shadowmap.dsv ));
+			( shadowmap.texture, &desc, ~shadowmap.dsv ));
 
 		HOK( device.device->CreateDepthStencilView
-		  ( zbuffer.texture, &desc, &zbuffer.dsv ));
+		  ( zbuffer.texture, &desc, ~zbuffer.dsv ));
 
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 		desc.Texture2DArray.MipSlice = 0;
@@ -251,20 +251,20 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Texture2DArray.ArraySize = 6;
 
 		HOK( device.device->CreateDepthStencilView
-		  ( shadowcube.texture, &desc, &shadowcube.dsv ));
+		  ( shadowcube.texture, &desc, ~shadowcube.dsv ));
 	}
 	HOK( device.device->CreateShaderResourceView
-		( gbuffer0.texture, NULL, &gbuffer0.srv ) );
+		( gbuffer0.texture, NULL, ~gbuffer0.srv ) );
 	HOK( device.device->CreateShaderResourceView
-		( gbuffer1.texture, NULL, &gbuffer1.srv ) );
+		( gbuffer1.texture, NULL, ~gbuffer1.srv ) );
 	HOK( device.device->CreateShaderResourceView
-		( lbuffer.texture, NULL, &lbuffer.srv ) );
+		( lbuffer.texture, NULL, ~lbuffer.srv ) );
 	HOK( device.device->CreateRenderTargetView
-		( gbuffer0.texture, NULL, &gbuffer0.rtv ) );
+		( gbuffer0.texture, NULL, ~gbuffer0.rtv ) );
 	HOK( device.device->CreateRenderTargetView
-		( gbuffer1.texture, NULL, &gbuffer1.rtv ) );
+		( gbuffer1.texture, NULL, ~gbuffer1.rtv ) );
 	HOK( device.device->CreateRenderTargetView
-		( lbuffer.texture, NULL, &lbuffer.rtv ) );
+		( lbuffer.texture, NULL, ~lbuffer.rtv ) );
 
 	// Viewports
 	{			
@@ -292,55 +292,55 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	// Shaders
 	{
 		IPtr<ID3D11ClassLinkage> linkage;
-		HOK( device.device->CreateClassLinkage( &linkage ));
+		HOK( device.device->CreateClassLinkage( ~linkage ));
 
-		CompileShader( "shaders/ps_render.hlsl", "ps_render", "ps_5_0", &code );
+		CompileShader( "shaders/ps_render.hlsl", "ps_render", "ps_5_0", ~code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &vinfo.ps_render));
+			code->GetBufferSize(), linkage, ~vinfo.ps_render));
 
-		CompileShader( "shaders/vs_render_z.hlsl", "vs_render_z", "vs_5_0", &code );
+		CompileShader( "shaders/vs_render_z.hlsl", "vs_render_z", "vs_5_0", ~code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.vs_render_z));
+			code->GetBufferSize(), linkage, ~linfo.vs_render_z));
 
-		CompileShader( "shaders/vs_render_cube_z.hlsl", "vs_render_cube_z", "vs_5_0", &code );
+		CompileShader( "shaders/vs_render_cube_z.hlsl", "vs_render_cube_z", "vs_5_0", ~code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.vs_render_cube_z));
-		CompileShader( "shaders/gs_render_cube_z.hlsl", "gs_render_cube_z", "gs_5_0", &code );
+			code->GetBufferSize(), linkage, ~linfo.vs_render_cube_z));
+		CompileShader( "shaders/gs_render_cube_z.hlsl", "gs_render_cube_z", "gs_5_0", ~code );
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.gs_render_cube_z));
+			code->GetBufferSize(), linkage, ~linfo.gs_render_cube_z));
 
-		CompileShader( "shaders/vs_noop.hlsl", "vs_noop", "vs_5_0", &code );
+		CompileShader( "shaders/vs_noop.hlsl", "vs_noop", "vs_5_0", ~code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.vs_noop));
-		CompileShader( "shaders/gs_fullscreen.hlsl", "gs_fullscreen", "gs_5_0", &code );
+			code->GetBufferSize(), linkage, ~linfo.vs_noop));
+		CompileShader( "shaders/gs_fullscreen.hlsl", "gs_fullscreen", "gs_5_0", ~code );
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.gs_fullscreen));
+			code->GetBufferSize(), linkage, ~linfo.gs_fullscreen));
 
-		CompileShader( "shaders/gs_dir_light.hlsl", "gs_dir_light", "gs_5_0", &code );
+		CompileShader( "shaders/gs_dir_light.hlsl", "gs_dir_light", "gs_5_0", ~code );
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.gs_dir_light));
-		CompileShader( "shaders/gs_point_light.hlsl", "gs_point_light", "gs_5_0", &code );
+			code->GetBufferSize(), linkage, ~linfo.gs_dir_light));
+		CompileShader( "shaders/gs_point_light.hlsl", "gs_point_light", "gs_5_0", ~code );
 		HOK( device.device->CreateGeometryShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.gs_point_light));
+			code->GetBufferSize(), linkage, ~linfo.gs_point_light));
 
-		CompileShader( "shaders/ps_dir_light.hlsl", "ps_dir_light", "ps_5_0", &code );
+		CompileShader( "shaders/ps_dir_light.hlsl", "ps_dir_light", "ps_5_0", ~code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.ps_dir_light));
-		CompileShader( "shaders/ps_point_light.hlsl", "ps_point_light", "ps_5_0", &code );
+			code->GetBufferSize(), linkage, ~linfo.ps_dir_light));
+		CompileShader( "shaders/ps_point_light.hlsl", "ps_point_light", "ps_5_0", ~code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &linfo.ps_point_light));
+			code->GetBufferSize(), linkage, ~linfo.ps_point_light));
 
-		CompileShader( "shaders/ps_final.hlsl", "ps_final", "ps_5_0", &code );
+		CompileShader( "shaders/ps_final.hlsl", "ps_final", "ps_5_0", ~code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &pinfo.ps_final));
+			code->GetBufferSize(), linkage, ~pinfo.ps_final));
 
-		CompileShader( "shaders/ps_tracy.hlsl", "ps_tracy", "ps_5_0", &code );
+		CompileShader( "shaders/ps_tracy.hlsl", "ps_tracy", "ps_5_0", ~code );
 		HOK( device.device->CreatePixelShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &rinfo.ps_tracy));
+			code->GetBufferSize(), linkage, ~rinfo.ps_tracy));
 
-		CompileShader( "shaders/vs_render.hlsl", "vs_render", "vs_5_0", &code );
+		CompileShader( "shaders/vs_render.hlsl", "vs_render", "vs_5_0", ~code );
 		HOK( device.device->CreateVertexShader(code->GetBufferPointer(),
-			code->GetBufferSize(), linkage, &vinfo.vs_render));
+			code->GetBufferSize(), linkage, ~vinfo.vs_render));
 
 		rinfo.vs_noop = pinfo.vs_noop = linfo.vs_noop;
 		rinfo.gs_fullscreen = pinfo.gs_fullscreen = linfo.gs_fullscreen;
@@ -365,7 +365,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 		HOK( device.device->CreateInputLayout
 			( element, 2, code->GetBufferPointer(),
-			code->GetBufferSize(), &vinfo.layout ) );
+			code->GetBufferSize(), ~vinfo.layout ) );
 
 		linfo.layout = vinfo.layout;
 	}
@@ -385,15 +385,15 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.AntialiasedLineEnable = false;
 		//
 		desc.FrontCounterClockwise = true;
-		HOK( device.device->CreateRasterizerState( &desc, &vinfo.rs_default));
+		HOK( device.device->CreateRasterizerState( &desc, ~vinfo.rs_default));
 		rinfo.rs_default = linfo.rs_default = pinfo.rs_default = vinfo.rs_default;
 
 		desc.CullMode = D3D11_CULL_NONE;
-		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_both_sides));
+		HOK( device.device->CreateRasterizerState( &desc, ~linfo.rs_both_sides));
 
 		desc.CullMode = D3D11_CULL_BACK;
 		desc.SlopeScaledDepthBias = 1.0f;
-		HOK( device.device->CreateRasterizerState( &desc, &linfo.rs_shadow));
+		HOK( device.device->CreateRasterizerState( &desc, ~linfo.rs_shadow));
 	}
 	{
 		D3D11_BLEND_DESC desc;
@@ -410,7 +410,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		//
 		desc.RenderTarget[0].BlendEnable = true;
 		desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-		HOK( device.device->CreateBlendState( &desc, &linfo.bs_additive));
+		HOK( device.device->CreateBlendState( &desc, ~linfo.bs_additive));
 	}
 	{
 		D3D11_DEPTH_STENCIL_DESC desc;
@@ -441,7 +441,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		*desc.BorderColor = *zeros;
 		//
 		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-		HOK( device.device->CreateSamplerState( &desc, &linfo.sm_point));
+		HOK( device.device->CreateSamplerState( &desc, ~linfo.sm_point));
 		pinfo.sm_point = linfo.sm_point;
 	}
 
@@ -455,22 +455,22 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.MiscFlags = 0;
 
 		desc.ByteWidth = sizeof( CBufferLayouts::object );
-		HOK( device.device->CreateBuffer( &desc, NULL, &cb_object ));
+		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_object ));
 
 		desc.ByteWidth = sizeof( CBufferLayouts::frame );
-		HOK( device.device->CreateBuffer( &desc, NULL, &cb_frame ));
+		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_frame ));
 
 		desc.ByteWidth = sizeof( CBufferLayouts::object_z );
-		HOK( device.device->CreateBuffer( &desc, NULL, &cb_object_z ));
+		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_object_z ));
 
 		desc.ByteWidth = sizeof( CBufferLayouts::object_cube_z );
-		HOK( device.device->CreateBuffer( &desc, NULL, &cb_object_cube_z ));
+		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_object_cube_z ));
 
 		desc.ByteWidth = sizeof( CBufferLayouts::light );
-		HOK( device.device->CreateBuffer( &desc, NULL, &cb_light ));
+		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_light ));
 
 		desc.ByteWidth = sizeof( CBufferLayouts::tracy );
-		HOK( device.device->CreateBuffer( &desc, NULL, &cb_tracy ));
+		HOK( device.device->CreateBuffer( &desc, NULL, ~cb_tracy ));
 	}
 }
 
