@@ -13,6 +13,7 @@ struct LightRenderInfo
 	Matrix4f cubematrices[6];
 
 	IPtr<ID3D11InputLayout> layout;
+	IPtr<ID3D11InputLayout> layout_z;
 	IPtr<ID3D11RasterizerState> rs_default;
 	IPtr<ID3D11RasterizerState> rs_shadow;
 	IPtr<ID3D11RasterizerState> rs_both_sides;

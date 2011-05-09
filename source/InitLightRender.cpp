@@ -54,28 +54,33 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 	// Layout //!
 	{       
 		IPtr<ID3D10Blob> code;
-		Tools::CompileShader( "shaders/vs_render.hlsl", "vs_5_0", ~code );
 
 		D3D11_INPUT_ELEMENT_DESC element[2] =
 		{
 			{
 				"POSITION", 0,
 				DXGI_FORMAT_R32G32B32_FLOAT,
-				0, 0,
+				0, D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_VERTEX_DATA, 0
 			},
 
 			{
 				"NORMAL", 0,
 				DXGI_FORMAT_R32G32B32_FLOAT,
-				1, 0,
+				1, D3D11_APPEND_ALIGNED_ELEMENT,
 				D3D11_INPUT_PER_VERTEX_DATA, 0
 			}
 		};
 
+		Tools::CompileShader( "shaders/vs_render.hlsl", "vs_5_0", ~code );
 		HOK( device.device->CreateInputLayout
 			( element, 2, code->GetBufferPointer(),
 			code->GetBufferSize(), ~info.layout ) );
+
+		Tools::CompileShader( "shaders/vs_render_z.hlsl", "vs_5_0", ~code );
+		HOK( device.device->CreateInputLayout
+			( element, 1, code->GetBufferPointer(),
+			code->GetBufferSize(), ~info.layout_z ) );
 	}
 
 	//Misc

@@ -1,14 +1,11 @@
 cbuffer object_cube_z: register(b0)
 #include "cbuffer/object_cube_z"
 
-#include "struct/Vertex"
-#include "struct/Pixel"
-
 
 void main
 (
-	Vertex vertex,
-	out float3 position : POSITION
+	float3 position : POSITION,
+	out float3 output : POSITION
 ){
-	position = vertex.position;
+	output = position;
 }
