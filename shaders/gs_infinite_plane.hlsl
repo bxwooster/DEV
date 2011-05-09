@@ -4,7 +4,7 @@ cbuffer object_z: register(b0)
 #include "struct/Empty"
 #include "struct/Pixel"
 
-[maxvertexcount(36)]
+[maxvertexcount(12)]
 void main
 (
 	point Empty empty[1],
