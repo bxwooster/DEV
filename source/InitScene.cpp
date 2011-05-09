@@ -4,15 +4,11 @@
 #include "Geometries.hpp"
 #include "PhysicsState.hpp"
 #include "DeviceState.hpp"
+#include "Tools.hpp"
 
 #include <btBulletDynamicsCommon.h>
 
 namespace Devora {
-namespace Tools {
-
-Geometry ReadGeometry(ID3D11Device* device, const std::string& filename);
-
-}; using namespace Tools;
 
 class MotionState : public btMotionState
 {
@@ -42,8 +38,8 @@ public:
 void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	Geometries& geometries, PhysicsState& state, DeviceState& device)
 {
-	geometries.push_back( ReadGeometry(device.device, "geometry//plane.geom") );
-	geometries.push_back( ReadGeometry(device.device, "geometry//icosphere.geom") );
+	geometries.push_back( Tools::ReadGeometry(device.device, "geometry//plane.geom") );
+	geometries.push_back( Tools::ReadGeometry(device.device, "geometry//icosphere.geom") );
 
 	Matrix4f view_axis;
 	view_axis << 0, 1, 0, 0,

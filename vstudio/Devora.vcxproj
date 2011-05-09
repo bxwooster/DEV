@@ -30,6 +30,7 @@
     <ClInclude Include="..\source\RayTracingInfo.hpp" />
     <ClInclude Include="..\source\ShaderCache.hpp" />
     <ClInclude Include="..\source\TimingData.hpp" />
+    <ClInclude Include="..\source\Tools.hpp" />
     <ClInclude Include="..\source\Transforms.hpp" />
     <ClInclude Include="..\source\VisualRenderInfo.hpp" />
     <ClInclude Include="..\source\Visuals.hpp" />

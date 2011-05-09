@@ -8,23 +8,17 @@
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
 #include "ShaderCache.hpp"
+#include "Tools.hpp"
 
 #include <D3DX11.h>
 
 namespace Devora {
-namespace Tools {
-
-void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
-void CompileShader( char* file, char* profile, ID3D10Blob** code );
-
-};
 namespace LoadShader
 {
 	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
 	void Geometry(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11GeometryShader>& shader);
 	void Pixel(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11PixelShader>& shader);
 }
-
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
@@ -301,81 +295,6 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 			code->GetBufferSize(), ~vinfo.layout ) );
 
 		linfo.layout = vinfo.layout;
-	}
-
-	// States
-	{
-		D3D11_RASTERIZER_DESC desc;
-		desc.FillMode = D3D11_FILL_SOLID;
-		desc.CullMode = D3D11_CULL_BACK;
-		desc.FrontCounterClockwise = false;
-		desc.DepthBias = 0;
-		desc.DepthBiasClamp = 0.0f;
-		desc.SlopeScaledDepthBias = 0.0f;
-		desc.DepthClipEnable = true;
-		desc.ScissorEnable = false;
-		desc.MultisampleEnable = false;
-		desc.AntialiasedLineEnable = false;
-		//
-		desc.FrontCounterClockwise = true;
-		HOK( device.device->CreateRasterizerState( &desc, ~vinfo.rs_default));
-		rinfo.rs_default = linfo.rs_default = pinfo.rs_default = vinfo.rs_default;
-
-		desc.CullMode = D3D11_CULL_NONE;
-		HOK( device.device->CreateRasterizerState( &desc, ~linfo.rs_both_sides));
-
-		desc.CullMode = D3D11_CULL_BACK;
-		desc.SlopeScaledDepthBias = 1.0f;
-		HOK( device.device->CreateRasterizerState( &desc, ~linfo.rs_shadow));
-	}
-	{
-		D3D11_BLEND_DESC desc;
-		desc.AlphaToCoverageEnable = false;
-		desc.IndependentBlendEnable = false;
-		desc.RenderTarget[0].BlendEnable = false;
-		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-		desc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		//
-		desc.RenderTarget[0].BlendEnable = true;
-		desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-		HOK( device.device->CreateBlendState( &desc, ~linfo.bs_additive));
-	}
-	{
-		D3D11_DEPTH_STENCIL_DESC desc;
-		desc.DepthEnable = true;
-		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc = D3D11_COMPARISON_LESS;
-		desc.StencilEnable = false;
-		desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-		desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-		//
-		// No DSS yet
-	}
-
-	// Samplers
-	{
-		float zeros[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-		D3D11_SAMPLER_DESC desc;
-		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-		desc.MipLODBias = 0.0f;
-		desc.MinLOD = -FLT_MAX;
-		desc.MaxLOD = FLT_MAX;
-		desc.MaxAnisotropy = 16;
-		desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		*desc.BorderColor = *zeros;
-		//
-		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-		HOK( device.device->CreateSamplerState( &desc, ~linfo.sm_point));
-		pinfo.sm_point = linfo.sm_point;
 	}
 }
 

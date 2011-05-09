@@ -1,5 +1,6 @@
 #include "OK.h"
 
+#include "Tools.hpp"
 #include "DeviceState.hpp"
 #include "RayTracingInfo.hpp"
 #include "ShaderCache.hpp"
@@ -17,6 +18,10 @@ void InitRayTracing(DeviceState& device, ShaderCache& cache, RayTracingInfo& inf
 	LoadShader::Vertex(cache, device, "shaders/vs_noop.hlsl", info.vs_noop);
 	LoadShader::Geometry(cache, device, "shaders/gs_fullscreen.hlsl", info.gs_fullscreen);
 	LoadShader::Pixel(cache, device, "shaders/ps_tracy.hlsl", info.ps_tracy);
+
+	D3D11_RASTERIZER_DESC desc = Tools::DefaultRasterizerDesc();
+	desc.FrontCounterClockwise = true;
+	HOK( device.device->CreateRasterizerState( &desc, ~info.rs_default));
 }
 
 } // namespace Devora

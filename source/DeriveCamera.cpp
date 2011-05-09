@@ -1,15 +1,11 @@
 #include "Transforms.hpp"
 #include "PlayerState.hpp"
 #include "Camera.hpp"
+#include "Tools.hpp"
 
 #include <d3dx10math.h>
 
 namespace Devora {
-namespace Tools {
-
-void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
-
-}; using namespace Tools;
 
 void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera)
 {
@@ -28,7 +24,7 @@ void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera)
 	camera.aperture = 1.0f;
 	camera.vertical_fov = 60;
 	camera.view = view_axis * rotate * transforms[0].inverse();
-	SetProjectionMatrix(camera.proj, camera.vertical_fov, camera.aspect_ratio, camera.z_near);
+	Tools::SetProjectionMatrix(camera.proj, camera.vertical_fov, camera.aspect_ratio, camera.z_near);
 }
 
 } // namespace Devora
