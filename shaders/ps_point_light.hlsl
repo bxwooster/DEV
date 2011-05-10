@@ -21,7 +21,6 @@ float4 main
 ) : SV_Target0
 {
 	float2 uv = pixel.pos.xy * rcpres;
-	float light_scale = 10.0;
 	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(viewI_light_view_proj, surface_pos);

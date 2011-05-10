@@ -20,7 +20,6 @@ float4 main
 ) : SV_Target0
 {
 	float2 uv = pixel.pos.xy * rcpres;
-	float light_scale = 10.0;
 	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(viewI_light_view_proj, surface_pos);
@@ -30,8 +29,6 @@ float4 main
 
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
-
-	//return float4(all(abs(reprojected.xy) < 1), 1, 0, 0) * 0.5;
 
 	float inside_cone = length(reprojected.xy) < 1;
 	float fade = smoothstep(radius, radius * 0.9, l);
@@ -51,8 +48,6 @@ float4 main
 
     float radiance = lighted * fade *
 		max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
-
-	//return float4(radiance * in_front * inside_cone * 0.3, 0.03, 0.0, 1.0);
 
 	return float4(radiance * light_colour * colour, 1.0);
 }

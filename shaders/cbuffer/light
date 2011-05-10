@@ -4,7 +4,6 @@
 	float4x4 light_world_view_proj;
 
 	float3 light_pos;
-	float _; //!
+	float radius; //! alignment issues
 	float3 light_colour;
-	float radius;
 };

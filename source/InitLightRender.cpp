@@ -36,6 +36,7 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 		//desc.FrontCounterClockwise = true;
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_default));
 
+		//desc.FillMode = D3D11_FILL_WIREFRAME;
 		desc.CullMode = D3D11_CULL_FRONT;
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_backface));
 

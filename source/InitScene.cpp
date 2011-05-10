@@ -60,38 +60,38 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	transforms.push_back( t ); // player
 	transforms.push_back( Matrix4f::Identity() ); // plane
 
-	//for (int i = -2; i <= 2; i++)
-	//{
-	//	for (int j = -2; j <= 2; j++)
-	//	{
-	//		t.col(3) = Vector4f(i * 3.0f + j % 2, j * 3.0f + i % 2, 1.0f, 1.0f);
-	//		Visual v = { transforms.size(), 1 };
-	//		transforms.push_back( t );
-	//		visuals.push_back( v );
-	//	}
-	//}
+	for (int i = -2; i <= 2; i++)
+	{
+		for (int j = -2; j <= 2; j++)
+		{
+			t.col(3) = Vector4f(i * 3.0f + j % 2, j * 3.0f + i % 2, 1.0f, 1.0f);
+			v.transform = transforms.size();
+			transforms.push_back( t );
+			visuals.push_back( v );
+		}
+	}
 
-	t.col(3) = Vector4f(0, 0, 5, 1);
-	light.colour = Vector3f(1, 1, 0);
+	t.col(3) = Vector4f(0, 0, 10, 1);
+	light.colour = Vector3f(0.5, 0.5, 0);
 	v.transform = light.transform = transforms.size();
 	transforms.push_back( t * view_axis );
 	lights.point.push_back(light);
 	visuals.push_back( v );
 
-	t.col(3) = Vector4f(5, 3, 1, 1);
-	transforms.push_back( t );
-	light.colour = Vector3f(1, 0, 0);
-	v.transform = light.transform = transforms.size();
-	transforms.push_back( t * view_axis );
-	lights.dir.push_back(light);
-	visuals.push_back( v );
+	//t.col(3) = Vector4f(5, 2, 1, 1);
+	//transforms.push_back( t );
+	//light.colour = Vector3f(1, 0, 0);
+	//v.transform = light.transform = transforms.size();
+	//transforms.push_back( t * view_axis );
+	//lights.dir.push_back(light);
+	//visuals.push_back( v );
 
-	t.col(3) = Vector4f(5, -3, 1, 1);
-	light.colour = Vector3f(0, 1, 0);
-	v.transform = light.transform = transforms.size();
-	transforms.push_back( t * view_axis );
-	lights.dir.push_back(light);
-	visuals.push_back( v );
+	//t.col(3) = Vector4f(5, -2, 1, 1);
+	//light.colour = Vector3f(0, 1, 0);
+	//v.transform = light.transform = transforms.size();
+	//transforms.push_back( t * view_axis );
+	//lights.dir.push_back(light);
+	//visuals.push_back( v );
 
 
 	btScalar mass(1);

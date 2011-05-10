@@ -18,6 +18,7 @@ void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer, Camera& 
 	data.xy_to_ray = Vector2f(-camera.aspect_ratio, 1.0) * tan(alpha);
 	data.z_near = camera.z_near;
 	data.rcpres = Vector2f( 1 / float(camera.screen.w), 1 / float(camera.screen.h) );
+	data.light_scale = 100.0f;
 	state->UpdateSubresource(cb_frame, 0, NULL, (void*)&data, sizeof(data), 0);
 
 	state->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
