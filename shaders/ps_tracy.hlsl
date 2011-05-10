@@ -10,6 +10,7 @@ cbuffer tracy: register(b1)
 
 float dist(float3 world)
 {
+	world -= float3(0,0,1);
 	float torus = length(float2(length(world.xy) - 1.0, world.z)) - 0.25;
 	float cube = max(max(abs(world.x), abs(world.y)), abs(world.z)) - 1.0;
 	float sphere = length(world) - sqrt(2.0);
@@ -27,8 +28,9 @@ void main
 ){
 	float2 uv = pixel.pos.xy * rcpres;
 
-	float4 pos = float4(eye, 1.0);
-	float4 dir = mul( viewI, -normalize(float4(uv_to_ray(uv), 1.0, 0.0) ) );
+	float4 pos = float4(eye, 0.0);
+	float4 dir = mul( viewI, -normalize(float4(uv_to_ray(uv), 1, 0)));
+	float4 cdir = mul( viewI, -normalize(float4(0, 0, 1, 0)));
 	float4 ray = float4(dir.xyz, 1.0);
 
 	float d = 1.0;
@@ -48,5 +50,6 @@ void main
 
 	g0.xyz = normal;
 	g1.xyz = 1.0;
-	depth = 1.0 - z_near / (pos.w); //!
+
+	depth = 1.0 - z_near / (pos.w * dot(dir, cdir)); //!
 }
