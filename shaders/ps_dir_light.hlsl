@@ -39,7 +39,7 @@ float4 main
 	float4 s = z_near / (1.0 - shadowmap.Gather(sm_point, s_uv));
 
 	float p = dot(viewI_light_view[2].xyz, lightvec);
-	float lighted = dot(p - 0.2 <= s, 0.25);
+	float lighted = dot(p <= s, 0.25);
 
 	if (lighted == 0.0) discard;
 

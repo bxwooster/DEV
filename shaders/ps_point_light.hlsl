@@ -36,7 +36,7 @@ float4 main
 
 	float3 p = abs(mul(viewI_light_view, float4(lightvec, 0)).xyz);
 	float m = max(p.x, max(p.y, p.z));
-	float lighted = dot(m - 0.2 <= s, 0.25);
+	float lighted = dot(m <= s, 0.25);
 
 	if (lighted == 0.0) discard;
 

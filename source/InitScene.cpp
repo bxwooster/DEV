@@ -60,11 +60,13 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	transforms.push_back( t ); // player
 	transforms.push_back( Matrix4f::Identity() ); // plane
 
-	for (int i = -2; i <= 2; i++)
+	int N = 1;
+	for (int i = -N; i <= N; i++)
 	{
-		for (int j = -2; j <= 2; j++)
+		for (int j = -N; j <= N; j++)
 		{
-			t.col(3) = Vector4f(i * 3.0f + j % 2, j * 3.0f + i % 2, 1.0f, 1.0f);
+			if (i == 0 && j == 0) continue;
+			t.col(3) = Vector4f(i * 3.0f, j * 3.0f, 1.0f, 1.0f);
 			v.transform = transforms.size();
 			transforms.push_back( t );
 			visuals.push_back( v );

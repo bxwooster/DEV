@@ -33,15 +33,14 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 
 	{
 		D3D11_RASTERIZER_DESC desc = Tools::DefaultRasterizerDesc();
-		//desc.FrontCounterClockwise = true;
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_default));
 
-		//desc.FillMode = D3D11_FILL_WIREFRAME;
 		desc.CullMode = D3D11_CULL_FRONT;
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_backface));
 
 		desc.CullMode = D3D11_CULL_BACK;
 		desc.SlopeScaledDepthBias = 1.0f;
+		desc.DepthBias = 128;
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_shadow));
 	}
 

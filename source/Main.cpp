@@ -135,7 +135,7 @@ void run()
 		Prepare(graphics, cb_frame, zbuffer, camera);
 		RenderVisuals(graphics, vinfo, transforms, visuals, geometries,
 			camera, gbuffer0, gbuffer1, zbuffer, cb_object);
-		/*RayTrace(graphics, rinfo, camera, zbuffer, gbuffer0, gbuffer1, cb_frame, cb_tracy);*/
+		RayTrace(graphics, rinfo, camera, zbuffer, gbuffer0, gbuffer1, cb_frame, cb_tracy);
 		RenderLights(graphics, linfo, transforms, lights, visuals, geometries,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
