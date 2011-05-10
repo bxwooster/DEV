@@ -10,7 +10,7 @@ void main
 ){
 	ScreenPixel pixel;
 	float2 position;
-	float2 positions[] = { {0, 0}, {2, 0}, {0, 2} };
+	float2 positions[] = { {0, 0}, {0, 2}, {2, 0} };
 
 	for (uint id = 0; id < 3; id++)
 	{

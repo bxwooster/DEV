@@ -16,17 +16,19 @@ def write(filename, mesh):
 
     vertices = mesh.vertices
     for face in mesh.faces:
-        if len(face.vertices) == 3:        
+        indices = face.vertices
+        if len(indices) == 3:
+            indices = [indices[0], indices[2], indices[1]]            
             if not face.use_smooth:
                 N = face.normal
-                for index in face.vertices:
+                for index in indices:
                     V = vertices[index].co
                     pbuffer.write( ppack.pack(V.x, V.y, V.z) )
                     nbuffer.write( npack.pack(N.x, N.y, N.z) )
                     ibuffer.write( ipack.pack(total) )
                     total += 1
             else:
-                for index in face.vertices:
+                for index in indices:
                     if index not in reindex:
                         reindex[index] = total
                         total += 1

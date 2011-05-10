@@ -23,7 +23,7 @@ void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& 
 
 	{
 		D3D11_RASTERIZER_DESC desc = Tools::DefaultRasterizerDesc();
-		desc.FrontCounterClockwise = true;
+		//desc.FrontCounterClockwise = true;
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_default));
 	}
 
