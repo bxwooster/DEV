@@ -6,6 +6,7 @@
 #include "DeviceState.hpp"
 #include "Tools.hpp"
 
+#include <iostream>
 #include <btBulletDynamicsCommon.h>
 
 namespace Devora {
@@ -19,25 +20,22 @@ public:
 		transform(transform_)
 	{}
 
-	virtual ~MotionState()
-	{}
-
 	virtual void getWorldTransform(btTransform &t) const
 	{
-		Matrix4f transposed = transform.transpose();
-		t.setFromOpenGLMatrix( (btScalar*)transposed.data() );
+		*(Matrix4f*)&t = transform.transpose();
 	}
 
 	virtual void setWorldTransform(const btTransform& t)
 	{
-		t.getOpenGLMatrix( (btScalar*)transform.data() );
-		transform.transposeInPlace();
+		transform = (*(Matrix4f*)&t).transpose();
+		transform.col(3).w() = 1.0;
 	}
 };
 
 void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	Geometries& geometries, PhysicsState& state, DeviceState& device)
-{
+{ 
+	// Make A Scene oooo-oh-oo-oh-oo-oh-oo-oh-oo
 	geometries.push_back( Tools::ReadGeometry(device.device, "geometry//Sphere") );
 
 	Matrix4f view_axis;
@@ -95,25 +93,34 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	//lights.dir.push_back(light);
 	//visuals.push_back( v );
 
+	int n = transforms.size();
+	state.bodies = (btRigidBody*)btRigidBody::operator new[](n * sizeof(btRigidBody));
 
-	btScalar mass(1);
+	btScalar mass;
 	btVector3 localInertia;
+	btMotionState* motionState;
+
+	mass = 3;
+	localInertia = btVector3(0, 0, 0); // can't rotate
+	motionState = new MotionState(transforms[0]);
+	state.bodies[0] = btRigidBody(mass, motionState, state.sphere.get(), localInertia);
+	state.dynamicsWorld->addRigidBody(&state.bodies[0]);
+	
+	mass = 0;
+	motionState = new MotionState(transforms[1]);
+	state.bodies[1] = btRigidBody(mass, motionState, state.plane.get(), localInertia);
+	state.dynamicsWorld->addRigidBody(&state.bodies[1]);
+
+	mass = 1;
 	state.sphere->calculateLocalInertia(mass, localInertia);
 
 	for (int i = 2; i < transforms.size(); i++)
 	{	
-		btMotionState* motionState = new MotionState(transforms[i]);
-		btRigidBody* body = new btRigidBody(mass, motionState, state.sphere.get(), localInertia);
-		state.dynamicsWorld->addRigidBody(body);
-		state.bodies.push_back(body);
+		motionState = new MotionState(transforms[i]);
+		btRigidBody body(mass, motionState, state.sphere.get(), localInertia);
+		state.bodies[i] = body;
+		state.dynamicsWorld->addRigidBody(&state.bodies[i]);
 	}
-
-	mass = 3;
-	localInertia = btVector3(0, 0, 0); // can't rotate
-	btMotionState* motionState = new MotionState(transforms[0]);
-	state.playerBody = std::unique_ptr<btRigidBody>
-		(new btRigidBody(mass, motionState, state.sphere.get(), localInertia) );
-	state.dynamicsWorld->addRigidBody(state.playerBody.get());
 }
 
 } // namespace Devora

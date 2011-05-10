@@ -118,18 +118,18 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\msvc\2008\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
-    <SourcePath>$(SourcePath)</SourcePath>
+    <SourcePath>$(SolutionDir)..\..\__external__\bullet\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\msvc\2008\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
-    <SourcePath>$(SourcePath)</SourcePath>
+    <SourcePath>$(SolutionDir)..\..\__external__\bullet\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
