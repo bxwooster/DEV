@@ -69,7 +69,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		data.light_pos = (camera.view * transforms[light.transform].col(3)).head<3>();
 		data.light_colour = light.colour;
 		data.light_world_view_proj = camera.proj * camera.view * transforms[light.transform];
-		data.radius = 5; //!
+		data.radius = 30; //!
 
 		ID3D11Buffer* buffers[] = { cb_frame, cb_light };
 		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowmap.srv };
@@ -105,15 +105,12 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		Matrix4f lightview = transforms[light.transform].inverse();
 		Matrix4f lightview_lightproj = info.proj * lightview;
 
-		D3D11_VIEWPORT& v = shadowcube.viewport;
-		D3D11_VIEWPORT viewports[6] = {v, v, v, v, v, v};
-
 		state->ClearDepthStencilView(shadowcube.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 		state->ClearState();
 
 		state->IASetInputLayout( info.layout_z );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-		state->RSSetViewports( 6, viewports ); //!
+		state->RSSetViewports( 1, &shadowcube.viewport ); //!
 		state->OMSetRenderTargets(0, NULL, shadowcube.dsv);
 
 		state->RSSetState( info.rs_shadow );

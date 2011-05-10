@@ -7,5 +7,5 @@ void main
 	float3 position : POSITION,
 	out float4 output : SV_Position
 ){
-	output = mul( world_view_proj, position );
+	output = mul( world_view_proj, float4(position, 1.0) );
 }
