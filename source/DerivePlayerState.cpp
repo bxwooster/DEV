@@ -13,6 +13,7 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 	int const A = 65;
 	int const D = 68;
 	int const SPACE = 32;
+	int const SHIFT = 16;
 
 	auto end = input.keys_held.end();
 
@@ -39,6 +40,7 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 	state.mov = rot * state.mov;
 
 	state.jump = ( input.keys_held.find(SPACE) != end );
+	state.sprint = ( input.keys_held.find(SHIFT) != end );
 
 	state.camera.yaw += input.mouse.x * 0.25f; //! mouse sens
 	state.camera.pitch += input.mouse.y * 0.25f;

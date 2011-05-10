@@ -16,7 +16,7 @@ struct LightRenderInfo
 	IPtr<ID3D11InputLayout> layout_z;
 	IPtr<ID3D11RasterizerState> rs_default;
 	IPtr<ID3D11RasterizerState> rs_shadow;
-	IPtr<ID3D11RasterizerState> rs_both_sides;
+	IPtr<ID3D11RasterizerState> rs_backface;
 	IPtr<ID3D11BlendState> bs_additive;
 	IPtr<ID3D11SamplerState> sm_point;
 

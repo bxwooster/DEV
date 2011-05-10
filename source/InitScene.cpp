@@ -51,6 +51,8 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	t.col(3) = Vector4f(10, 0, 5, 1);
 
 	Visual v;
+	Light light;
+
 	v.transform = transforms.size();
 	v.geometry = 0;
 	visuals.push_back( v ); //!
@@ -69,28 +71,28 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	//	}
 	//}
 
-	t.col(3) = Vector4f(0, 0, 5, 1);
-	Light light = { Vector3f(1, 1, 0), transforms.size() };
-	v.transform = transforms.size();
-	transforms.push_back( t * view_axis );
-	lights.point.push_back(light);
-	visuals.push_back( v );
+	//t.col(3) = Vector4f(0, 0, 5, 1);
+	//light.colour = Vector3f(1, 1, 0);
+	//v.transform = light.transform = transforms.size();
+	//transforms.push_back( t * view_axis );
+	//lights.point.push_back(light);
+	//visuals.push_back( v );
 
-	t.col(3) = Vector4f(5, 3, 1, 1);
-	transforms.push_back( t );
-	v.transform = light.transform = transforms.size();
-	light.colour = Vector3f(1, 0, 0);
-	transforms.push_back( t * view_axis );
-	lights.dir.push_back(light);
-	visuals.push_back( v );
+	//t.col(3) = Vector4f(5, 3, 1, 1);
+	//transforms.push_back( t );
+	//light.colour = Vector3f(1, 0, 0);
+	//v.transform = light.transform = transforms.size();
+	//transforms.push_back( t * view_axis );
+	//lights.dir.push_back(light);
+	//visuals.push_back( v );
 
 	t.col(3) = Vector4f(5, -3, 1, 1);
-	transforms.push_back( t );
-	v.transform = light.transform = transforms.size();
 	light.colour = Vector3f(0, 1, 0);
+	v.transform = light.transform = transforms.size();
 	transforms.push_back( t * view_axis );
 	lights.dir.push_back(light);
 	visuals.push_back( v );
+
 
 	btScalar mass(1);
 	btVector3 localInertia;
@@ -104,7 +106,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 		state.bodies.push_back(body);
 	}
 
-	mass = 5;
+	mass = 3;
 	localInertia = btVector3(0, 0, 0); // can't rotate
 	btMotionState* motionState = new MotionState(transforms[0]);
 	state.playerBody = std::unique_ptr<btRigidBody>

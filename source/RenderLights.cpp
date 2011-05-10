@@ -69,7 +69,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		data.light_pos = (camera.view * transforms[light.transform].col(3)).head<3>();
 		data.light_colour = light.colour;
 		data.light_world_view_proj = camera.proj * camera.view * transforms[light.transform];
-		data.radius = 30; //!
+		data.radius = 5; //!
 
 		ID3D11Buffer* buffers[] = { cb_frame, cb_light };
 		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowmap.srv };
@@ -81,7 +81,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state->RSSetViewports( 1, &lbuffer.viewport );
 
-		state->RSSetState( info.rs_default );
+		state->RSSetState( info.rs_backface );
 		state->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
 		state->OMSetDepthStencilState( NULL, 0 );
 
@@ -160,7 +160,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->RSSetViewports( 1, &lbuffer.viewport );
 		state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
 
-		state->RSSetState( info.rs_default );
+		state->RSSetState( info.rs_backface );
 		state->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
 		state->OMSetDepthStencilState( NULL, 0 );
 

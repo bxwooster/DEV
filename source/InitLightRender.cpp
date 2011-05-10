@@ -36,8 +36,8 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 		desc.FrontCounterClockwise = true;
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_default));
 
-		desc.CullMode = D3D11_CULL_NONE;
-		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_both_sides));
+		desc.CullMode = D3D11_CULL_FRONT;
+		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_backface));
 
 		desc.CullMode = D3D11_CULL_BACK;
 		desc.SlopeScaledDepthBias = 1.0f;
