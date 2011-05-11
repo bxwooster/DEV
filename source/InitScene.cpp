@@ -95,6 +95,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 
 	int n = transforms.size();
 	state.bodies = (btRigidBody*)btRigidBody::operator new[](n * sizeof(btRigidBody));
+	//! delete
 
 	btScalar mass;
 	btVector3 localInertia;
