@@ -27,6 +27,8 @@ void InitPhysics(PhysicsState& state)
 		(new btStaticPlaneShape(btVector3(0, 0, 1), 0)) ;
 	state.sphere = unique_ptr<btCollisionShape>
 		(new btSphereShape(1) );
+
+	state.timeToSimulate = 0;
 }
 
 } // namespace Devora

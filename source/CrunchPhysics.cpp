@@ -7,58 +7,6 @@
 
 namespace Devora {
 
-void internalSingleStepSimulation(btDiscreteDynamicsWorld* world, btScalar timeStep)
-{
-	world->predictUnconstraintMotion(timeStep);
-	world->performDiscreteCollisionDetection();
-	world->addSpeculativeContacts(timeStep);
-	world->calculateSimulationIslands();
-	world->solveConstraints(world->getSolverInfo());
-	world->integrateTransforms(timeStep);
-	world->updateActivationState(timeStep);
-}
-
-void stepSimulation(btDiscreteDynamicsWorld* world, float timeStep)
-{
-	static float localTime = 0;
-	float const fixedTimeStep = 1.0f / 60.0f;
-	int const maxSubSteps = 6;
-
-	//fixed timestep with interpolation
-	localTime += timeStep;
-	int numSimulationSubSteps = std::min(int(localTime / fixedTimeStep), maxSubSteps);
-	localTime -= numSimulationSubSteps * fixedTimeStep;
-
-	for (int i = 0; i < world->m_nonStaticRigidBodies.size(); i++)
-	{
-		btRigidBody* body = world->m_nonStaticRigidBodies[i];
-		if (body->isActive())
-		{
-			body->applyGravity();
-		}
-	}
-
-
-	for (int k = 0; k < numSimulationSubSteps; k++)
-	{
-		internalSingleStepSimulation(world, fixedTimeStep);
-	}
-
-	for (int i = 0; i < world->m_nonStaticRigidBodies.size(); i++)
-	{
-		btRigidBody* body = world->m_nonStaticRigidBodies[i];
-		if (body->isActive())
-		{
-			btTransform interpolatedTransform;
-			btTransformUtil::integrateTransform(body->getInterpolationWorldTransform(),
-				body->getInterpolationLinearVelocity(),body->getInterpolationAngularVelocity(),
-				localTime*body->getHitFraction(),interpolatedTransform);
-			body->getMotionState()->setWorldTransform(interpolatedTransform);
-		}
-		body->clearForces();
-	}
-}
-
 void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	PlayerState& player, TimingData& timing)
 {
@@ -70,7 +18,48 @@ void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	state.bodies[0].activate(true);
 	state.bodies[0].setLinearVelocity( btVector3(mult * player.mov.x(), mult * player.mov.y(), vel.z()));
 	
-	stepSimulation(state.dynamicsWorld.get(), timing.delta);
+	//state.dynamicsWorld->stepSimulation(timing.delta, 6);
+	//return;
+
+	float const fixedTimeStep = 1.0f / 60.0f;
+	int const maxSubSteps = 6;
+
+	//fixed timestep with interpolation
+	state.timeToSimulate += timing.delta;
+	int subSteps = std::min(int(state.timeToSimulate / fixedTimeStep), maxSubSteps);
+	state.timeToSimulate -= subSteps * fixedTimeStep;
+
+	auto world = state.dynamicsWorld.get();
+
+	//world->saveKinematicState(fixedTimeStep * subSteps);
+	world->applyGravity();
+
+	for (int k = 0; k < subSteps; k++)
+	{
+		world->predictUnconstraintMotion(fixedTimeStep);
+		world->updateAabbs();
+		world->m_broadphasePairCache->calculateOverlappingPairs(world->m_dispatcher1);
+
+		btDispatcherInfo& dispatchInfo = world->getDispatchInfo();
+		dispatchInfo.m_timeStep = fixedTimeStep;
+		dispatchInfo.m_stepCount = 0;
+
+		world->m_dispatcher1->dispatchAllCollisionPairs(
+				world->m_broadphasePairCache->getOverlappingPairCache(),
+				dispatchInfo, world->m_dispatcher1);	
+
+		//if (getDispatchInfo().m_useContinuous)
+		//	world->addSpeculativeContacts(fixedTimeStep);
+		world->calculateSimulationIslands();
+		
+		world->getSolverInfo().m_timeStep = fixedTimeStep;
+		world->solveConstraints(world->getSolverInfo());
+		world->integrateTransforms(fixedTimeStep);
+		//world->updateActivationState(fixedTimeStep);
+	}
+
+	world->synchronizeMotionStates();
+	world->clearForces();
 }
 
 } // namespace Devora

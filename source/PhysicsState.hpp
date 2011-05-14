@@ -16,8 +16,9 @@ struct PhysicsState
 	std::unique_ptr<btSequentialImpulseConstraintSolver> solver;
 	std::unique_ptr<btCollisionShape> plane;
 	std::unique_ptr<btCollisionShape> sphere;
-	btRigidBody* bodies;
 	std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
+	btRigidBody* bodies;
+	float timeToSimulate;
 };
 
 } // namespace Devora
