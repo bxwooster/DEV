@@ -3,5 +3,6 @@
 
 void main
 (
-	out Empty empty
-) { }
+out Empty empty
+) 
+{ }

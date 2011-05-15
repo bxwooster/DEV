@@ -1,4 +1,0 @@
-struct ScreenPixel
-{
-	float4 pos : SV_Position;
-};

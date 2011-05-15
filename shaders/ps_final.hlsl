@@ -9,16 +9,15 @@ Texture2D lbuffer: register(t3);
 sampler sm_point : register(s0);
 
 #include "code/uv_to_ray"
+#include "struct/PPosition"
 
 
 float4 main
 (
-	float4 pos : SV_Position
+	PPosition input
 ) : SV_Target0
 {
-	float2 uv = pos.xy * rcpres;
-
-	//return (zbuffer.Sample(sm_point, uv).x - 0.97) / 0.1;
+	float2 uv = input.svposition.xy * rcpres;
 
 	if (zbuffer.Sample(sm_point, uv).x == 1.0) //sky
 	{

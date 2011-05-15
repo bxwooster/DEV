@@ -1,0 +1,4 @@
+struct VPosition
+{
+	float3 position : POSITION;
+};

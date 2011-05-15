@@ -82,9 +82,10 @@
     <None Include="..\shaders\ps_render.hlsl" />
     <None Include="..\shaders\ps_tracy.hlsl" />
     <None Include="..\shaders\struct\Empty" />
-    <None Include="..\shaders\struct\Pixel" />
-    <None Include="..\shaders\struct\ScreenPixel" />
-    <None Include="..\shaders\struct\Vertex" />
+    <None Include="..\shaders\struct\PPositionNormal" />
+    <None Include="..\shaders\struct\PPosition" />
+    <None Include="..\shaders\struct\VPosition" />
+    <None Include="..\shaders\struct\VPositionNormal" />
     <None Include="..\shaders\vs_noop.hlsl" />
     <None Include="..\shaders\vs_render.hlsl" />
     <None Include="..\shaders\vs_render_cube_z.hlsl" />

@@ -1,14 +1,12 @@
 cbuffer object_cube_z: register(b0)
 #include "cbuffer/object_cube_z"
 
-struct Input
-{
-	float3 position : POSITION;
-};
+#include "struct/VPosition"
+#include "struct/PPosition"
 
 struct Output
 {
-	float4 position : SV_Position;
+	PPosition p;
 	uint index : SV_RenderTargetArrayIndex;
 };
 
@@ -16,7 +14,7 @@ struct Output
 [maxvertexcount(18)]
 void main
 (
-	triangle Input input[3],
+	triangle VPosition input[3],
 	inout TriangleStream<Output> stream
 ){
 	Output output;
@@ -25,7 +23,7 @@ void main
 		output.index = i;
 		for (int v = 0; v < 3; v++)
 		{
-			output.position = mul(cubeproj[i], float4(input[v].position, 1.0));
+			output.p.svposition = mul(cubeproj[i], float4(input[v].position, 1.0));
 
 			stream.Append( output );
 		}

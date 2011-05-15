@@ -2,15 +2,15 @@ cbuffer object_z: register(b0)
 #include "cbuffer/light"
 
 #include "struct/Empty"
-#include "struct/ScreenPixel"
+#include "struct/PPosition"
 
 [maxvertexcount(36)]
 void main
 (
 	point Empty empty[1],
-	inout TriangleStream<ScreenPixel> stream
+	inout TriangleStream<PPosition> stream
 ){
-	ScreenPixel pixel;
+	PPosition output;
 
 	float3 vertices[] =
 	{
@@ -47,8 +47,8 @@ void main
 		for (uint v = 0; v < 3; v++)
 		{
 			float4 vertex = float4(-radius * vertices[ indices[id][v] ], 1.0);
-			pixel.pos = mul(light_world_view_proj, vertex);
-			stream.Append(pixel);
+			output.svposition = mul(light_world_view_proj, vertex);
+			stream.Append(output);
 		}
 		stream.RestartStrip();
 	}

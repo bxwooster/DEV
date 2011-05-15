@@ -3,8 +3,7 @@ cbuffer frame: register(b0)
 cbuffer tracy: register(b1)
 #include "cbuffer/tracy"
 
-#include "struct/ScreenPixel"
-
+#include "struct/PPosition"
 #include "code/uv_to_ray"
 
 
@@ -21,12 +20,12 @@ float dist(float3 world)
 
 void main
 (
-	ScreenPixel pixel,
-	out float4 g0 : SV_Target0,
-	out float4 g1 : SV_Target1,
-	out float depth : SV_Depth
+	PPosition input,
+out float4 g0 : SV_Target0,
+out float4 g1 : SV_Target1,
+out float depth : SV_Depth
 ){
-	float2 uv = pixel.pos.xy * rcpres;
+	float2 uv = input.svposition.xy * rcpres;
 
 	float4 pos = float4(eye, 0.0);
 	float4 dir = mul( viewI, -normalize(float4(uv_to_ray(uv), 1, 0)));

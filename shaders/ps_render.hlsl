@@ -1,12 +1,12 @@
-#include "struct/Pixel"
+#include "struct/PPositionNormal"
 
 
 void main
 (
-	Pixel pixel,
-	out float4 g0 : SV_Target0,
-	out float4 g1 : SV_Target1
+	PPositionNormal input,
+out float4 g0 : SV_Target0,
+out float4 g1 : SV_Target1
 ){
-	g0.xyz = pixel.normal;
+	g0.xyz = input.normal;
 	g1.xyz = 1.0; // some colour
 }

@@ -189,15 +189,6 @@
     <None Include="..\shaders\cbuffer\light">
       <Filter>shaders\cbuffer</Filter>
     </None>
-    <None Include="..\shaders\struct\Pixel">
-      <Filter>shaders\struct</Filter>
-    </None>
-    <None Include="..\shaders\struct\ScreenPixel">
-      <Filter>shaders\struct</Filter>
-    </None>
-    <None Include="..\shaders\struct\Vertex">
-      <Filter>shaders\struct</Filter>
-    </None>
     <None Include="..\shaders\struct\Empty">
       <Filter>shaders\struct</Filter>
     </None>
@@ -248,6 +239,18 @@
     </None>
     <None Include="..\shaders\gs_infinite_plane.hlsl">
       <Filter>shaders\shaders</Filter>
+    </None>
+    <None Include="..\shaders\struct\VPosition">
+      <Filter>shaders\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\VPositionNormal">
+      <Filter>shaders\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\PPosition">
+      <Filter>shaders\struct</Filter>
+    </None>
+    <None Include="..\shaders\struct\PPositionNormal">
+      <Filter>shaders\struct</Filter>
     </None>
   </ItemGroup>
 </Project>

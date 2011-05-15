@@ -1,15 +1,14 @@
 cbuffer object: register(b0)
 #include "cbuffer/object"
 
-#include "struct/Vertex"
-#include "struct/Pixel"
-
+#include "struct/VPositionNormal"
+#include "struct/PPositionNormal"
 
 void main
 (
-	Vertex vertex,
-	out Pixel pixel
+	VPositionNormal input,
+out PPositionNormal output
 ){
-	pixel.pos = mul( world_view_proj, float4(vertex.position, 1.0) );
-	pixel.normal = normalize( mul( (float3x3)world_view, vertex.normal ) );
+	output.svposition = mul( world_view_proj, float4(input.position, 1.0) );
+	output.normal = normalize( mul( (float3x3)world_view, input.normal ) );
 }
