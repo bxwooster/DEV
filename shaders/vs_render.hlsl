@@ -4,6 +4,7 @@ cbuffer object: register(b0)
 #include "struct/VPositionNormal"
 #include "struct/PPositionNormal"
 
+
 void main
 (
 	VPositionNormal input,

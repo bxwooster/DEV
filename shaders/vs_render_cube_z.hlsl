@@ -3,6 +3,7 @@ cbuffer object_cube_z: register(b0)
 
 #include "struct/VPosition"
 
+
 void main
 (
 	VPosition input,

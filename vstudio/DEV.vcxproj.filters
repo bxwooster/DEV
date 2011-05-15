@@ -252,5 +252,8 @@
     <None Include="..\shaders\struct\PPositionNormal">
       <Filter>shaders\struct</Filter>
     </None>
+    <None Include="..\shaders\code\common_light">
+      <Filter>shaders\code</Filter>
+    </None>
   </ItemGroup>
 </Project>

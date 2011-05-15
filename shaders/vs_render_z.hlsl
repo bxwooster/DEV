@@ -4,6 +4,7 @@ cbuffer object_z: register(b0)
 #include "struct/VPosition"
 #include "struct/PPosition"
 
+
 void main
 (
 	VPosition input,

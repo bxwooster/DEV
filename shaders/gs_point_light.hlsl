@@ -4,6 +4,7 @@ cbuffer object_z: register(b0)
 #include "struct/Empty"
 #include "struct/PPosition"
 
+
 [maxvertexcount(36)]
 void main
 (

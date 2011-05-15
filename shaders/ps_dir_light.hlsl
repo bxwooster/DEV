@@ -10,9 +10,24 @@ Texture2D shadowmap: register(t3);
 
 sampler sm_point : register(s0);
 
-#include "code/uv_to_ray"
 #include "struct/PPosition"
+#include "code/uv_to_ray"
 
+float shadowmap_test(float4 reprojected, float3 lightvec)
+{
+	float in_front = reprojected.w > 0;
+	reprojected /= reprojected.w;
+	float inside_cone = length(reprojected.xy) < 1;
+	if (in_front * inside_cone == 0.0) discard;
+
+	float2 s_uv = float2(reprojected.x, -reprojected.y) * 0.5 + 0.5;
+	float4 s = z_near / (1.0 - shadowmap.Gather(sm_point, s_uv));
+	float m = dot(viewI_light_view[2].xyz, lightvec);
+	return dot(m <= s, 0.25);
+}
+
+#define SHADOW_TEST shadowmap_test(reprojected, lightvec)
+#include "code/common_light"
 
 float4 main
 (
@@ -20,34 +35,5 @@ float4 main
 ) : SV_Target0
 {
 	float2 uv = input.svposition.xy * rcpres;
-	float z_neg = -z_near / (1.0 - zbuffer.Sample(sm_point, uv).x);
-	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
-	float4 reprojected = mul(viewI_light_view_proj, surface_pos);
-
-	float in_front = reprojected.w > 0;
-	reprojected /= reprojected.w;
-
-	float3 lightvec = light_pos - surface_pos.xyz;
-	float l = length(lightvec);
-
-	float inside_cone = length(reprojected.xy) < 1;
-	float fade = smoothstep(radius, radius * 0.9, l);
-
-	if (fade * in_front * inside_cone == 0.0) discard;
-	
-	float2 s_uv = float2(reprojected.x, -reprojected.y) * 0.5 + 0.5;
-	float4 s = z_near / (1.0 - shadowmap.Gather(sm_point, s_uv));
-
-	float p = dot(viewI_light_view[2].xyz, lightvec);
-	float lighted = dot(p <= s, 0.25);
-
-	if (lighted == 0.0) discard;
-
-	float3 normal = gbuffer0.Sample(sm_point, uv).xyz;
-	float3 colour = gbuffer1.Sample(sm_point, uv).xyz;
-
-    float radiance = lighted * fade *
-		max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
-
-	return float4(radiance * light_colour * colour, 1.0);
+	return common_light(uv);
 }
