@@ -3,7 +3,7 @@
 #include "OK.h"
 #include <string>
 
-namespace Devora {
+namespace DEV {
 namespace Tools {
 
 void CompileShader( char* file, char* profile, ID3D10Blob** code );
@@ -64,4 +64,4 @@ namespace LoadShader
 	}
 }
 
-} // namespace Devora
+} // namespace DEV

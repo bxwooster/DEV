@@ -1,11 +1,10 @@
-#ifndef __Devora_Buffer__
-#define __Devora_Buffer__
+#pragma once
 
 #include "IPtr.h"
 
 #include <d3d11.h>
 
-namespace Devora {
+namespace DEV {
 
 struct Buffer
 {
@@ -15,6 +14,4 @@ struct Buffer
 	D3D11_VIEWPORT viewport;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

@@ -1,13 +1,10 @@
-#ifndef __Devora_CBuffer__
-#define __Devora_CBuffer__
+#pragma once
 
 #include "IPtr.h"
 #include <d3d11.h>
 
-namespace Devora {
+namespace DEV {
 
 typedef IPtr<ID3D11Buffer> CBuffer;
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

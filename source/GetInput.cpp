@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <vector>
 
-namespace Devora {
+namespace DEV {
 
 void GetInput(InputData& input)
 {
@@ -57,4 +57,4 @@ void GetInput(InputData& input)
 	}
 }
 
-} // namespace Devora
+} // namespace DEV

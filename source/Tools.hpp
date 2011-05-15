@@ -1,11 +1,10 @@
-#ifndef __Devora_Tools__
-#define __Devora_Tools__
+#pragma once
 
 #include "Matrix.h"
 #include "Geometries.hpp"
 #include <d3d11.h>
 
-namespace Devora {
+namespace DEV {
 
 namespace Tools {
 
@@ -20,6 +19,4 @@ D3D11_RASTERIZER_DESC DefaultRasterizerDesc();
 
 }
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

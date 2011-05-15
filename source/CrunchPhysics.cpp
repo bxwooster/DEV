@@ -3,7 +3,7 @@
 #include "TimingData.hpp"
 #include "Transforms.hpp"
 
-namespace Devora {
+namespace DEV {
 
 void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	PlayerState& player, TimingData& timing)
@@ -19,4 +19,4 @@ void CrunchPhysics(PhysicsState& state, Transforms& transforms,
 	state.dynamicsWorld->stepSimulation(timing.delta, 6);
 }
 
-} // namespace Devora
+} // namespace DEV

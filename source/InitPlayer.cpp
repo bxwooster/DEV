@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-namespace Devora {
+namespace DEV {
 
 void InitPlayer(PlayerState& state)
 {
@@ -10,4 +10,4 @@ void InitPlayer(PlayerState& state)
 	state.camera.yaw = 0;
 }
 
-} // namespace Devora
+} // namespace DEV

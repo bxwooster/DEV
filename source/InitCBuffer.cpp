@@ -3,7 +3,7 @@
 #include "DeviceState.hpp"
 #include "CBuffer.hpp"
 
-namespace Devora {
+namespace DEV {
 
 void InitCBuffer(DeviceState& device, CBuffer& cb, size_t size)
 {
@@ -17,4 +17,4 @@ void InitCBuffer(DeviceState& device, CBuffer& cb, size_t size)
 	HOK( device.device->CreateBuffer( &desc, NULL, ~cb ));
 }
 
-} // namespace Devora
+} // namespace DEV

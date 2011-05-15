@@ -5,7 +5,7 @@
 #include "RayTracingInfo.hpp"
 #include "ShaderCache.hpp"
 
-namespace Devora {
+namespace DEV {
 namespace LoadShader
 {
 	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
@@ -24,4 +24,4 @@ void InitRayTracing(RayTracingInfo& info, DeviceState& device, ShaderCache& cach
 	HOK( device.device->CreateRasterizerState( &desc, ~info.rs_default));
 }
 
-} // namespace Devora
+} // namespace DEV

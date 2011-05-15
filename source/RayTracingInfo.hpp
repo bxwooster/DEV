@@ -1,10 +1,9 @@
-#ifndef __Devora_RayTraceInfo__
-#define __Devora_RayTraceInfo__
+#pragma once
 
 #include "IPtr.h"
 #include <D3D11.h>
 
-namespace Devora {
+namespace DEV {
 
 struct RayTracingInfo
 {
@@ -14,6 +13,4 @@ struct RayTracingInfo
 	IPtr<ID3D11PixelShader> ps_tracy;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

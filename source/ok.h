@@ -1,11 +1,10 @@
-#ifndef __OK__
-#define __OK__
+#pragma once
 
 #include <exception>
 #include <string>
 #include <sstream>
 
-namespace common {   
+namespace __ok {   
 
 template <class T> 
 inline std::string to_string(const T& obj)
@@ -28,7 +27,7 @@ inline std::string to_string(const T& obj)
     { \
         HRESULT h = (RESULT); \
 		if ( FAILED(h) ) throw std::exception \
-			( ( __INFO__ "\n" #RESULT "\nError code: " + common::to_string(h) ).c_str() ); \
+			( ( __INFO__ "\n" #RESULT "\nError code: " + __ok::to_string(h) ).c_str() ); \
     }
 
 #define OK( RESULT ) \
@@ -38,12 +37,10 @@ inline std::string to_string(const T& obj)
     { \
         HRESULT h = (RESULT); \
 		if ( FAILED(h) ) throw std::exception \
-			( ( __INFO__ "\n" #RESULT "\nError code: " + common::to_string(h) + \
+			( ( __INFO__ "\n" #RESULT "\nError code: " + __ok::to_string(h) + \
 			"\n" + std::string(MESSAGE) ).c_str() ); \
     }
 
 #define OK_EX( RESULT, MESSAGE ) \
         if ( !(RESULT) ) throw std::exception \
 			( ( __INFO__ "\n" #RESULT "\n" + std::string(MESSAGE) ).c_str() );
-
-#endif

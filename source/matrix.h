@@ -1,5 +1,4 @@
-#ifndef __Matrix__
-#define __Matrix__
+#pragma once
 
 #include "OK.h"
 
@@ -14,5 +13,3 @@
 
 using Eigen::Matrix;
 EIGEN_USING_MATRIX_TYPEDEFS
-
-#endif

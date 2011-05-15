@@ -1,10 +1,9 @@
-#ifndef __Devora_VisualRenderInfo__
-#define __Devora_VisualRenderInfo__
+#pragma once
 
 #include "IPtr.h"
 #include <D3D11.h>
 
-namespace Devora {
+namespace DEV {
 
 struct VisualRenderInfo
 {
@@ -17,6 +16,4 @@ struct VisualRenderInfo
 	IPtr<ID3D11GeometryShader> gs_infinite_plane;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

@@ -1,10 +1,9 @@
-#ifndef __Devora_InputData__
-#define __Devora_InputData__
+#pragma once
 
 #include <set>
 #include <vector>
 
-namespace Devora {
+namespace DEV {
 
 struct InputData
 {
@@ -21,6 +20,4 @@ struct InputData
 	std::set<Key> keys_held;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

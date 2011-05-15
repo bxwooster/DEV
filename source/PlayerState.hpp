@@ -1,9 +1,8 @@
-#ifndef __Devora_PlayerState__
-#define __Devora_PlayerState__
+#pragma once
 
 #include "Matrix.h"
 
-namespace Devora {
+namespace DEV {
 
 struct PlayerState
 {
@@ -19,6 +18,4 @@ struct PlayerState
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

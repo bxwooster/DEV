@@ -6,7 +6,7 @@
 
 #include "OK.h"
 
-namespace Devora {
+namespace DEV {
 
 void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer, Camera& camera)
 {
@@ -24,4 +24,4 @@ void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer, Camera& 
 	state->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 }
 
-} // namespace Devora
+} // namespace DEV

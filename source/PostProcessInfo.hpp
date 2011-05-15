@@ -1,10 +1,9 @@
-#ifndef __Devora_PostProcessInfo__
-#define __Devora_PostProcessInfo__
+#pragma once
 
 #include "IPtr.h"
 #include <D3D11.h>
 
-namespace Devora {
+namespace DEV {
 
 struct PostProcessInfo
 {
@@ -15,6 +14,4 @@ struct PostProcessInfo
 	IPtr<ID3D11SamplerState> sm_point;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

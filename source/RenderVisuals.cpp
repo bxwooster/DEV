@@ -9,7 +9,7 @@
 #include "CBuffer.hpp"
 #include "CBufferLayouts.hpp"
 
-namespace Devora {
+namespace DEV {
 
 typedef unsigned int uint;
 

@@ -1,11 +1,10 @@
-#ifndef __Devora_Lights__
-#define __Devora_Lights__
+#pragma once
 
 #include "Matrix.h"
 
 #include <LinearMath/btAlignedObjectArray.h>
 
-namespace Devora {
+namespace DEV {
 
 struct Light
 {
@@ -19,6 +18,4 @@ struct Lights
 	btAlignedObjectArray<Light> point;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

@@ -1,7 +1,7 @@
 #include "TimingData.hpp"
 #include <Windows.h>
 
-namespace Devora {
+namespace DEV {
 
 void GetTiming(TimingData& timing)
 {
@@ -11,4 +11,4 @@ void GetTiming(TimingData& timing)
 	timing.counter = large.QuadPart;
 }
 
-} // namespace Devora
+} // namespace DEV

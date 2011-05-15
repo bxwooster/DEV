@@ -1,13 +1,10 @@
-#ifndef __Devora_GraphicsState__
-#define __Devora_GraphicsState__
+#pragma once
 
 #include "IPtr.h"
 #include <d3d11.h>
 
-namespace Devora {
+namespace DEV {
 
 typedef IPtr<ID3D11DeviceContext> GraphicsState;
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

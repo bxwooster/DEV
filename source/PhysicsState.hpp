@@ -1,12 +1,11 @@
-#ifndef __Devora_PhysicsState__
-#define __Devora_PhysicsState__
+#pragma once
 
 #include <LinearMath/btAlignedObjectArray.h>
 #include <btBulletDynamicsCommon.h>
 #include <vector>
 #include <memory>
 
-namespace Devora {
+namespace DEV {
 
 struct PhysicsState
 {
@@ -20,6 +19,4 @@ struct PhysicsState
 	std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

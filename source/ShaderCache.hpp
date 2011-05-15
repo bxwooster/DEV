@@ -1,12 +1,11 @@
-#ifndef __Devora_ShaderCache__
-#define __Devora_ShaderCache__
+#pragma once
 
 #include "IPtr.h"
 #include <D3D11.h>
 #include <unordered_map>
 #include <string>
 
-namespace Devora {
+namespace DEV {
 
 struct ShaderCache
 {
@@ -16,6 +15,4 @@ struct ShaderCache
 	std::unordered_map<std::string, IPtr<ID3D11PixelShader>> pixel_shaders;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

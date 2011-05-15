@@ -8,7 +8,7 @@
 #include <fstream>
 #include <vector>
 
-namespace Devora {
+namespace DEV {
 
 typedef unsigned int uint;
 
@@ -180,4 +180,4 @@ Geometry ReadGeometry(ID3D11Device* device, const std::string& path)
 
 }
 
-} // namespace Devora
+} // namespace DEV

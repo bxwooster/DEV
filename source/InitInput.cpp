@@ -4,7 +4,7 @@
 
 #include <Windows.h>
 
-namespace Devora {
+namespace DEV {
 
 void InitInput(InputData& input)
 {
@@ -22,4 +22,4 @@ void InitInput(InputData& input)
 	OK( RegisterRawInputDevices( info, 2, sizeof(RAWINPUTDEVICE) ) );
 }
 
-} // namespace Devora
+} // namespace DEV

@@ -10,7 +10,7 @@
 
 #include <d3dx11.h>
 
-namespace Devora {
+namespace DEV {
 
 void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer, 
 	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, CBuffer& cb_frame)
@@ -33,4 +33,4 @@ void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
 	state->Draw( 1, 0 );
 }
 
-} // namespace Devora
+} // namespace DEV

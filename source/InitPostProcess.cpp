@@ -5,7 +5,7 @@
 #include "PostProcessInfo.hpp"
 #include "ShaderCache.hpp"
 
-namespace Devora {
+namespace DEV {
 namespace LoadShader
 {
 	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
@@ -32,4 +32,4 @@ void InitPostProcess(PostProcessInfo& info, DeviceState& device, ShaderCache& ca
 	}
 }
 
-} // namespace Devora
+} // namespace DEV

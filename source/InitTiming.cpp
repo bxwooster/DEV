@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-namespace Devora {
+namespace DEV {
 
 void InitTiming(TimingData& timing)
 {
@@ -13,4 +13,4 @@ void InitTiming(TimingData& timing)
 	timing.counter = large.QuadPart;
 }
 
-} // namespace Devora
+} // namespace DEV

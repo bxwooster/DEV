@@ -5,7 +5,7 @@
 
 #include <d3dx10math.h>
 
-namespace Devora {
+namespace DEV {
 
 void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera)
 {
@@ -27,4 +27,4 @@ void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera)
 	Tools::SetProjectionMatrix(camera.proj, camera.vertical_fov, camera.aspect_ratio, camera.z_near);
 }
 
-} // namespace Devora
+} // namespace DEV

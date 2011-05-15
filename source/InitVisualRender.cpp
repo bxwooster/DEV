@@ -5,7 +5,7 @@
 #include "VisualRenderInfo.hpp"
 #include "ShaderCache.hpp"
 
-namespace Devora {
+namespace DEV {
 namespace LoadShader
 {
 	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
@@ -55,4 +55,4 @@ void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& 
 	}
 }
 
-} // namespace Devora
+} // namespace DEV

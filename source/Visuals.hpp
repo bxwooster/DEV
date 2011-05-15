@@ -1,9 +1,8 @@
-#ifndef __Devora_Visuals__
-#define __Devora_Visuals__
+#pragma once
 
 #include <vector>
 
-namespace Devora {
+namespace DEV {
 
 struct Visual
 {
@@ -13,6 +12,4 @@ struct Visual
 
 typedef std::vector<Visual> Visuals;
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

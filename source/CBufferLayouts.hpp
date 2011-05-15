@@ -1,9 +1,8 @@
-#ifndef __Devora_CBufferLayouts__
-#define __Devora_CBufferLayouts__
+#pragma once
 
 #include "Matrix.h"
 
-namespace Devora {
+namespace DEV {
 
 namespace CBufferLayouts {
 
@@ -39,6 +38,4 @@ struct tracy
 
 }
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

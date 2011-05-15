@@ -24,7 +24,7 @@
 #include <exception>
 #include <Windows.h>
 
-namespace Devora {
+namespace DEV {
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
@@ -145,13 +145,13 @@ void run()
 }
 
 
-} // namespace Devora
+} // namespace DEV
 
 int main()
 {
 	try
 	{
-		Devora::run();
+		DEV::run();
 	}
 	catch(std::exception exception)
 	{

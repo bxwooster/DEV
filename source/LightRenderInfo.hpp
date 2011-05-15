@@ -1,11 +1,10 @@
-#ifndef __Devora_LightRenderInfo__
-#define __Devora_LightRenderInfo__
+#pragma once
 
 #include "Matrix.h"
 #include "IPtr.h"
 #include <D3D11.h>
 
-namespace Devora {
+namespace DEV {
 
 struct LightRenderInfo
 {
@@ -33,6 +32,4 @@ struct LightRenderInfo
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

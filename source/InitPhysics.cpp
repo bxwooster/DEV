@@ -1,6 +1,6 @@
 #include "PhysicsState.hpp"
 
-namespace Devora {
+namespace DEV {
 
 using namespace std;
 
@@ -29,4 +29,4 @@ void InitPhysics(PhysicsState& state)
 		(new btSphereShape(1) );
 }
 
-} // namespace Devora
+} // namespace DEV

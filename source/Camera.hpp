@@ -1,9 +1,8 @@
-#ifndef __Devora_Camera__
-#define __Devora_Camera__
+#pragma once
 
 #include "Matrix.h"
 
-namespace Devora {
+namespace DEV {
 
 struct Camera
 {
@@ -24,6 +23,4 @@ struct Camera
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

@@ -6,7 +6,7 @@
 #include "CBuffer.hpp"
 #include "CBufferLayouts.hpp"
 
-namespace Devora {
+namespace DEV {
 
 typedef unsigned int uint;
 
@@ -48,4 +48,4 @@ void RayTrace(GraphicsState& state, RayTracingInfo& info,
 	state->Draw( 1, 0 );
 }
 
-} // namespace Devora
+} // namespace DEV

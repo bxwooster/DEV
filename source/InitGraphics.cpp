@@ -7,7 +7,7 @@
 
 #include <D3DX11.h>
 
-namespace Devora {
+namespace DEV {
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 {
@@ -43,13 +43,13 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 	WNDCLASSEX window_class;
 	ZeroMemory( &window_class, sizeof( WNDCLASSEX ) );
-	window_class.lpszClassName = "Devora::window";                        
+	window_class.lpszClassName = "DEV::window";                        
 	window_class.cbSize = sizeof( WNDCLASSEX );      
 	window_class.lpfnWndProc = WindowProc;  
 	RegisterClassEx( &window_class );
 
 	HWND window;
-	OK( window = CreateWindowEx( 0, window_class.lpszClassName, "Devora",
+	OK( window = CreateWindowEx( 0, window_class.lpszClassName, "DEV",
 		WS_SYSMENU | WS_OVERLAPPED | WS_VISIBLE, CW_USEDEFAULT,
 		CW_USEDEFAULT, width, height, NULL, NULL, NULL, 0 ) );
 
@@ -223,4 +223,4 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	}
 }
 
-} // namespace Devora
+} // namespace DEV

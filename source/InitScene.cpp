@@ -9,7 +9,7 @@
 #include <iostream>
 #include <btBulletDynamicsCommon.h>
 
-namespace Devora {
+namespace DEV {
 
 class MotionState : public btMotionState
 {
@@ -124,4 +124,4 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	}
 }
 
-} // namespace Devora
+} // namespace DEV

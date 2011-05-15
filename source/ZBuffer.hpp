@@ -1,10 +1,9 @@
-#ifndef __Devora_ZBuffer__
-#define __Devora_ZBuffer__
+#pragma once
 
 #include "IPtr.h"
 #include <D3D11.h>
 
-namespace Devora {
+namespace DEV {
 
 struct ZBuffer
 {
@@ -14,6 +13,4 @@ struct ZBuffer
 	D3D11_VIEWPORT viewport;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

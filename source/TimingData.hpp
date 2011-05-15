@@ -1,7 +1,6 @@
-#ifndef __Devora_TimingData__
-#define __Devora_TimingData__
+#pragma once
 
-namespace Devora {
+namespace DEV {
 
 struct TimingData
 {
@@ -10,6 +9,4 @@ struct TimingData
 	float delta;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

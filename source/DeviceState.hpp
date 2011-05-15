@@ -1,10 +1,9 @@
-#ifndef __Devora_DeviceState__
-#define __Devora_DeviceState__
+#pragma once
 
 #include "IPtr.h"
 #include <d3d11.h>
 
-namespace Devora {
+namespace DEV {
 
 struct DeviceState
 {
@@ -12,6 +11,4 @@ struct DeviceState
 	IPtr<IDXGISwapChain> swap_chain;
 };
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

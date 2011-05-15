@@ -1,5 +1,4 @@
-#ifndef __IPtr_h__
-#define __IPtr_h__
+#pragma once
 
 template <typename Interface>
 class IPtr
@@ -57,5 +56,3 @@ public:
         return &pointer;
     }
 };
-
-#endif

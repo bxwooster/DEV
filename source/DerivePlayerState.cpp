@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-namespace Devora {
+namespace DEV {
 
 void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 {
@@ -47,4 +47,4 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 	state.camera.pitch = std::max(-90.0f, std::min(state.camera.pitch, 90.0f));
 }
 
-} // namespace Devora
+} // namespace DEV

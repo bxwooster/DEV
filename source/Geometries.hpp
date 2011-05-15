@@ -1,11 +1,10 @@
-#ifndef __Devora_Geometries__
-#define __Devora_Geometries__
+#pragma once
 
 #include "IPtr.h"
 #include <D3D11.h>
 #include <vector>
 
-namespace Devora {
+namespace DEV {
 
 struct Geometry
 {
@@ -17,6 +16,4 @@ struct Geometry
 
 typedef std::vector<Geometry> Geometries;
 
-} // namespace Devora
-
-#endif
+} // namespace DEV
