@@ -3,6 +3,7 @@
 #include "GraphicsState.hpp"
 #include "Buffer.hpp"
 #include "ZBuffer.hpp"
+#include "UBuffer.hpp"
 #include "Tools.hpp"
 
 #include <D3DX11.h>
@@ -29,7 +30,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 	return DefWindowProc(handle, msg, w, l);
 }
 
-void InitGraphics(GraphicsState& state, DeviceState& device, 
+void InitGraphics(GraphicsState& state, DeviceState& device,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera)
 {
@@ -178,6 +179,13 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 		HOK( device.device->CreateDepthStencilView
 		  ( zbuffer.texture, &desc, ~zbuffer.dsv ));
+
+		desc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
+
+		HOK( device.device->CreateDepthStencilView
+		  ( zbuffer.texture, &desc, ~zbuffer.dsv_readonly ));
+
+		desc.Flags = 0;
 
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 		desc.Texture2DArray.MipSlice = 0;

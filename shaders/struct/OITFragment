@@ -1,0 +1,7 @@
+struct OITFragment
+{
+	unsigned int normal_xy;
+	unsigned int normal_z_and_depth;
+	unsigned int colour_rgba;
+	unsigned int next;
+};

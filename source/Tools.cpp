@@ -110,7 +110,7 @@ D3D11_DEPTH_STENCIL_DESC DefaultDepthStencilDesc()
 	return desc;
 }
 
-void CompileShader( char* file, char* profile, ID3D10Blob** code )
+void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
 {
 	IPtr<ID3D10Blob> info;
 
@@ -119,7 +119,7 @@ void CompileShader( char* file, char* profile, ID3D10Blob** code )
 	D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
 
 	HOK_EX( D3DX11CompileFromFile( file,
-	NULL, NULL, "main", profile, shader_flags,
+	NULL, NULL, entry, profile, shader_flags,
 	0, NULL, code, ~info, NULL ),
 	*&info ? (char*)info->GetBufferPointer() : "" );
 }

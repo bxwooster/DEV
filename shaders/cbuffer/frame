@@ -4,5 +4,6 @@
 	float z_near;
 	float2 xy_to_ray;
 	float2 rcpres;
+	float2 res;
 	float light_scale;
 };

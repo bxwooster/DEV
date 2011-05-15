@@ -32,6 +32,7 @@
     <ClInclude Include="..\source\TimingData.hpp" />
     <ClInclude Include="..\source\Tools.hpp" />
     <ClInclude Include="..\source\Transforms.hpp" />
+    <ClInclude Include="..\source\UBuffer.hpp" />
     <ClInclude Include="..\source\VisualRenderInfo.hpp" />
     <ClInclude Include="..\source\Visuals.hpp" />
     <ClInclude Include="..\source\ZBuffer.hpp" />
@@ -46,6 +47,7 @@
     <ClCompile Include="..\source\InitGraphics.cpp" />
     <ClCompile Include="..\source\InitInput.cpp" />
     <ClCompile Include="..\source\InitLightRender.cpp" />
+    <ClCompile Include="..\source\InitOIT.cpp" />
     <ClCompile Include="..\source\InitPhysics.cpp" />
     <ClCompile Include="..\source\InitPlayer.cpp" />
     <ClCompile Include="..\source\InitPostProcess.cpp" />
@@ -71,6 +73,8 @@
     <None Include="..\shaders\cbuffer\object_z" />
     <None Include="..\shaders\cbuffer\tracy" />
     <None Include="..\shaders\code\common_light" />
+    <None Include="..\shaders\code\f16x2" />
+    <None Include="..\shaders\code\u8x4" />
     <None Include="..\shaders\code\uv_to_ray" />
     <None Include="..\shaders\gs_infinite_plane.hlsl" />
     <None Include="..\shaders\gs_point_light.hlsl" />
@@ -83,6 +87,7 @@
     <None Include="..\shaders\ps_render.hlsl" />
     <None Include="..\shaders\ps_tracy.hlsl" />
     <None Include="..\shaders\struct\Empty" />
+    <None Include="..\shaders\struct\OITFragment" />
     <None Include="..\shaders\struct\PPositionNormal" />
     <None Include="..\shaders\struct\PPosition" />
     <None Include="..\shaders\struct\VPosition" />

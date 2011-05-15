@@ -10,4 +10,4 @@
 *.dll
 *.pyd
 __pycache__
-*.pixexp
+/misc

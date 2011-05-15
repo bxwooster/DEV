@@ -8,22 +8,24 @@
 namespace DEV {
 namespace LoadShader
 {
-	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
-	void Geometry(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11GeometryShader>& shader);
-	void Pixel(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11PixelShader>& shader);
+	void Vertex(ShaderCache& cache, DeviceState& device, IPtr<ID3D11VertexShader>& shader, char* name, char* entry = "main");
+	void Geometry(ShaderCache& cache, DeviceState& device, IPtr<ID3D11GeometryShader>& shader, char* name, char* entry = "main");
+	void Pixel(ShaderCache& cache, DeviceState& device, IPtr<ID3D11PixelShader>& shader, char* name, char* entry = "main");
 }
 
 void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& cache, Camera& camera)
 {
-	LoadShader::Vertex(cache, device, "shaders/vs_render_z.hlsl", info.vs_render_z);
-	LoadShader::Vertex(cache, device, "shaders/vs_render_cube_z.hlsl", info.vs_render_cube_z);
-	LoadShader::Vertex(cache, device, "shaders/vs_noop.hlsl", info.vs_noop);
-	LoadShader::Geometry(cache, device, "shaders/gs_fullscreen.hlsl", info.gs_fullscreen);
-	LoadShader::Geometry(cache, device, "shaders/gs_render_cube_z.hlsl", info.gs_render_cube_z);
-	LoadShader::Geometry(cache, device, "shaders/gs_dir_light.hlsl", info.gs_dir_light);
-	LoadShader::Geometry(cache, device, "shaders/gs_point_light.hlsl", info.gs_point_light);
-	LoadShader::Pixel(cache, device, "shaders/ps_dir_light.hlsl", info.ps_dir_light);
-	LoadShader::Pixel(cache, device, "shaders/ps_point_light.hlsl", info.ps_point_light);
+	LoadShader::Vertex(cache, device, info.vs_render_z, "shaders/vs_render_z.hlsl");
+	LoadShader::Vertex(cache, device, info.vs_render_cube_z, "shaders/vs_render_cube_z.hlsl");
+	LoadShader::Vertex(cache, device, info.vs_noop, "shaders/vs_noop.hlsl");
+	LoadShader::Geometry(cache, device, info.gs_fullscreen, "shaders/gs_fullscreen.hlsl");
+	LoadShader::Geometry(cache, device, info.gs_render_cube_z, "shaders/gs_render_cube_z.hlsl");
+	LoadShader::Geometry(cache, device, info.gs_dir_light, "shaders/gs_dir_light.hlsl");
+	LoadShader::Geometry(cache, device, info.gs_point_light, "shaders/gs_point_light.hlsl");
+	LoadShader::Pixel(cache, device, info.ps_dir_light, "shaders/ps_dir_light.hlsl");
+	LoadShader::Pixel(cache, device, info.ps_point_light, "shaders/ps_point_light.hlsl");
+	LoadShader::Pixel(cache, device, info.ps_dir_light_oit, "shaders/ps_dir_light.hlsl", "main_oit");
+	LoadShader::Pixel(cache, device, info.ps_point_light_oit, "shaders/ps_point_light.hlsl", "main_oit");
 
 	{
 		D3D11_SAMPLER_DESC desc = Tools::DefaultSamplerDesc();
@@ -72,12 +74,12 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 			}
 		};
 
-		Tools::CompileShader( "shaders/vs_render.hlsl", "vs_5_0", ~code );
+		Tools::CompileShader( "shaders/vs_render.hlsl", "main", "vs_5_0", ~code );
 		HOK( device.device->CreateInputLayout
 			( element, 2, code->GetBufferPointer(),
 			code->GetBufferSize(), ~info.layout ) );
 
-		Tools::CompileShader( "shaders/vs_render_z.hlsl", "vs_5_0", ~code );
+		Tools::CompileShader( "shaders/vs_render_z.hlsl", "main", "vs_5_0", ~code );
 		HOK( device.device->CreateInputLayout
 			( element, 1, code->GetBufferPointer(),
 			code->GetBufferSize(), ~info.layout_z ) );

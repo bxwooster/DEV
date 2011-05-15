@@ -8,6 +8,7 @@
 #include "ZBuffer.hpp"
 #include "Buffer.hpp"
 #include "CBuffer.hpp"
+#include "UBuffer.hpp"
 #include "CBufferLayouts.hpp"
 
 namespace DEV {
@@ -18,12 +19,16 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
+	UBuffer& oit_start_buffer, UBuffer& oit_fragment_buffer,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light)
 {
 	const float blendf[4] = {1.0f, 1.0f, 1.0f, 0.0f};
 	const float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 	state->ClearRenderTargetView(lbuffer.rtv, black);
+
+	ID3D11UnorderedAccessView* uavs[] = { oit_start_buffer.uav, oit_fragment_buffer.uav };
+	unsigned int counts[] = { -1, -1 };
 
 	for (int k = 0; k < lights.dir.size(); k++)
 	{
@@ -76,7 +81,8 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
 
-		state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
+		//state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
+		state->OMSetRenderTargetsAndUnorderedAccessViews(1, &lbuffer.rtv, NULL, 1, 2, uavs, counts);
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state->RSSetViewports( 1, &lbuffer.viewport );
@@ -94,6 +100,9 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->PSSetShaderResources(0, 4, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
+		state->Draw( 1, 0 );
+
+		state->PSSetShader( info.ps_dir_light_oit, NULL, 0 );
 		state->Draw( 1, 0 );
 	}
 
@@ -155,7 +164,8 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state->RSSetViewports( 1, &lbuffer.viewport );
-		state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
+		//state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
+		state->OMSetRenderTargetsAndUnorderedAccessViews(1, &lbuffer.rtv, NULL, 1, 2, uavs, counts);
 
 		state->RSSetState( info.rs_backface );
 		state->OMSetBlendState( info.bs_additive, blendf, 0xffffffff );
@@ -170,6 +180,9 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->PSSetShaderResources(0, 4, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
+		state->Draw( 1, 0 );
+
+		state->PSSetShader( info.ps_point_light_oit, NULL, 0 );
 		state->Draw( 1, 0 );
 	}
 }

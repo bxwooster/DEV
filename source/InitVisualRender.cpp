@@ -8,18 +8,18 @@
 namespace DEV {
 namespace LoadShader
 {
-	void Vertex(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11VertexShader>& shader);
-	void Geometry(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11GeometryShader>& shader);
-	void Pixel(ShaderCache& cache, DeviceState& device, char* name, IPtr<ID3D11PixelShader>& shader);
+	void Vertex(ShaderCache& cache, DeviceState& device, IPtr<ID3D11VertexShader>& shader, char* name, char* entry = "main");
+	void Geometry(ShaderCache& cache, DeviceState& device, IPtr<ID3D11GeometryShader>& shader, char* name, char* entry = "main");
+	void Pixel(ShaderCache& cache, DeviceState& device, IPtr<ID3D11PixelShader>& shader, char* name, char* entry = "main");
 }
 
 void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& cache)
 {
-	LoadShader::Vertex(cache, device, "shaders/vs_render.hlsl", info.vs_render);
-	LoadShader::Pixel(cache, device, "shaders/ps_render.hlsl", info.ps_render);
+	LoadShader::Vertex(cache, device, info.vs_render, "shaders/vs_render.hlsl");
+	LoadShader::Pixel(cache, device, info.ps_render, "shaders/ps_render.hlsl");
 
-	LoadShader::Vertex(cache, device, "shaders/vs_noop.hlsl", info.vs_noop);
-	LoadShader::Geometry(cache, device, "shaders/gs_infinite_plane.hlsl", info.gs_infinite_plane);
+	LoadShader::Vertex(cache, device, info.vs_noop, "shaders/vs_noop.hlsl");
+	LoadShader::Geometry(cache, device, info.gs_infinite_plane, "shaders/gs_infinite_plane.hlsl");
 
 	{
 		D3D11_RASTERIZER_DESC desc = Tools::DefaultRasterizerDesc();
@@ -30,7 +30,7 @@ void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& 
 	// Layout //!
 	{       
 		IPtr<ID3D10Blob> code;
-		Tools::CompileShader( "shaders/vs_render.hlsl", "vs_5_0", ~code );
+		Tools::CompileShader( "shaders/vs_render.hlsl", "main", "vs_5_0", ~code );
 
 		D3D11_INPUT_ELEMENT_DESC element[2] =
 		{

@@ -6,6 +6,7 @@
 #include "Camera.hpp"
 #include "ZBuffer.hpp"
 #include "Buffer.hpp"
+#include "UBuffer.hpp"
 #include "CBuffer.hpp"
 #include "CBufferLayouts.hpp"
 
@@ -15,7 +16,8 @@ typedef unsigned int uint;
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object)
+	UBuffer& oit_start_buffer, UBuffer& oit_fragment_buffer,
+	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame)
 {
 	OK( gbuffer0.viewport == gbuffer1.viewport);
 	OK( gbuffer0.viewport == zbuffer.viewport);
@@ -23,7 +25,11 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state->ClearState();
 
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
-	state->OMSetRenderTargets(2, targets, zbuffer.dsv);
+	//state->OMSetRenderTargets(2, targets, zbuffer.dsv);
+	ID3D11UnorderedAccessView* uavs[] = { oit_start_buffer.uav, oit_fragment_buffer.uav };
+	unsigned int counts[] = { -1, 0 };
+	state->OMSetRenderTargetsAndUnorderedAccessViews
+		(2, targets, zbuffer.dsv, 2, 2, uavs, counts);
 	state->RSSetViewports( 1, &gbuffer0.viewport );
 	state->IASetInputLayout( info.layout );
 	state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
@@ -31,6 +37,8 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state->OMSetDepthStencilState( NULL, 0 );
 	state->RSSetState( info.rs_default );
 	state->VSSetConstantBuffers(0, 1, &cb_object);
+	ID3D11Buffer* buffers[] = {cb_frame, cb_object};
+	state->PSSetConstantBuffers(0, 2, buffers);
 	state->VSSetShader(info.vs_render, NULL, 0);
 	state->PSSetShader(info.ps_render, NULL, 0);
 
@@ -41,6 +49,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;
+		data.__colour = Vector4f(1, 1, 1, i == 1 ? 0.5f : 1);
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 		state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
@@ -50,6 +59,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 	data.world_view = camera.view * transforms[1]; //! plane
 	data.world_view_proj = camera.proj * data.world_view;
+	data.__colour = Vector4f(1, 1, 1, 1);
 
 	state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 

@@ -28,6 +28,8 @@ struct LightRenderInfo
 	IPtr<ID3D11GeometryShader> gs_point_light;
 	IPtr<ID3D11PixelShader> ps_dir_light;
 	IPtr<ID3D11PixelShader> ps_point_light;
+	IPtr<ID3D11PixelShader> ps_dir_light_oit;
+	IPtr<ID3D11PixelShader> ps_point_light_oit;
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };

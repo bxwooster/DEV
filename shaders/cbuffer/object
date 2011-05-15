@@ -1,4 +1,5 @@
 {
 	float4x4 world_view_proj;
 	float4x4 world_view;
+	float4 __colour;
 };

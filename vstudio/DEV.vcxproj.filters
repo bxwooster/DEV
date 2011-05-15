@@ -97,6 +97,9 @@
     <ClInclude Include="..\source\Tools.hpp">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\UBuffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp">
@@ -170,6 +173,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Tools.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\InitOIT.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
@@ -253,6 +259,15 @@
       <Filter>shaders\struct</Filter>
     </None>
     <None Include="..\shaders\code\common_light">
+      <Filter>shaders\code</Filter>
+    </None>
+    <None Include="..\shaders\struct\OITFragment">
+      <Filter>shaders\struct</Filter>
+    </None>
+    <None Include="..\shaders\code\f16x2">
+      <Filter>shaders\code</Filter>
+    </None>
+    <None Include="..\shaders\code\u8x4">
       <Filter>shaders\code</Filter>
     </None>
   </ItemGroup>

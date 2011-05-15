@@ -8,6 +8,11 @@ Texture2D gbuffer1: register(t1);
 Texture2D zbuffer: register(t2);
 Texture2D shadowmap: register(t3);
 
+#include "struct/OITFragment"
+
+RWByteAddressBuffer start_buffer : register(u1);
+RWStructuredBuffer<OITFragment> fragment_buffer : register(u2);
+
 sampler sm_point : register(s0);
 
 #include "struct/PPosition"
@@ -34,6 +39,13 @@ float4 main
 	PPosition input
 ) : SV_Target0
 {
-	float2 uv = input.svposition.xy * rcpres;
-	return common_light(uv);
+	return common_light(input);
+}
+
+float4 main_oit
+(
+	PPosition input
+) : SV_Target0
+{
+	return common_light_oit(input);
 }
