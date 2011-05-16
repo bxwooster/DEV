@@ -101,9 +101,6 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
 		state->Draw( 1, 0 );
-
-		state->PSSetShader( info.ps_dir_light_oit, NULL, 0 );
-		state->Draw( 1, 0 );
 	}
 
 
@@ -180,9 +177,6 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->PSSetShaderResources(0, 4, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
-		state->Draw( 1, 0 );
-
-		state->PSSetShader( info.ps_point_light_oit, NULL, 0 );
 		state->Draw( 1, 0 );
 	}
 }

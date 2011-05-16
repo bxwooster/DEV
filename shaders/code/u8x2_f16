@@ -1,0 +1,16 @@
+float3 u8x2_f16_unpack(uint input)
+{
+    float3 output;
+    output.x =  input        & 0x000000ff;
+    output.y = (input >>  8) & 0x000000ff;
+    output.z = f16tof32(input >> 16);
+    return output * float3(1.0/255.0, 1.0/255.0, 1);
+}
+
+uint u8x2_f16_pack(float3 input)
+{
+	uint2 value = uint2(saturate(input.xy) * 255 + 0.5);
+    return  (value.x)        |
+           ((value.y) <<  8) |
+   (f32tof16(input.z) << 16);
+}

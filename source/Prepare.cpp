@@ -26,8 +26,8 @@ void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer,
 
 	state->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	unsigned int magic[4] = { -1 };
-	state->ClearUnorderedAccessViewUint(oit_start_buffer.uav, magic);
+	unsigned int null[4] = { NULL };
+	state->ClearUnorderedAccessViewUint(oit_start_buffer.uav, null);
 }
 
 } // namespace DEV

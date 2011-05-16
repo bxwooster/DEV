@@ -27,7 +27,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
 	//state->OMSetRenderTargets(2, targets, zbuffer.dsv);
 	ID3D11UnorderedAccessView* uavs[] = { oit_start_buffer.uav, oit_fragment_buffer.uav };
-	unsigned int counts[] = { -1, 0 };
+	unsigned int counts[] = { -1, 1 };
 	state->OMSetRenderTargetsAndUnorderedAccessViews
 		(2, targets, zbuffer.dsv, 2, 2, uavs, counts);
 	state->RSSetViewports( 1, &gbuffer0.viewport );
@@ -49,7 +49,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;
-		data.__colour = Vector4f(1, 1, 1, i == 1 ? 0.5f : 1);
+		data.__colour = Vector4f(1, 1, 1, i == 2 ? 0.5f : 0.5f);
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 		state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);

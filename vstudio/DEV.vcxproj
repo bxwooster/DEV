@@ -74,6 +74,8 @@
     <None Include="..\shaders\cbuffer\tracy" />
     <None Include="..\shaders\code\common_light" />
     <None Include="..\shaders\code\f16x2" />
+    <None Include="..\shaders\code\normal" />
+    <None Include="..\shaders\code\u8x2_f16" />
     <None Include="..\shaders\code\u8x4" />
     <None Include="..\shaders\code\uv_to_ray" />
     <None Include="..\shaders\gs_infinite_plane.hlsl" />

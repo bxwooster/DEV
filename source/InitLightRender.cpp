@@ -24,8 +24,6 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 	LoadShader::Geometry(cache, device, info.gs_point_light, "shaders/gs_point_light.hlsl");
 	LoadShader::Pixel(cache, device, info.ps_dir_light, "shaders/ps_dir_light.hlsl");
 	LoadShader::Pixel(cache, device, info.ps_point_light, "shaders/ps_point_light.hlsl");
-	LoadShader::Pixel(cache, device, info.ps_dir_light_oit, "shaders/ps_dir_light.hlsl", "main_oit");
-	LoadShader::Pixel(cache, device, info.ps_point_light_oit, "shaders/ps_point_light.hlsl", "main_oit");
 
 	{
 		D3D11_SAMPLER_DESC desc = Tools::DefaultSamplerDesc();

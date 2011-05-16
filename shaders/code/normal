@@ -1,0 +1,17 @@
+// code from http://aras-p.info/texts/CompactNormalStorage.html
+// normal MUST be normalised.
+
+float2 normal_encode(float3 n)
+{
+    float2 enc = normalize(n.xy) * (sqrt(-n.z*0.5+0.5));
+    return enc*0.5+0.5;
+}
+
+float3 normal_decode(float2 enc)
+{
+    float4 nn = float4(2*enc, 0, 0) + float4(-1,-1, 1,-1);
+    float l = dot(nn.xyz, -nn.xyw);
+    nn.z = l;
+    nn.xy *= sqrt(l);
+    return nn.xyz * 2 + float3(0, 0, -1);
+}

@@ -36,11 +36,3 @@ float4 main
 {
 	return common_light(input);
 }
-
-float4 main_oit
-(
-	PPosition input
-) : SV_Target0
-{
-	return common_light_oit(input);
-}

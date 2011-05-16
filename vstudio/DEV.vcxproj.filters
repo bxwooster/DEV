@@ -270,5 +270,11 @@
     <None Include="..\shaders\code\u8x4">
       <Filter>shaders\code</Filter>
     </None>
+    <None Include="..\shaders\code\normal">
+      <Filter>shaders\code</Filter>
+    </None>
+    <None Include="..\shaders\code\u8x2_f16">
+      <Filter>shaders\code</Filter>
+    </None>
   </ItemGroup>
 </Project>

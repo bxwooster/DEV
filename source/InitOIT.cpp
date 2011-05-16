@@ -3,6 +3,8 @@
 #include "Camera.hpp"
 #include "DeviceState.hpp"
 #include "UBuffer.hpp"
+
+typedef unsigned int uint;
 #include "shaders/struct/OITFragment"
 
 namespace DEV {
