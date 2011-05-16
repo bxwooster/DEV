@@ -40,14 +40,16 @@ void InitOIT(DeviceState& device, Camera& camera,
 		desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.NumElements = n_fragments;
-		desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
+		desc.Buffer.Flags = 0;
 		desc.Format = DXGI_FORMAT_UNKNOWN;
 
 		HOK( device.device->CreateUnorderedAccessView
-			( oit_scattered.buffer, &desc, ~oit_scattered.uav ));
+			( oit_consolidated.buffer, &desc, ~oit_consolidated.uav ));
+
+		desc.Buffer.Flags = desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
 
 		HOK( device.device->CreateUnorderedAccessView
-			( oit_consolidated.buffer, &desc, ~oit_consolidated.uav ));
+			( oit_scattered.buffer, &desc, ~oit_scattered.uav ));
 
 		desc.Buffer.NumElements = screen_size + 2; //!
 		desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_RAW;

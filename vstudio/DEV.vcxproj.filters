@@ -100,6 +100,9 @@
     <ClInclude Include="..\source\UBuffer.hpp">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\LoadShader.hpp">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CrunchPhysics.cpp">
@@ -280,6 +283,9 @@
       <Filter>shaders\code</Filter>
     </None>
     <None Include="..\shaders\ps_skylight.hlsl">
+      <Filter>shaders\shaders</Filter>
+    </None>
+    <None Include="..\shaders\cs_oit_consolidate.hlsl">
       <Filter>shaders\shaders</Filter>
     </None>
   </ItemGroup>

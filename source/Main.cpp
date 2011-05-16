@@ -28,8 +28,7 @@
 namespace DEV {
 
 void InitOIT(DeviceState& device, Camera& camera,
-	UBuffer& oit_start, UBuffer& oit_scattered,
-	UBuffer& oit_consolidated);
+	UBuffer& oit_start, UBuffer& oit_scattered,	UBuffer& oit_consolidated);
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
@@ -64,7 +63,7 @@ void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer,
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
-	UBuffer& oit_start, UBuffer& oit_scattered,
+	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame);
 
 void RenderLights(GraphicsState& state, LightRenderInfo& info,
@@ -144,7 +143,7 @@ void run()
 
 		Prepare(graphics, cb_frame, zbuffer, oit_start, camera);
 		RenderVisuals(graphics, vinfo, transforms, visuals, geometries,
-			camera, oit_start, oit_scattered,
+			camera, oit_start, oit_scattered, oit_consolidated,
 			gbuffer0, gbuffer1, zbuffer, cb_object, cb_frame);
 		//RayTrace(graphics, rinfo, camera, zbuffer, gbuffer0, gbuffer1, cb_frame, cb_tracy);
 		RenderLights(graphics, linfo, transforms, lights, visuals, geometries,

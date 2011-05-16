@@ -4,14 +4,10 @@
 #include "DeviceState.hpp"
 #include "PostProcessInfo.hpp"
 #include "ShaderCache.hpp"
+#include "LoadShader.hpp"
 
 namespace DEV {
-namespace LoadShader
-{
-	void Vertex(ShaderCache& cache, DeviceState& device, IPtr<ID3D11VertexShader>& shader, char* name, char* entry = "main");
-	void Geometry(ShaderCache& cache, DeviceState& device, IPtr<ID3D11GeometryShader>& shader, char* name, char* entry = "main");
-	void Pixel(ShaderCache& cache, DeviceState& device, IPtr<ID3D11PixelShader>& shader, char* name, char* entry = "main");
-}
+
 
 void InitPostProcess(PostProcessInfo& info, DeviceState& device, ShaderCache& cache)
 {

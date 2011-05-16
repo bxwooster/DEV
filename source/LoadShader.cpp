@@ -1,18 +1,34 @@
-#include "DeviceState.hpp"
-#include "ShaderCache.hpp"
+#include "LoadShader.hpp"
 #include "OK.h"
 #include <string>
 
 namespace DEV {
 namespace Tools {
-
 void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code );
-
 }
 
 namespace LoadShader
 {
-	void Vertex(ShaderCache& cache, DeviceState& device, IPtr<ID3D11VertexShader>& shader, char* file, char* entry = "main")
+	void Compute(ShaderCache& cache, DeviceState& device, IPtr<ID3D11ComputeShader>& shader, char* file, char* entry)
+	{
+		std::string key(file);
+		key.append("@");
+		key.append(entry);
+		auto it = cache.compute_shaders.find(key);
+		if (it != cache.compute_shaders.end())
+		{
+			shader = it->second;
+			return;
+		}
+
+		IPtr<ID3D10Blob> code;
+		Tools::CompileShader(file, entry, "cs_5_0", ~code);
+		HOK( device.device->CreateComputeShader(code->GetBufferPointer(),
+			code->GetBufferSize(), NULL, ~shader));
+		cache.compute_shaders[key] = shader;
+	}
+
+	void Vertex(ShaderCache& cache, DeviceState& device, IPtr<ID3D11VertexShader>& shader, char* file, char* entry)
 	{
 		std::string key(file);
 		key.append("@");
@@ -31,7 +47,7 @@ namespace LoadShader
 		cache.vertex_shaders[key] = shader;
 	}
 
-	void Geometry(ShaderCache& cache, DeviceState& device, IPtr<ID3D11GeometryShader>& shader, char* file, char* entry = "main")
+	void Geometry(ShaderCache& cache, DeviceState& device, IPtr<ID3D11GeometryShader>& shader, char* file, char* entry)
 	{
 		std::string key(file);
 		key.append("@");
@@ -50,7 +66,7 @@ namespace LoadShader
 		cache.geometry_shaders[key] = shader;
 	}
 
-	void Pixel(ShaderCache& cache, DeviceState& device, IPtr<ID3D11PixelShader>& shader, char* file, char* entry = "main")
+	void Pixel(ShaderCache& cache, DeviceState& device, IPtr<ID3D11PixelShader>& shader, char* file, char* entry)
 	{
 		std::string key(file);
 		key.append("@");

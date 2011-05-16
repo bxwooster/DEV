@@ -46,17 +46,15 @@ float4 common_light(PPosition input)
 	[unroll]
 	for (uint i = 0; i < 4 && index != 0; i++)
 	{
-		fragments[i] = fragment_buffer[index];
+		fragments[i] = scattered_buffer[index];
 		uint packed = fragments[i].normal16_depth16;
 		depths[i] = f16tof32(packed >> 16);
-		index = fragment_buffer[index].spec8_next24 & 0x00ffffff;
+		index = fragments[i].spec8_next24 & 0x00ffffff;
 	}
 
 	uint4 indices = uint4(0, 1, 2, 3);
 
 	sort4(depths, indices);
-
-	float combined_alpha = 1.0;
 
 	[loop] [allow_uav_condition] //! loop?
 	for (uint j = 0; j < i; j++)
@@ -65,8 +63,7 @@ float4 common_light(PPosition input)
 		OITFragment fragment = fragments[indices[j]];
 		normal = normal_decode(u8x2_f16_unpack(fragment.normal16_depth16).xy);
 		colour = u8x4_unpack(fragment.colour);
-		result *= (1.0 - colour.a);
-		combined_alpha *= (1.0 - colour.a);
+		result *= (1.0 - colour.a); // alpha
 		colour.a = (fragment.spec8_next24 >> 24) / 255.0; //specular
 		result += inner_light(uv, depths[j], normal, colour);
 	}

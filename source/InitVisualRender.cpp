@@ -4,14 +4,9 @@
 #include "DeviceState.hpp"
 #include "VisualRenderInfo.hpp"
 #include "ShaderCache.hpp"
+#include "LoadShader.hpp"
 
 namespace DEV {
-namespace LoadShader
-{
-	void Vertex(ShaderCache& cache, DeviceState& device, IPtr<ID3D11VertexShader>& shader, char* name, char* entry = "main");
-	void Geometry(ShaderCache& cache, DeviceState& device, IPtr<ID3D11GeometryShader>& shader, char* name, char* entry = "main");
-	void Pixel(ShaderCache& cache, DeviceState& device, IPtr<ID3D11PixelShader>& shader, char* name, char* entry = "main");
-}
 
 void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& cache)
 {
@@ -20,6 +15,8 @@ void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& 
 
 	LoadShader::Vertex(cache, device, info.vs_noop, "shaders/vs_noop.hlsl");
 	LoadShader::Geometry(cache, device, info.gs_infinite_plane, "shaders/gs_infinite_plane.hlsl");
+
+	LoadShader::Compute(cache, device, info.cs_oit_consolidate, "shaders/cs_oit_consolidate.hlsl");
 
 	{
 		D3D11_RASTERIZER_DESC desc = Tools::DefaultRasterizerDesc();

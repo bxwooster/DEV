@@ -11,7 +11,7 @@ Texture2D shadowmap: register(t3);
 #include "struct/OITFragment"
 
 RWByteAddressBuffer start_buffer : register(u1);
-RWStructuredBuffer<OITFragment> fragment_buffer : register(u2);
+RWStructuredBuffer<OITFragment> scattered_buffer : register(u2);
 
 sampler sm_point : register(s0);
 

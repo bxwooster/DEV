@@ -3,15 +3,10 @@
 #include "LightRenderInfo.hpp"
 #include "DeviceState.hpp"
 #include "ShaderCache.hpp"
+#include "LoadShader.hpp"
 #include "OK.h"
 
 namespace DEV {
-namespace LoadShader
-{
-	void Vertex(ShaderCache& cache, DeviceState& device, IPtr<ID3D11VertexShader>& shader, char* name, char* entry = "main");
-	void Geometry(ShaderCache& cache, DeviceState& device, IPtr<ID3D11GeometryShader>& shader, char* name, char* entry = "main");
-	void Pixel(ShaderCache& cache, DeviceState& device, IPtr<ID3D11PixelShader>& shader, char* name, char* entry = "main");
-}
 
 void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& cache, Camera& camera)
 {

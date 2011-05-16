@@ -16,7 +16,7 @@ typedef unsigned int uint;
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
-	UBuffer& oit_start, UBuffer& oit_scattered,
+	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame)
 {
 	OK( gbuffer0.viewport == gbuffer1.viewport);
@@ -26,8 +26,8 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 	ID3D11Buffer* buffers[] = {cb_frame, cb_object};
 	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
-	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_scattered.uav };
-	unsigned int counts[] = { -1, 1 };
+	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_scattered.uav, oit_consolidated.uav };
+	unsigned int counts[] = { -1, 1, -1 };
 
 	state->OMSetRenderTargetsAndUnorderedAccessViews
 		(2, targets, zbuffer.dsv, 2, 2, uavs, counts);
@@ -52,7 +52,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;
-		data.__colour = Vector4f(1, 1, 1, 1.0f);
+		data.__colour = Vector4f(1, 1, 1, i > 0 ? 0.5f : 1);
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 		state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
@@ -62,7 +62,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 	data.world_view = camera.view * transforms[1]; //! plane
 	data.world_view_proj = camera.proj * data.world_view;
-	data.__colour = Vector4f(1, 1, 1, 0.5f);
+	data.__colour = Vector4f(1, 1, 1, 1);
 
 	state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 
@@ -71,6 +71,14 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 	state->GSSetShader(info.gs_infinite_plane, NULL, 0);
 	state->GSSetConstantBuffers(0, 1, &cb_object);
 	state->Draw( 1, 0 );
+
+	//
+	state->CSSetShader( info.cs_oit_consolidate, NULL, 0 );
+
+	state->CSSetConstantBuffers( 0, 1, &cb_frame );
+	state->CSSetUnorderedAccessViews(0, 3, uavs, counts);
+
+	//state->Dispatch(camera.screen.w / 8, camera.screen.h / 8, 1);
 }
 
-} // namespace Devora9
+} // namespace DEV
