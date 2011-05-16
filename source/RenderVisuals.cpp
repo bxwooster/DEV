@@ -52,7 +52,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;
-		data.__colour = Vector4f(1, 1, 1, i > 0 ? 0.5f : 1);
+		data.__colour = Vector4f(1, 1, 1, i > 0 ? 1.0f : 1);
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 		state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
@@ -77,8 +77,10 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 	state->CSSetConstantBuffers( 0, 1, &cb_frame );
 	state->CSSetUnorderedAccessViews(0, 3, uavs, counts);
+	state->CSSetShaderResources(0, 1, &zbuffer.srv);
+	state->CSSetSamplers(0, 1, &info.sm_point);
 
-	//state->Dispatch(camera.screen.w / 8, camera.screen.h / 8, 1);
+	state->Dispatch(camera.screen.w / 8, camera.screen.h / 8, 1);
 }
 
 } // namespace DEV

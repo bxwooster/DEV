@@ -19,7 +19,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
-	UBuffer& oit_start, UBuffer& oit_scattered,
+	UBuffer& oit_start, UBuffer& oit_consolidated,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light)
 {
 	const float blendf[4] = {1.0f, 1.0f, 1.0f, 0.0f};
@@ -27,7 +27,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 	state->ClearRenderTargetView(lbuffer.rtv, black);
 
-	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_scattered.uav };
+	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_consolidated.uav };
 	unsigned int counts[] = { -1, -1 };
 
 	state->ClearState();

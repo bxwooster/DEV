@@ -19,6 +19,12 @@ void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& 
 	LoadShader::Compute(cache, device, info.cs_oit_consolidate, "shaders/cs_oit_consolidate.hlsl");
 
 	{
+		D3D11_SAMPLER_DESC desc = Tools::DefaultSamplerDesc();
+		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		HOK( device.device->CreateSamplerState( &desc, ~info.sm_point));
+	}
+
+	{
 		D3D11_RASTERIZER_DESC desc = Tools::DefaultRasterizerDesc();
 		HOK( device.device->CreateRasterizerState( &desc, ~info.rs_default));
 	}
