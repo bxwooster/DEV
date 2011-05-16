@@ -75,6 +75,7 @@
     <None Include="..\shaders\code\common_light" />
     <None Include="..\shaders\code\f16x2" />
     <None Include="..\shaders\code\normal" />
+    <None Include="..\shaders\code\sort4" />
     <None Include="..\shaders\code\u8x2_f16" />
     <None Include="..\shaders\code\u8x4" />
     <None Include="..\shaders\code\uv_to_ray" />
@@ -87,6 +88,7 @@
     <None Include="..\shaders\ps_final.hlsl" />
     <None Include="..\shaders\ps_point_light.hlsl" />
     <None Include="..\shaders\ps_render.hlsl" />
+    <None Include="..\shaders\ps_skylight.hlsl" />
     <None Include="..\shaders\ps_tracy.hlsl" />
     <None Include="..\shaders\struct\Empty" />
     <None Include="..\shaders\struct\OITFragment" />

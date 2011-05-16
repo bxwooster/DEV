@@ -1,0 +1,53 @@
+void sort4_bad(inout float4 depths, inout uint4 indices) // worse?
+{
+	uint2 half = uint2(depths.x > depths.y, depths.z > depths.w);
+	uint4 swap = half.xxyy;
+
+	indices += swap * (indices.yxwz - indices);
+	depths += swap * (depths.yxwz - depths);
+
+	half = uint2(depths.x > depths.z, depths.y > depths.w);
+	swap = half.xyxy;
+
+	indices += swap * (indices.zyxw - indices);
+	depths += swap * (depths.xwzy - depths);
+
+	half = uint2(depths.y > depths.z, 0);
+	swap = half.yxxy;
+
+	indices += swap * (indices.zyxw - indices);
+	depths += swap * (depths.xwzy - depths);
+}
+ 
+void sort4(inout float4 depths, inout uint4 indices)
+{
+	if (depths.x > depths.y)
+	{
+		indices = indices.yxzw;
+		depths = depths.yxzw;
+	}
+
+	if (depths.z > depths.w)
+	{
+		indices = indices.xywz;
+		depths = depths.xywz;
+	}
+
+	if (depths.x > depths.z)
+	{
+		indices = indices.zyxw;
+		depths = depths.zyxw;
+	}
+
+	if (depths.y > depths.w)
+	{
+		indices = indices.xwzy;
+		depths = depths.xwzy;
+	}
+
+	if (depths.y > depths.z)
+	{
+		indices = indices.xzyw;
+		depths = depths.xzyw;
+	}
+}

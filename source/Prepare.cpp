@@ -10,7 +10,7 @@
 namespace DEV {
 
 void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer,
-	UBuffer& oit_start_buffer, Camera& camera)
+	UBuffer& oit_start, Camera& camera)
 {
 	float alpha = float(camera.vertical_fov * M_PI / 180 * 0.5);
 
@@ -26,8 +26,8 @@ void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer,
 
 	state->ClearDepthStencilView(zbuffer.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 
-	unsigned int null[4] = { NULL };
-	state->ClearUnorderedAccessViewUint(oit_start_buffer.uav, null);
+	unsigned int null[4] = { 0 };
+	state->ClearUnorderedAccessViewUint(oit_start.uav, null);
 }
 
 } // namespace DEV

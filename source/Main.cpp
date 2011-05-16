@@ -27,7 +27,10 @@
 
 namespace DEV {
 
-void InitOIT(DeviceState& device, Camera& camera, UBuffer& start_buffer, UBuffer& fragment_buffer);
+void InitOIT(DeviceState& device, Camera& camera,
+	UBuffer& oit_start, UBuffer& oit_scattered,
+	UBuffer& oit_consolidated);
+
 void InitGraphics(GraphicsState& state, DeviceState& device, 
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera);
@@ -57,18 +60,18 @@ void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing)
 void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera);
 void Present(DeviceState& state);
 void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer,
-	UBuffer& oit_start_buffer, Camera& camera);
+	UBuffer& oit_start, Camera& camera);
 
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
-	UBuffer& oit_start_buffer, UBuffer& oit_fragment_buffer,
+	UBuffer& oit_start, UBuffer& oit_scattered,
 	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame);
 
 void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
-	UBuffer& oit_start_buffer, UBuffer& oit_fragment_buffer,
+	UBuffer& oit_start, UBuffer& oit_scattered,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light);
 
 void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
@@ -99,7 +102,7 @@ void run()
 
 	Buffer backbuffer, gbuffer0, gbuffer1, lbuffer;
 	ZBuffer zbuffer, shadowmap, shadowcube;
-	UBuffer oit_start_buffer, oit_fragment_buffer;
+	UBuffer oit_start, oit_scattered, oit_consolidated;
 
 	Transforms transforms;
 	Visuals visuals;
@@ -111,7 +114,7 @@ void run()
 	// Code
 	InitGraphics(graphics, device, gbuffer0, gbuffer1,
 		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera);
-	InitOIT(device, camera, oit_start_buffer, oit_fragment_buffer);
+	InitOIT(device, camera, oit_start, oit_scattered, oit_consolidated);
 	
 	InitVisualRender(vinfo, device, shadercache);
 	InitLightRender(linfo, device, shadercache, camera);
@@ -139,14 +142,14 @@ void run()
 		CrunchPhysics(physics, transforms, player, timing);
 		DeriveCamera(transforms, player, camera);
 
-		Prepare(graphics, cb_frame, zbuffer, oit_start_buffer, camera);
+		Prepare(graphics, cb_frame, zbuffer, oit_start, camera);
 		RenderVisuals(graphics, vinfo, transforms, visuals, geometries,
-			camera, oit_start_buffer, oit_fragment_buffer,
+			camera, oit_start, oit_scattered,
 			gbuffer0, gbuffer1, zbuffer, cb_object, cb_frame);
 		//RayTrace(graphics, rinfo, camera, zbuffer, gbuffer0, gbuffer1, cb_frame, cb_tracy);
 		RenderLights(graphics, linfo, transforms, lights, visuals, geometries,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
-			oit_start_buffer, oit_fragment_buffer,
+			oit_start, oit_scattered,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
 		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);
 		Present(device);

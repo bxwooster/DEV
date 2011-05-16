@@ -39,7 +39,7 @@ out float4 g1 : SV_Target1
 		uint dim = 2 * res.x * res.y;
 		if (index >=  dim) discard; // overflow
 
-		uint start = 4 * (input.svposition.y * res.x + input.svposition.x);
+		uint start = 4 * (input.svposition.y * res.x + input.svposition.x + 2);
 		start_buffer.InterlockedExchange(start, index, old_index);
 		
 		OITFragment fragment;

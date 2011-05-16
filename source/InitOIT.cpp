@@ -9,7 +9,9 @@ typedef unsigned int uint;
 
 namespace DEV {
 
-void InitOIT(DeviceState& device, Camera& camera, UBuffer& start_buffer, UBuffer& fragment_buffer)
+void InitOIT(DeviceState& device, Camera& camera,
+	UBuffer& oit_start, UBuffer& oit_scattered,
+	UBuffer& oit_consolidated)
 {
 	int screen_size = camera.screen.w * camera.screen.h;
 	int n_fragments = 2 * screen_size; //!
@@ -22,13 +24,16 @@ void InitOIT(DeviceState& device, Camera& camera, UBuffer& start_buffer, UBuffer
 		desc.StructureByteStride = sizeof(OITFragment);
 	
 		HOK( device.device->CreateBuffer
-			(&desc, NULL, ~fragment_buffer.buffer));
-
-		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
-		desc.ByteWidth = screen_size * sizeof(int);
+			(&desc, NULL, ~oit_scattered.buffer));
 
 		HOK( device.device->CreateBuffer
-			(&desc, NULL, ~start_buffer.buffer));
+			(&desc, NULL, ~oit_consolidated.buffer));
+
+		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+		desc.ByteWidth = (screen_size + 2) * sizeof(int); // 2 counters
+
+		HOK( device.device->CreateBuffer
+			(&desc, NULL, ~oit_start.buffer));
 	}
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC desc = {};
@@ -39,14 +44,17 @@ void InitOIT(DeviceState& device, Camera& camera, UBuffer& start_buffer, UBuffer
 		desc.Format = DXGI_FORMAT_UNKNOWN;
 
 		HOK( device.device->CreateUnorderedAccessView
-			( fragment_buffer.buffer, &desc, ~fragment_buffer.uav ));
+			( oit_scattered.buffer, &desc, ~oit_scattered.uav ));
 
-		desc.Buffer.NumElements = screen_size;
+		HOK( device.device->CreateUnorderedAccessView
+			( oit_consolidated.buffer, &desc, ~oit_consolidated.uav ));
+
+		desc.Buffer.NumElements = screen_size + 2; //!
 		desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_RAW;
 		desc.Format = DXGI_FORMAT_R32_TYPELESS;
 
 		HOK( device.device->CreateUnorderedAccessView
-			( start_buffer.buffer, &desc, ~start_buffer.uav ));
+			( oit_start.buffer, &desc, ~oit_start.uav ));
 	}
 }
 

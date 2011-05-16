@@ -19,7 +19,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
-	UBuffer& oit_start_buffer, UBuffer& oit_fragment_buffer,
+	UBuffer& oit_start, UBuffer& oit_scattered,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light)
 {
 	const float blendf[4] = {1.0f, 1.0f, 1.0f, 0.0f};
@@ -27,8 +27,27 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 	state->ClearRenderTargetView(lbuffer.rtv, black);
 
-	ID3D11UnorderedAccessView* uavs[] = { oit_start_buffer.uav, oit_fragment_buffer.uav };
+	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_scattered.uav };
 	unsigned int counts[] = { -1, -1 };
+
+	state->ClearState();
+
+	state->OMSetRenderTargets(1, &lbuffer.rtv, zbuffer.dsv);
+	state->RSSetViewports( 1, &lbuffer.viewport );
+	state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
+
+	state->RSSetState(info.rs_default);
+	state->OMSetBlendState( NULL, blendf, 0xffffffff );
+	state->OMSetDepthStencilState( info.ds_less_equal, 0 );
+
+	state->VSSetShader(info.vs_noop, NULL, 0);
+	state->GSSetShader(info.gs_fullscreen, NULL, 0);
+	state->PSSetShader(info.ps_skylight, NULL, 0);
+	
+	state->PSSetConstantBuffers(0, 1, &cb_frame);
+	state->PSSetSamplers(0, 1, &info.sm_point);
+
+	state->Draw( 1, 0 );
 
 	for (int k = 0; k < lights.dir.size(); k++)
 	{
@@ -41,13 +60,13 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->ClearState();
 
 		state->OMSetRenderTargets(0, NULL, shadowmap.dsv);
+		state->RSSetViewports( 1, &shadowmap.viewport );
 		state->IASetInputLayout( info.layout_z );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-		state->RSSetViewports( 1, &shadowmap.viewport );
 
 		state->RSSetState( info.rs_shadow );
 		state->OMSetBlendState( NULL, blendf, 0xffffffff );
-		state->OMSetDepthStencilState( NULL, 0u );
+		state->OMSetDepthStencilState( NULL, 0 );
 
 		state->VSSetShader( info.vs_render_z, NULL, 0 );
 		state->GSSetShader( NULL, NULL, 0 );
@@ -81,7 +100,6 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
 
-		//state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
 		state->OMSetRenderTargetsAndUnorderedAccessViews(1, &lbuffer.rtv, NULL, 1, 2, uavs, counts);
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
@@ -114,10 +132,10 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->ClearDepthStencilView(shadowcube.dsv, D3D11_CLEAR_DEPTH, 1.0, 0);
 		state->ClearState();
 
-		state->IASetInputLayout( info.layout_z );
-		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 		state->RSSetViewports( 1, &shadowcube.viewport ); //!
 		state->OMSetRenderTargets(0, NULL, shadowcube.dsv);
+		state->IASetInputLayout( info.layout_z );
+		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 
 		state->RSSetState( info.rs_shadow );
 		state->OMSetBlendState( NULL, blendf, 0xffffffff );
@@ -161,7 +179,6 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		state->IASetInputLayout( NULL );
 		state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 		state->RSSetViewports( 1, &lbuffer.viewport );
-		//state->OMSetRenderTargets(1, &lbuffer.rtv, NULL);
 		state->OMSetRenderTargetsAndUnorderedAccessViews(1, &lbuffer.rtv, NULL, 1, 2, uavs, counts);
 
 		state->RSSetState( info.rs_backface );

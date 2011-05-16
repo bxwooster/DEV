@@ -13,7 +13,7 @@ void main
 
 	for (uint id = 0; id < 3; id++)
 	{
-		output.svposition = float4(positions[id] * 2 - 1, 0, 1);
+		output.svposition = float4(positions[id] * 2 - 1, 1, 1);
 		stream.Append(output);
 	}
 }

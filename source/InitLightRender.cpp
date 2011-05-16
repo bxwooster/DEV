@@ -24,6 +24,7 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 	LoadShader::Geometry(cache, device, info.gs_point_light, "shaders/gs_point_light.hlsl");
 	LoadShader::Pixel(cache, device, info.ps_dir_light, "shaders/ps_dir_light.hlsl");
 	LoadShader::Pixel(cache, device, info.ps_point_light, "shaders/ps_point_light.hlsl");
+	LoadShader::Pixel(cache, device, info.ps_skylight, "shaders/ps_skylight.hlsl");
 
 	{
 		D3D11_SAMPLER_DESC desc = Tools::DefaultSamplerDesc();
@@ -50,6 +51,13 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 		desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 		HOK( device.device->CreateBlendState( &desc, ~info.bs_additive));
 	}
+
+	{
+		D3D11_DEPTH_STENCIL_DESC desc = Tools::DefaultDepthStencilDesc();
+		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		HOK( device.device->CreateDepthStencilState( &desc, ~info.ds_less_equal));
+	}
+
 
 	// Layout //!
 	{       

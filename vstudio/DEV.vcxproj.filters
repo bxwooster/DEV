@@ -276,5 +276,11 @@
     <None Include="..\shaders\code\u8x2_f16">
       <Filter>shaders\code</Filter>
     </None>
+    <None Include="..\shaders\code\sort4">
+      <Filter>shaders\code</Filter>
+    </None>
+    <None Include="..\shaders\ps_skylight.hlsl">
+      <Filter>shaders\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

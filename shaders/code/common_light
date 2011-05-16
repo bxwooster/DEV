@@ -1,18 +1,14 @@
 #include "code/u8x2_f16"
 #include "code/u8x4"
 #include "code/normal"
+#include "code/sort4"
 
-void sort(inout float4 depths, inout uint4 indices)
-{
-	if (depths.x > depths.y)
-	{
-		indices = indices.yxzw;
-		depths = depths.yxzw;
-	}
-}
 
-float3 inner_light(float2 uv, float depth, float3 normal, float3 colour)
+inline float3 inner_light(float2 uv, float depth, float3 normal, float4 colour_spec)
 {
+	float3 colour = colour_spec.rgb;
+	float specular = colour_spec.a;
+
 	float z_neg = -z_near / (1 - depth);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
 	float4 reprojected = mul(viewI_light_view_proj, surface_pos);
@@ -20,11 +16,9 @@ float3 inner_light(float2 uv, float depth, float3 normal, float3 colour)
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
 	float fade = smoothstep(radius, radius * 0.9, l);
-	if (fade == 0.0) return 0;//discard;
+	if (fade == 0.0) return 0;
 
 	float lighted = SHADOW_TEST;
-
-	if (lighted == 0.0) return 0;//discard;
 
     float radiance = lighted * fade *
 		max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
@@ -39,9 +33,10 @@ float4 common_light(PPosition input)
 	float depth = zbuffer.Sample(sm_point, uv).x;
 	float3 normal = normal_decode(gbuffer0.Sample(sm_point, uv).xy);
 	float4 colour = gbuffer1.Sample(sm_point, uv); //! easy perf
-	float3 result = inner_light(uv, depth, normal, colour.xyz);
 
-	uint start = 4 * (input.svposition.y * res.x + input.svposition.x);
+	float3 result = inner_light(uv, depth, normal, colour);
+
+	uint start = 4 * (input.svposition.y * res.x + input.svposition.x + 2);
 	uint index = start_buffer.Load(start);
 	if (index == 0) return float4(result, 1.0);
 
@@ -58,22 +53,24 @@ float4 common_light(PPosition input)
 	}
 
 	uint4 indices = uint4(0, 1, 2, 3);
-	//sort(depths, indices);
+
+	sort4(depths, indices);
 
 	float combined_alpha = 1.0;
 
-	[unroll]
+	[loop] [allow_uav_condition] //! loop?
 	for (uint j = 0; j < i; j++)
 	{
-		if (depths[j] > depth) continue; //! break
+		if (depths[j] > depth) break;
 		OITFragment fragment = fragments[indices[j]];
 		normal = normal_decode(u8x2_f16_unpack(fragment.normal16_depth16).xy);
 		colour = u8x4_unpack(fragment.colour);
 		result *= (1.0 - colour.a);
 		combined_alpha *= (1.0 - colour.a);
-		result += inner_light(uv, depths[j], normal, colour.xyz);
+		colour.a = (fragment.spec8_next24 >> 24) / 255.0; //specular
+		result += inner_light(uv, depths[j], normal, colour);
 	}
 
-	//return 0.1 * z_near / (1 - depths);
+	//return 0;//return 0.01 * z_near / (1 - depths);
 	return float4(result, 1.0);
 }

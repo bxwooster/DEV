@@ -17,6 +17,7 @@ struct LightRenderInfo
 	IPtr<ID3D11RasterizerState> rs_shadow;
 	IPtr<ID3D11RasterizerState> rs_backface;
 	IPtr<ID3D11BlendState> bs_additive;
+	IPtr<ID3D11DepthStencilState> ds_less_equal;
 	IPtr<ID3D11SamplerState> sm_point;
 
 	IPtr<ID3D11VertexShader> vs_render_z;
@@ -28,6 +29,7 @@ struct LightRenderInfo
 	IPtr<ID3D11GeometryShader> gs_point_light;
 	IPtr<ID3D11PixelShader> ps_dir_light;
 	IPtr<ID3D11PixelShader> ps_point_light;
+	IPtr<ID3D11PixelShader> ps_skylight;
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
