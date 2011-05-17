@@ -17,21 +17,20 @@ typedef unsigned int uint;
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
 	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame)
+	Buffer& gbuffer, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame)
 {
-	OK( gbuffer0.viewport == gbuffer1.viewport);
-	OK( gbuffer0.viewport == zbuffer.viewport);
+	OK( gbuffer.viewport == zbuffer.viewport);
 
 	state->ClearState();
 
 	ID3D11Buffer* buffers[] = {cb_frame, cb_object};
-	ID3D11RenderTargetView* targets[] = { gbuffer0.rtv, gbuffer1.rtv };
+	ID3D11RenderTargetView* targets[] = { gbuffer.rtv };
 	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_scattered.uav, oit_consolidated.uav };
 	unsigned int counts[] = { -1, 1, -1 };
 
 	state->OMSetRenderTargetsAndUnorderedAccessViews
-		(2, targets, zbuffer.dsv, 2, 2, uavs, counts);
-	state->RSSetViewports( 1, &gbuffer0.viewport );
+		(1, targets, zbuffer.dsv, 1, 2, uavs, counts);
+	state->RSSetViewports( 1, &gbuffer.viewport );
 	state->IASetInputLayout( info.layout );
 	state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 

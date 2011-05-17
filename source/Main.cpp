@@ -31,7 +31,7 @@ void InitOIT(DeviceState& device, Camera& camera,
 	UBuffer& oit_start, UBuffer& oit_scattered,	UBuffer& oit_consolidated);
 
 void InitGraphics(GraphicsState& state, DeviceState& device, 
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
+	Buffer& gbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera);
 
 void InitCBuffer(DeviceState& device, CBuffer& cb, size_t size);
@@ -64,20 +64,20 @@ void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer,
 void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
 	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
 	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame);
+	Buffer& gbuffer, ZBuffer& zbuffer, CBuffer& cb_object, CBuffer& cb_frame);
 
 void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
+	Buffer& gbuffer, Buffer& lbuffer,
 	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light);
 
 void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
-	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, CBuffer& cb_frame);
+	Buffer& gbuffer,	Buffer& lbuffer, Buffer& backbuffer, CBuffer& cb_frame);
 
 void RayTrace(GraphicsState& state, RayTracingInfo& info,
-	Camera& camera,	ZBuffer& zbuffer, Buffer& gbuffer0, Buffer& gbuffer1,
+	Camera& camera,	ZBuffer& zbuffer, Buffer& gbuffer,
 	CBuffer& cb_frame, CBuffer& cb_tracy);
 
 
@@ -99,7 +99,7 @@ void run()
 	Camera camera;
 	PlayerState player;
 
-	Buffer backbuffer, gbuffer0, gbuffer1, lbuffer;
+	Buffer backbuffer, gbuffer, lbuffer;
 	ZBuffer zbuffer, shadowmap, shadowcube;
 	UBuffer oit_start, oit_scattered, oit_consolidated;
 
@@ -111,7 +111,7 @@ void run()
 	CBuffer cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame, cb_tracy;
 
 	// Code
-	InitGraphics(graphics, device, gbuffer0, gbuffer1,
+	InitGraphics(graphics, device, gbuffer,
 		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera);
 	InitOIT(device, camera, oit_start, oit_scattered, oit_consolidated);
 	
@@ -144,13 +144,13 @@ void run()
 		Prepare(graphics, cb_frame, zbuffer, oit_start, camera);
 		RenderVisuals(graphics, vinfo, transforms, visuals, geometries,
 			camera, oit_start, oit_scattered, oit_consolidated,
-			gbuffer0, gbuffer1, zbuffer, cb_object, cb_frame);
-		//RayTrace(graphics, rinfo, camera, zbuffer, gbuffer0, gbuffer1, cb_frame, cb_tracy);
+			gbuffer, zbuffer, cb_object, cb_frame);
+		//RayTrace(graphics, rinfo, camera, zbuffer, gbuffer, cb_frame, cb_tracy);
 		RenderLights(graphics, linfo, transforms, lights, visuals, geometries,
-			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
+			camera, zbuffer, shadowmap, shadowcube, gbuffer, lbuffer,
 			oit_start, oit_scattered, oit_consolidated,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
-		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);
+		PostProcess(graphics, pinfo, zbuffer, gbuffer, lbuffer, backbuffer, cb_frame);
 		Present(device);
 	}
 }

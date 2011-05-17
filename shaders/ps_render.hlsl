@@ -17,18 +17,17 @@ RWStructuredBuffer<OITFragment> scattered_buffer : register(u3);
 void main
 (
 	PPositionNormal input,
-out float4 g0 : SV_Target0,
-out float4 g1 : SV_Target1
+out uint2 output : SV_Target0
 ){
-	float4 colour = __colour; //{ 1, 1, 1, 1 };
+	float4 colour = { 1, 1, 1, 1 };
 	float specular = 1;
 	float2 encoded_normal = normal_encode(normalize(input.normal));
 	// Interpolation means we have to renormalize for encoding.
 
 	if (colour.a == 1.0)
 	{
-		g0 = float4(encoded_normal, specular, 0);
-		g1 = colour;
+		output.x = u16x2_pack(encoded_normal);
+		output.y = u8x4_pack(float4(colour.xyz, specular));
 		return;
 	}
 	else if (colour.a == 0.0) discard;

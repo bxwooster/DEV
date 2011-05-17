@@ -3,10 +3,9 @@ cbuffer frame: register(b0)
 cbuffer light: register(b1)
 #include "cbuffer/light"
 
-Texture2D gbuffer0: register(t0);
-Texture2D gbuffer1: register(t1);
-Texture2D zbuffer: register(t2);
-TextureCube shadowcube: register(t3);
+Texture2D<uint2> gbuffer: register(t0);
+Texture2D<float> zbuffer: register(t1);
+TextureCube<float> shadowcube: register(t2);
 
 #include "struct/OITFragment"
 

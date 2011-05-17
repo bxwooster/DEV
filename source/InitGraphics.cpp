@@ -31,7 +31,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM w, LPARAM l)
 }
 
 void InitGraphics(GraphicsState& state, DeviceState& device,
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
+	Buffer& gbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera)
 {
 	// Camera
@@ -141,13 +141,9 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 
 		HOK( device.device->CreateTexture2D( &desc, NULL, ~lbuffer.texture ) );
 		
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //DXGI_FORMAT_R32G32_UINT
+		desc.Format = DXGI_FORMAT_R32G32_UINT;
 
-		HOK( device.device->CreateTexture2D( &desc, NULL, ~gbuffer0.texture ) );
-
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-		HOK( device.device->CreateTexture2D( &desc, NULL, ~gbuffer1.texture ) );
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~gbuffer.texture ) );
 	}
 
 	// Views
@@ -199,29 +195,25 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		  ( shadowcube.texture, &desc, ~shadowcube.dsv ));
 	}
 	HOK( device.device->CreateShaderResourceView
-		( gbuffer0.texture, NULL, ~gbuffer0.srv ) );
-	HOK( device.device->CreateShaderResourceView
-		( gbuffer1.texture, NULL, ~gbuffer1.srv ) );
+		( gbuffer.texture, NULL, ~gbuffer.srv ) );
 	HOK( device.device->CreateShaderResourceView
 		( lbuffer.texture, NULL, ~lbuffer.srv ) );
 	HOK( device.device->CreateRenderTargetView
-		( gbuffer0.texture, NULL, ~gbuffer0.rtv ) );
-	HOK( device.device->CreateRenderTargetView
-		( gbuffer1.texture, NULL, ~gbuffer1.rtv ) );
+		( gbuffer.texture, NULL, ~gbuffer.rtv ) );
 	HOK( device.device->CreateRenderTargetView
 		( lbuffer.texture, NULL, ~lbuffer.rtv ) );
 
 	// Viewports
 	{			
-		gbuffer0.viewport.Width = float(width);
-		gbuffer0.viewport.Height = float(height);
-		gbuffer0.viewport.MinDepth = 0.0f;
-		gbuffer0.viewport.MaxDepth = 1.0f;
-		gbuffer0.viewport.TopLeftX = 0.0f;
-		gbuffer0.viewport.TopLeftY = 0.0f;
+		gbuffer.viewport.Width = float(width);
+		gbuffer.viewport.Height = float(height);
+		gbuffer.viewport.MinDepth = 0.0f;
+		gbuffer.viewport.MaxDepth = 1.0f;
+		gbuffer.viewport.TopLeftX = 0.0f;
+		gbuffer.viewport.TopLeftY = 0.0f;
 
-		backbuffer.viewport = lbuffer.viewport = zbuffer.viewport 
-			= gbuffer1.viewport = gbuffer0.viewport;
+		backbuffer.viewport = lbuffer.viewport 
+			= zbuffer.viewport = gbuffer.viewport;
 	   
 		shadowmap.viewport.Width = float(shadowmap_size);
 		shadowmap.viewport.Height = float(shadowmap_size);

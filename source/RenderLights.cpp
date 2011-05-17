@@ -18,7 +18,7 @@ typedef unsigned int uint;
 void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
+	Buffer& gbuffer, Buffer& lbuffer,
 	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light)
 {
@@ -112,7 +112,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		data.radius = 30; //!
 
 		ID3D11Buffer* buffers[] = { cb_frame, cb_light };
-		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowmap.srv };
+		ID3D11ShaderResourceView* views[] = { gbuffer.srv, zbuffer.srv, shadowmap.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
 
@@ -131,7 +131,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		state->GSSetConstantBuffers(0, 1, &cb_light);
 		state->PSSetConstantBuffers(0, 2, buffers);
-		state->PSSetShaderResources(0, 4, views);
+		state->PSSetShaderResources(0, 3, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
 		state->Draw( 1, 0 );
@@ -188,7 +188,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 		data.radius = 30; //!
 
 		ID3D11Buffer* buffers[] = { cb_frame, cb_light };
-		ID3D11ShaderResourceView* views[4] = { gbuffer0.srv, gbuffer1.srv, zbuffer.srv, shadowcube.srv };
+		ID3D11ShaderResourceView* views[] = { gbuffer.srv, zbuffer.srv, shadowcube.srv };
 
 		state->UpdateSubresource(cb_light, 0, NULL, (void*)&data, sizeof(data), 0);
 
@@ -207,7 +207,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 		state->GSSetConstantBuffers(0, 1, &cb_light);
 		state->PSSetConstantBuffers(0, 2, buffers);
-		state->PSSetShaderResources(0, 4, views);
+		state->PSSetShaderResources(0, 3, views);
 		state->PSSetSamplers(0, 1, &info.sm_point);
 
 		state->Draw( 1, 0 );

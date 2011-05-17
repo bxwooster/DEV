@@ -30,13 +30,15 @@ inline float3 inner_light(float2 uv, float depth, float3 normal, float4 colour_s
 float4 common_light(PPosition input)
 {
 	float3 result = 0;
+	int3 iuv = int3(input.svposition.xy, 0);
 	float2 uv = input.svposition.xy * rcpres;
 
-	float depth = zbuffer.Sample(sm_point, uv).x;
+	float depth = zbuffer.Load(iuv).x;
 	if (depth < 1.0)
 	{
-		float3 normal = normal_decode(gbuffer0.Sample(sm_point, uv).xy);
-		float4 colour = gbuffer1.Sample(sm_point, uv);
+		uint2 packed = gbuffer.Load(iuv);
+		float3 normal = normal_decode(u16x2_unpack(packed.x));
+		float4 colour = u8x4_unpack(packed.y);
 		result = inner_light(uv, depth, normal, colour);
 	}
 
