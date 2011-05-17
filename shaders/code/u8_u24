@@ -3,11 +3,11 @@ float2 u8_u24_unpack(uint input)
     float2 output;
     output.x = input >> 24;
 	output.y = input & 0x00ffffff;
-    return output / float2(255, 2^24 - 1);
+    return output / float2(255, pow(2, 24) - 1);
 }
 
 uint u8_u24_pack(float2 input)
 {
-	uint2 value = uint2(saturate(input) * float2(255, 2^24 - 1) + 0.5);
+	uint2 value = uint2(saturate(input) * float2(255, pow(2, 24) - 1) + 0.5);
     return  value.y | (value.x << 24) ;
 }
