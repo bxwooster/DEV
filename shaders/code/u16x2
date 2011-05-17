@@ -1,0 +1,13 @@
+float2 u16x2_unpack(uint input)
+{
+    float2 output;
+    output.x = input >> 16;
+	output.y = input & 0x0000ffff;
+    return output / 65535.0;
+}
+
+uint u16x2_pack(float2 input)
+{
+	uint2 value = uint2(saturate(input) * 65535.0 + 0.5);
+    return value.y | (value.x << 16);
+}

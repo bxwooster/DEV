@@ -48,22 +48,22 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 	state->ClearState();
 
-	state->OMSetRenderTargets(1, &lbuffer.rtv, zbuffer.dsv);
-	state->RSSetViewports( 1, &lbuffer.viewport );
-	state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
+	//state->OMSetRenderTargets(1, &lbuffer.rtv, zbuffer.dsv);
+	//state->RSSetViewports( 1, &lbuffer.viewport );
+	//state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 
-	state->RSSetState(info.rs_default);
-	state->OMSetBlendState( NULL, blendf, 0xffffffff );
-	state->OMSetDepthStencilState( info.ds_less_equal, 0 );
+	//state->RSSetState(info.rs_default);
+	//state->OMSetBlendState( NULL, blendf, 0xffffffff );
+	//state->OMSetDepthStencilState( info.ds_less_equal, 0 );
 
-	state->VSSetShader(info.vs_noop, NULL, 0);
-	state->GSSetShader(info.gs_fullscreen, NULL, 0);
-	state->PSSetShader(info.ps_skylight, NULL, 0);
-	
-	state->PSSetConstantBuffers(0, 1, &cb_frame);
-	state->PSSetSamplers(0, 1, &info.sm_point);
+	//state->VSSetShader(info.vs_noop, NULL, 0);
+	//state->GSSetShader(info.gs_fullscreen, NULL, 0);
+	//state->PSSetShader(info.ps_skylight, NULL, 0);
+	//
+	//state->PSSetConstantBuffers(0, 1, &cb_frame);
+	//state->PSSetSamplers(0, 1, &info.sm_point);
 
-	state->Draw( 1, 0 );
+	//state->Draw( 1, 0 );
 
 	for (int k = 0; k < lights.dir.size(); k++)
 	{

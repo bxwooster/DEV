@@ -1,13 +1,13 @@
 float2 f16x2_unpack(uint input)
 {
-    return f16tof32(uint2(
-		input & 0x0000ffff,
-		input >> 16 ));
+	uint2 value;
+	value.x = input >> 16;
+	value.y = input & 0x0000ffff;
+    return f16tof32(value);
 }
 
 uint f16x2_pack(float2 input)
 {
 	uint2 value = f32tof16(input);
-    return value.x |
-		  (value.y << 16);
+    return value.y | (value.x << 16);
 }

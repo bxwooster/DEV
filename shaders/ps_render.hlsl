@@ -5,8 +5,9 @@ cbuffer frame: register(b1)
 
 #include "struct/PPositionNormal"
 #include "struct/OITFragment"
-#include "code/u8x2_u16"
+#include "code/u16x2"
 #include "code/u8x4"
+#include "code/u8_u24"
 #include "code/normal"
 
 RWByteAddressBuffer start_buffer : register(u2);
@@ -21,11 +22,12 @@ out float4 g1 : SV_Target1
 ){
 	float4 colour = __colour; //{ 1, 1, 1, 1 };
 	float specular = 1;
-	float2 enc_normal = normal_encode(normalize(input.normal));
+	float2 encoded_normal = normal_encode(normalize(input.normal));
+	// Interpolation means we have to renormalize for encoding.
 
 	if (colour.a == 1.0)
 	{
-		g0 = float4(enc_normal, specular, 0);
+		g0 = float4(encoded_normal, specular, 0);
 		g1 = colour;
 		return;
 	}
@@ -44,9 +46,10 @@ out float4 g1 : SV_Target1
 
 		OITFragment fragment;
 		float depth = input.svposition.z;
-		fragment.normal16_depth16 = u8x2_u16_pack(float3(enc_normal, depth));
-		fragment.colour = u8x4_pack(colour);
-		fragment.spec8_next24 = (uint(specular * 255 + 0.5) << 24) | old_index;
+		fragment.normal = u16x2_pack(encoded_normal);
+		fragment.colour = u8x4_pack(float4(colour.xyz, specular));
+		fragment.alpha8_depth24 = u8_u24_pack(float2(colour.a, depth));
+		fragment.next = old_index;
 		scattered_buffer[index] = fragment;
 
 		discard;

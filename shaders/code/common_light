@@ -1,5 +1,6 @@
-#include "code/u8x2_u16"
+#include "code/u16x2"
 #include "code/u8x4"
+#include "code/u8_u24"
 #include "code/normal"
 #include "code/sort4"
 
@@ -23,18 +24,21 @@ inline float3 inner_light(float2 uv, float depth, float3 normal, float4 colour_s
     float radiance = lighted * fade *
 		max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
-	return radiance * colour * light_colour;
+	return 10 * radiance * colour * light_colour;
 }
 
 float4 common_light(PPosition input)
 {
+	float3 result = 0;
 	float2 uv = input.svposition.xy * rcpres;
 
 	float depth = zbuffer.Sample(sm_point, uv).x;
-	float3 normal = normal_decode(gbuffer0.Sample(sm_point, uv).xy);
-	float4 colour = gbuffer1.Sample(sm_point, uv);
-
-	float3 result = inner_light(uv, depth, normal, colour);
+	if (depth < 1.0)
+	{
+		float3 normal = normal_decode(gbuffer0.Sample(sm_point, uv).xy);
+		float4 colour = gbuffer1.Sample(sm_point, uv);
+		result = inner_light(uv, depth, normal, colour);
+	}
 
 	uint start = 4 * (input.svposition.y * res.x + input.svposition.x + 2);
 	uint index = start_buffer.Load(start);
@@ -43,18 +47,21 @@ float4 common_light(PPosition input)
 	uint N = index >> 24;
 	index = index & 0x00ffffff;
 
+	float3 normal;
+	float4 colour;
+
 	[loop] [allow_uav_condition]
 	for (uint j = 0; j < N; j++)
 	{
 		OITFragment fragment = consolidated_buffer[index + j];
-		float3 unpacked = u8x2_u16_unpack(fragment.normal16_depth16);
-		normal = normal_decode(unpacked.xy);
-		depth = unpacked.z;
+		normal = normal_decode(u16x2_unpack(fragment.normal));
+		float2 unpacked = u8_u24_unpack(fragment.alpha8_depth24);
+		float alpha = unpacked.x;
+		depth = unpacked.y;
 		colour = u8x4_unpack(fragment.colour);
-		result *= (1.0 - colour.a); // alpha
-		colour.a = (fragment.spec8_next24 >> 24) / 255.0; //specular
+		result *= (1.0 - alpha);
 		result += inner_light(uv, depth, normal, colour);
 	}
 
-	return float4(result, 1.0);
+	return 1.0;//float4(result, 1.0);
 }

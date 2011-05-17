@@ -1,6 +1,7 @@
 struct OITFragment
 {
-	uint normal16_depth16;
+	uint normal;
 	uint colour;
-	uint spec8_next24; // Hahaha
+	uint alpha8_depth24;
+	uint next;
 };

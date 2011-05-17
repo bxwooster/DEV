@@ -24,6 +24,7 @@ float shadowmap_test(float4 reprojected, float3 lightvec)
 	reprojected /= reprojected.w;
 	float inside_cone = length(reprojected.xy) < 1;
 	if (in_front * inside_cone == 0.0) discard;
+	return 1;
 
 	float2 s_uv = float2(reprojected.x, -reprojected.y) * 0.5 + 0.5;
 	float4 s = z_near / (1.0 - shadowmap.Gather(sm_point, s_uv));

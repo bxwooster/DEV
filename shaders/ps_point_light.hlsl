@@ -26,7 +26,7 @@ float shadowcube_test(float4 reprojected, float3 lightvec)
 	return dot(m <= s, 0.25);
 }
 
-#define SHADOW_TEST shadowcube_test(reprojected, lightvec)
+#define SHADOW_TEST 1;//shadowcube_test(reprojected, lightvec)
 #include "code/common_light"
 
 float4 main

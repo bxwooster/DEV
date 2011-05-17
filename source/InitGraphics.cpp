@@ -118,7 +118,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		ZeroMemory(&desc, sizeof(desc) );
 		desc.Width = shadowmap_size;
 		desc.Height = shadowmap_size;
-		desc.Format = DXGI_FORMAT_R16_TYPELESS;
+		desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
 		desc.ArraySize = 6;
 		desc.SampleDesc.Count = 1;
@@ -136,11 +136,14 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Height = height;
 		HOK( device.device->CreateTexture2D( &desc, NULL, ~zbuffer.texture ) );
 
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;//DXGI_FORMAT_R16G16B16A16_FLOAT; //!
+		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 
-		HOK( device.device->CreateTexture2D( &desc, NULL, ~gbuffer0.texture ) );
 		HOK( device.device->CreateTexture2D( &desc, NULL, ~lbuffer.texture ) );
+		
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //DXGI_FORMAT_R32G32_UINT
+
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~gbuffer0.texture ) );
 
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
@@ -151,7 +154,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		desc.Format = DXGI_FORMAT_R16_UNORM;
+		desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 		desc.Texture2D.MipLevels = 1;
 		desc.Texture2D.MostDetailedMip = 0;
 
@@ -171,7 +174,7 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc = {};
 		desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		desc.Format = DXGI_FORMAT_D16_UNORM;
+		desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		desc.Texture2D.MipSlice = 0;
 
 		HOK( device.device->CreateDepthStencilView

@@ -77,8 +77,10 @@
     <None Include="..\shaders\code\f16x2" />
     <None Include="..\shaders\code\normal" />
     <None Include="..\shaders\code\sort4" />
+    <None Include="..\shaders\code\u16x2" />
     <None Include="..\shaders\code\u8x2_u16" />
     <None Include="..\shaders\code\u8x4" />
+    <None Include="..\shaders\code\u8_u24" />
     <None Include="..\shaders\code\uv_to_ray" />
     <None Include="..\shaders\ps_oit_consolidate.hlsl" />
     <None Include="..\shaders\gs_infinite_plane.hlsl" />

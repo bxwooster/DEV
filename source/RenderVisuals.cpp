@@ -52,7 +52,7 @@ void RenderVisuals(GraphicsState& state, VisualRenderInfo& info,
 
 		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;
-		data.__colour = Vector4f(1, 1, 1, 0.8f);
+		data.__colour = Vector4f(1, 1, 1, i > 5 ? 1 : 0.8f);
 
 		state->UpdateSubresource(cb_object, 0, NULL, (void*)&data, sizeof(data), 0);
 		state->IASetVertexBuffers(0, 2, &*geom.buffers, geom.strides, geom.offsets);
