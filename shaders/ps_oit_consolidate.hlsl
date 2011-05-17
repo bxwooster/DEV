@@ -33,7 +33,7 @@ void main(PPosition input)
 		index = fragments[i].next;
 	}
 
-	uint N = uint(dot(float4(depths > solid_depth), 1)); // hahaha
+	uint N = uint(dot(float4(depths < solid_depth), 1)); // hahaha
 
 	uint4 indices = int4(0, 1, 2, 3);
 	sort4(depths, indices);

@@ -65,5 +65,5 @@ float4 common_light(PPosition input)
 		result += inner_light(uv, depth, normal, colour);
 	}
 
-	return 1.0;//float4(result, 1.0);
+	return float4(result, 1.0);
 }

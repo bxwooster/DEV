@@ -10,8 +10,8 @@ cbuffer frame: register(b1)
 #include "code/u8_u24"
 #include "code/normal"
 
-RWByteAddressBuffer start_buffer : register(u2);
-RWStructuredBuffer<OITFragment> scattered_buffer : register(u3);
+RWByteAddressBuffer start_buffer : register(u1);
+RWStructuredBuffer<OITFragment> scattered_buffer : register(u2);
 
 
 void main
@@ -19,7 +19,7 @@ void main
 	PPositionNormal input,
 out uint2 output : SV_Target0
 ){
-	float4 colour = { 1, 1, 1, 1 };
+	float4 colour = __colour; //{ 1, 1, 1, 1 };
 	float specular = 1;
 	float2 encoded_normal = normal_encode(normalize(input.normal));
 	// Interpolation means we have to renormalize for encoding.
