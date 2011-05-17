@@ -70,7 +70,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
-	UBuffer& oit_start, UBuffer& oit_consolidated,
+	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light);
 
 void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
@@ -148,7 +148,7 @@ void run()
 		//RayTrace(graphics, rinfo, camera, zbuffer, gbuffer0, gbuffer1, cb_frame, cb_tracy);
 		RenderLights(graphics, linfo, transforms, lights, visuals, geometries,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
-			oit_start, oit_consolidated,
+			oit_start, oit_scattered, oit_consolidated,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
 		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);
 		Present(device);

@@ -1,6 +1,7 @@
 cbuffer frame: register(b0)
 #include "cbuffer/frame"
 
+#include "struct/PPosition"
 #include "struct/OITFragment"
 #include "code/sort4"
 
@@ -8,17 +9,16 @@ Texture2D zbuffer: register(t0);
 sampler sm_point : register(s0);
 
 RWByteAddressBuffer start_buffer : register(u0);
-RWStructuredBuffer<OITFragment> scattered_buffer : register(u1);
-RWStructuredBuffer<OITFragment> consolidated_buffer : register(u2);
+RWStructuredBuffer<OITFragment> consolidated_buffer : register(u1);
+RWStructuredBuffer<OITFragment> scattered_buffer : register(u2);
 
 
-// Wavefront <= 64
-[numthreads(8, 8, 1)]
-void main(uint2 position : SV_DispatchThreadID)
+void main(PPosition input)
 {
+	float2 position = input.svposition.xy;
 	uint start = 4 * (position.y * res.x + position.x + 2);
 	uint index = start_buffer.Load(start);
-	if (index == 0) return;
+	if (index == 0) discard;
 
 	float solid_depth = zbuffer[position].x;
 	float4 depths = 1;
@@ -38,11 +38,11 @@ void main(uint2 position : SV_DispatchThreadID)
 
 	[unroll]
 	for (uint N = 0; N < 4; N++)
-		if (depths[N] < solid_depth) break;
+		if (depths[N] > solid_depth) break;
 
 	start_buffer.InterlockedAdd(0, N, index);
 	start_buffer.Store(start, index | (N << 24));
-
+	
 	[unroll]
 	for (uint j = 0; j < 4 && j < N; j++)
 	{

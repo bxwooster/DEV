@@ -19,7 +19,7 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
 	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
 	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
-	UBuffer& oit_start, UBuffer& oit_consolidated,
+	UBuffer& oit_start, UBuffer& oit_scattered, UBuffer& oit_consolidated,
 	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light)
 {
 	const float blendf[4] = {1.0f, 1.0f, 1.0f, 0.0f};
@@ -27,8 +27,24 @@ void RenderLights(GraphicsState& state, LightRenderInfo& info,
 
 	state->ClearRenderTargetView(lbuffer.rtv, black);
 
-	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_consolidated.uav };
-	unsigned int counts[] = { -1, -1 };
+	ID3D11UnorderedAccessView* uavs[] = { oit_start.uav, oit_consolidated.uav, oit_scattered.uav };
+	unsigned int counts[] = { -1, -1, -1 };
+
+	state->ClearState();
+
+	state->OMSetRenderTargetsAndUnorderedAccessViews(0, NULL, NULL, 0, 3, uavs, counts);
+	state->RSSetViewports( 1, &zbuffer.viewport );
+	state->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
+
+	state->VSSetShader(info.vs_noop, NULL, 0);
+	state->GSSetShader(info.gs_fullscreen, NULL, 0);
+	state->PSSetShader( info.ps_oit_consolidate, NULL, 0 );
+
+	state->PSSetConstantBuffers( 0, 1, &cb_frame );
+	state->PSSetShaderResources(0, 1, &zbuffer.srv);
+	state->PSSetSamplers(0, 1, &info.sm_point);
+
+	state->Draw(1, 0);
 
 	state->ClearState();
 

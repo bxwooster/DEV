@@ -21,6 +21,8 @@ void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& ca
 	LoadShader::Pixel(cache, device, info.ps_point_light, "shaders/ps_point_light.hlsl");
 	LoadShader::Pixel(cache, device, info.ps_skylight, "shaders/ps_skylight.hlsl");
 
+	LoadShader::Pixel(cache, device, info.ps_oit_consolidate, "shaders/ps_oit_consolidate.hlsl");
+
 	{
 		D3D11_SAMPLER_DESC desc = Tools::DefaultSamplerDesc();
 		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;

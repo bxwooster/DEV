@@ -32,7 +32,7 @@ float4 common_light(PPosition input)
 
 	float depth = zbuffer.Sample(sm_point, uv).x;
 	float3 normal = normal_decode(gbuffer0.Sample(sm_point, uv).xy);
-	float4 colour = gbuffer1.Sample(sm_point, uv); //! easy perf
+	float4 colour = gbuffer1.Sample(sm_point, uv);
 
 	float3 result = inner_light(uv, depth, normal, colour);
 
@@ -51,7 +51,7 @@ float4 common_light(PPosition input)
 		normal = normal_decode(unpacked.xy);
 		depth = unpacked.z;
 		colour = u8x4_unpack(fragment.colour);
-		result *= (1.0 - colour.a); // alpha
+		//result *= (1.0 - colour.a); // alpha
 		colour.a = (fragment.spec8_next24 >> 24) / 255.0; //specular
 		result += inner_light(uv, depth, normal, colour);
 	}

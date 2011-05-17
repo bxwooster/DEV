@@ -80,7 +80,7 @@
     <None Include="..\shaders\code\u8x2_f16" />
     <None Include="..\shaders\code\u8x4" />
     <None Include="..\shaders\code\uv_to_ray" />
-    <None Include="..\shaders\cs_oit_consolidate.hlsl" />
+    <None Include="..\shaders\ps_oit_consolidate.hlsl" />
     <None Include="..\shaders\gs_infinite_plane.hlsl" />
     <None Include="..\shaders\gs_point_light.hlsl" />
     <None Include="..\shaders\gs_dir_light.hlsl" />

@@ -16,8 +16,6 @@ struct VisualRenderInfo
 
 	IPtr<ID3D11VertexShader> vs_noop;
 	IPtr<ID3D11GeometryShader> gs_infinite_plane;
-
-	IPtr<ID3D11ComputeShader> cs_oit_consolidate;
 };
 
 } // namespace DEV

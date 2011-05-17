@@ -16,8 +16,6 @@ void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& 
 	LoadShader::Vertex(cache, device, info.vs_noop, "shaders/vs_noop.hlsl");
 	LoadShader::Geometry(cache, device, info.gs_infinite_plane, "shaders/gs_infinite_plane.hlsl");
 
-	LoadShader::Compute(cache, device, info.cs_oit_consolidate, "shaders/cs_oit_consolidate.hlsl");
-
 	{
 		D3D11_SAMPLER_DESC desc = Tools::DefaultSamplerDesc();
 		desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;

@@ -10,7 +10,7 @@ cbuffer frame: register(b1)
 #include "code/normal"
 
 RWByteAddressBuffer start_buffer : register(u2);
-RWStructuredBuffer<OITFragment> fragment_buffer : register(u3);
+RWStructuredBuffer<OITFragment> scattered_buffer : register(u3);
 
 
 void main
@@ -33,21 +33,21 @@ out float4 g1 : SV_Target1
 	else
 	{
 		uint old_index;
-		uint index = fragment_buffer.IncrementCounter();
+		uint index = scattered_buffer.IncrementCounter();
 
-		//uint dim, stride; fragment_buffer.GetDimensions(dim, stride); //!
+		//uint dim, stride; scattered_buffer.GetDimensions(dim, stride); //!
 		uint dim = 2 * res.x * res.y;
 		if (index >=  dim) discard; // overflow
 
 		uint start = 4 * (input.svposition.y * res.x + input.svposition.x + 2);
 		start_buffer.InterlockedExchange(start, index, old_index);
-		
+
 		OITFragment fragment;
 		float depth = input.svposition.z;
 		fragment.normal16_depth16 = u8x2_f16_pack(float3(enc_normal, depth));
 		fragment.colour = u8x4_pack(colour);
 		fragment.spec8_next24 = (uint(specular * 255 + 0.5) << 24) | old_index;
-		fragment_buffer[index] = fragment;
+		scattered_buffer[index] = fragment;
 
 		discard;
 	}

@@ -285,7 +285,7 @@
     <None Include="..\shaders\ps_skylight.hlsl">
       <Filter>shaders\shaders</Filter>
     </None>
-    <None Include="..\shaders\cs_oit_consolidate.hlsl">
+    <None Include="..\shaders\ps_oit_consolidate.hlsl">
       <Filter>shaders\shaders</Filter>
     </None>
   </ItemGroup>
