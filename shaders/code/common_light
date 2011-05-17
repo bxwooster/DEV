@@ -17,14 +17,14 @@ inline float3 inner_light(float2 uv, float depth, float3 normal, float4 colour_s
 	float3 lightvec = light_pos - surface_pos.xyz;
 	float l = length(lightvec);
 	float fade = smoothstep(radius, radius * 0.9, l);
-	if (fade == 0.0) return 0;
+	//if (fade == 0.0) return 0;
 
-	float lighted = SHADOW_TEST;
+	float lighted = SHADOW_TEST(reprojected, lightvec);
 
     float radiance = lighted * fade *
 		max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
 
-	return 10 * radiance * colour * light_colour;
+	return radiance * colour * light_colour;
 }
 
 float4 common_light(PPosition input)

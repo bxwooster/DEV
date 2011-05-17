@@ -46,7 +46,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	view_axis = view_axis.inverse().eval();
 
 	Matrix4f t = Matrix4f::Identity();
-	t.col(3) = Vector4f(10, 0, 5, 1);
+	t.col(3) = Vector4f(10, 0, 1, 1);
 
 	Visual v;
 	Light light;
@@ -64,7 +64,7 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 		for (int j = -N; j <= N; j++)
 		{
 			if (i == 0 && j == 0) continue;
-			t.col(3) = Vector4f(i * 3.0f, j * 3.0f, 1.0f, 1.0f);
+			t.col(3) = Vector4f(i * 3, j * 3, 1, 1);
 			v.transform = transforms.size();
 			transforms.push_back( t );
 			visuals.push_back( v );
@@ -72,26 +72,26 @@ void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
 	}
 
 	t.col(3) = Vector4f(0, 0, 1, 1);
-	light.colour = Vector3f(0.5, 0.5, 0);
+	light.colour = Vector3f(0.5f, 0.5f, 0);
 	v.transform = light.transform = transforms.size();
 	transforms.push_back( t * view_axis );
 	lights.point.push_back(light);
 	visuals.push_back( v );
 
-	//t.col(3) = Vector4f(6, 3, 1, 1);
-	//transforms.push_back( t );
-	//light.colour = Vector3f(1, 0, 0);
-	//v.transform = light.transform = transforms.size();
-	//transforms.push_back( t * view_axis );
-	//lights.dir.push_back(light);
-	//visuals.push_back( v );
+	t.col(3) = Vector4f(8, 4, 1, 1);
+	transforms.push_back( t );
+	light.colour = Vector3f(1, 0, 0);
+	v.transform = light.transform = transforms.size();
+	transforms.push_back( t * view_axis );
+	lights.dir.push_back(light);
+	visuals.push_back( v );
 
-	//t.col(3) = Vector4f(6, -3, 1, 1);
-	//light.colour = Vector3f(0, 1, 0);
-	//v.transform = light.transform = transforms.size();
-	//transforms.push_back( t * view_axis );
-	//lights.dir.push_back(light);
-	//visuals.push_back( v );
+	t.col(3) = Vector4f(8, -4, 1, 1);
+	light.colour = Vector3f(0, 1, 0);
+	v.transform = light.transform = transforms.size();
+	transforms.push_back( t * view_axis );
+	lights.dir.push_back(light);
+	visuals.push_back( v );
 
 	int n = transforms.size();
 	state.bodies = (btRigidBody*)btRigidBody::operator new[](n * sizeof(btRigidBody));
