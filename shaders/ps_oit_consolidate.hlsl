@@ -4,6 +4,7 @@ cbuffer frame: register(b0)
 #include "struct/PPosition"
 #include "struct/OITFragment"
 #include "code/sort4"
+#include "code/u8x2_u16"
 
 Texture2D zbuffer: register(t0);
 sampler sm_point : register(s0);
@@ -29,23 +30,26 @@ void main(PPosition input)
 	{
 		fragments[i] = scattered_buffer[index];
 		uint packed = fragments[i].normal16_depth16;
-		depths[i] = f16tof32(packed >> 16);
+		depths[i] = u8x2_u16_unpack(packed).z;
 		index = fragments[i].spec8_next24 & 0x00ffffff;
 	}
 
-	uint4 indices = uint4(0, 1, 2, 3);
+	uint N = 2;//uint(dot(float4(depths > solid_depth), 1));
+
+	uint4 indices = int4(0, 1, 2, 3);
 	sort4(depths, indices);
 
-	[unroll]
-	for (uint N = 0; N < 4; N++)
-		if (depths[N] > solid_depth) break;
+	
+	//[unroll]
+	//for (uint N = 0; N < 4; N++)
+		//if (depths[3 - N] < solid_depth) break;
 
 	start_buffer.InterlockedAdd(0, N, index);
 	start_buffer.Store(start, index | (N << 24));
 	
 	[unroll]
-	for (uint j = 0; j < 4 && j < N; j++)
+	for (uint j = 0; j < N; j++)
 	{
-		consolidated_buffer[index + j] = fragments[indices[j]];
+		consolidated_buffer[index + j] = fragments[indices[4 - N + j]];
 	}
 }

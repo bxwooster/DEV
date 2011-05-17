@@ -276,9 +276,6 @@
     <None Include="..\shaders\code\normal">
       <Filter>shaders\code</Filter>
     </None>
-    <None Include="..\shaders\code\u8x2_f16">
-      <Filter>shaders\code</Filter>
-    </None>
     <None Include="..\shaders\code\sort4">
       <Filter>shaders\code</Filter>
     </None>
@@ -287,6 +284,9 @@
     </None>
     <None Include="..\shaders\ps_oit_consolidate.hlsl">
       <Filter>shaders\shaders</Filter>
+    </None>
+    <None Include="..\shaders\code\u8x2_u16">
+      <Filter>shaders\code</Filter>
     </None>
   </ItemGroup>
 </Project>

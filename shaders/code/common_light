@@ -1,4 +1,4 @@
-#include "code/u8x2_f16"
+#include "code/u8x2_u16"
 #include "code/u8x4"
 #include "code/normal"
 #include "code/sort4"
@@ -47,11 +47,11 @@ float4 common_light(PPosition input)
 	for (uint j = 0; j < N; j++)
 	{
 		OITFragment fragment = consolidated_buffer[index + j];
-		float3 unpacked = u8x2_f16_unpack(fragment.normal16_depth16);
+		float3 unpacked = u8x2_u16_unpack(fragment.normal16_depth16);
 		normal = normal_decode(unpacked.xy);
 		depth = unpacked.z;
 		colour = u8x4_unpack(fragment.colour);
-		//result *= (1.0 - colour.a); // alpha
+		result *= (1.0 - colour.a); // alpha
 		colour.a = (fragment.spec8_next24 >> 24) / 255.0; //specular
 		result += inner_light(uv, depth, normal, colour);
 	}

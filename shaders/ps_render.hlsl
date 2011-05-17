@@ -5,7 +5,7 @@ cbuffer frame: register(b1)
 
 #include "struct/PPositionNormal"
 #include "struct/OITFragment"
-#include "code/u8x2_f16"
+#include "code/u8x2_u16"
 #include "code/u8x4"
 #include "code/normal"
 
@@ -44,7 +44,7 @@ out float4 g1 : SV_Target1
 
 		OITFragment fragment;
 		float depth = input.svposition.z;
-		fragment.normal16_depth16 = u8x2_f16_pack(float3(enc_normal, depth));
+		fragment.normal16_depth16 = u8x2_u16_pack(float3(enc_normal, depth));
 		fragment.colour = u8x4_pack(colour);
 		fragment.spec8_next24 = (uint(specular * 255 + 0.5) << 24) | old_index;
 		scattered_buffer[index] = fragment;
