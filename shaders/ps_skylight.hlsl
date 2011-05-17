@@ -7,7 +7,7 @@ sampler sm_point : register(s0);
 #include "struct/PPosition"
 
 
-float4 main
+float3 main
 (
 	PPosition input
 ) : SV_Target0

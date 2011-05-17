@@ -28,7 +28,7 @@ float shadowcube_test(float4 reprojected, float3 lightvec)
 #define SHADOW_TEST shadowcube_test
 #include "code/common_light"
 
-float4 main
+float3 main
 (
 	PPosition input
 ) : SV_Target0

@@ -118,26 +118,33 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		ZeroMemory(&desc, sizeof(desc) );
 		desc.Width = shadowmap_size;
 		desc.Height = shadowmap_size;
-		desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		desc.Format = DXGI_FORMAT_R16_TYPELESS;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
-		desc.ArraySize = 6;
+		desc.ArraySize = 1;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.MipLevels = 1;
-		desc.MiscFlags = D3D10_RESOURCE_MISC_TEXTURECUBE;
+		desc.MiscFlags = 0;
 
+		HOK( device.device->CreateTexture2D( &desc, NULL, ~shadowmap.texture ) );
+
+		desc.ArraySize = 6;
+		desc.MiscFlags = D3D10_RESOURCE_MISC_TEXTURECUBE;
+		
 		HOK( device.device->CreateTexture2D( &desc, NULL, ~shadowcube.texture ) );
+	
 		desc.ArraySize = 1;
 		desc.MiscFlags = 0;
-		HOK( device.device->CreateTexture2D( &desc, NULL, ~shadowmap.texture ) );
 
 		desc.Width = width;
 		desc.Height = height;
+		desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		
 		HOK( device.device->CreateTexture2D( &desc, NULL, ~zbuffer.texture ) );
 
-		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
 		HOK( device.device->CreateTexture2D( &desc, NULL, ~lbuffer.texture ) );
 		
@@ -155,10 +162,12 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Texture2D.MostDetailedMip = 0;
 
 		HOK( device.device->CreateShaderResourceView
-			( shadowmap.texture, &desc, ~shadowmap.srv ));
+			( zbuffer.texture, &desc, ~zbuffer.srv ));
+
+		desc.Format = DXGI_FORMAT_R16_UNORM;
 
 		HOK( device.device->CreateShaderResourceView
-			( zbuffer.texture, &desc, ~zbuffer.srv ));
+			( shadowmap.texture, &desc, ~shadowmap.srv ));
 
 		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 		desc.TextureCube.MipLevels = 1;
@@ -174,15 +183,12 @@ void InitGraphics(GraphicsState& state, DeviceState& device,
 		desc.Texture2D.MipSlice = 0;
 
 		HOK( device.device->CreateDepthStencilView
-			( shadowmap.texture, &desc, ~shadowmap.dsv ));
-
-		HOK( device.device->CreateDepthStencilView
 		  ( zbuffer.texture, &desc, ~zbuffer.dsv ));
 
-		desc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
+		desc.Format = DXGI_FORMAT_D16_UNORM;
 
 		HOK( device.device->CreateDepthStencilView
-		  ( zbuffer.texture, &desc, ~zbuffer.dsv_readonly ));
+			( shadowmap.texture, &desc, ~shadowmap.dsv ));
 
 		desc.Flags = 0;
 

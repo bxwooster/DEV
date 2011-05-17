@@ -5,6 +5,9 @@ cbuffer tracy: register(b1)
 
 #include "struct/PPosition"
 #include "code/uv_to_ray"
+#include "code/normal"
+#include "code/u16x2"
+#include "code/u8x4"
 
 
 float dist(float3 world)
@@ -21,8 +24,7 @@ float dist(float3 world)
 void main
 (
 	PPosition input,
-out float4 g0 : SV_Target0,
-out float4 g1 : SV_Target1,
+out uint2 output : SV_Target0,
 out float depth : SV_Depth
 ){
 	float2 uv = input.svposition.xy * rcpres;
@@ -40,15 +42,15 @@ out float depth : SV_Depth
 	}
 	clip(steps - i - 1);
 
-	float3 normal;
 	d = dist(pos.xyz);
+	float3 normal;
 	normal.x = dist(pos.xyz + float3(eps, 0, 0)) - d;
 	normal.y = dist(pos.xyz + float3(0, eps, 0)) - d;
 	normal.z = dist(pos.xyz + float3(0, 0, eps)) - d;
-	normal = mul((float3x3)view, normalize(normal));
+	normal = normalize( mul((float3x3)view, normal) );
 
-	g0.xyz = normal;
-	g1.xyz = 1.0;
+	output.x = u16x2_pack(normal_encode(normal));
+	output.y = u8x4_pack(1);
 
 	depth = 1.0 - z_near / (pos.w * dot(dir, cdir)); //!
 }
