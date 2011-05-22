@@ -1,6 +1,6 @@
 #include "InitGraphics.hpp"
 #include "Tools.hpp"
-#include <D3DX11.h>
+#include "CBufferLayouts.hpp"
 
 namespace DEV {
 
@@ -221,6 +221,27 @@ void InitGraphics::run()
 		shadowmap.viewport.TopLeftY = 0.0f;
 
 		shadowcube.viewport = shadowmap.viewport;
+	}
+
+	// Cbuffers
+	{
+		ID3D11Buffer** cbuffers[] = {
+			~cb_object, ~cb_object_z, ~cb_object_cube_z,
+			~cb_light, ~cb_frame, ~cb_tracy };
+
+		int number = sizeof(cbuffers) / sizeof(cbuffers[0]);
+
+		size_t sizes[] =
+		{
+			sizeof(CBufferLayouts::object),
+			sizeof(CBufferLayouts::object_z),
+			sizeof(CBufferLayouts::object_cube_z),
+			sizeof(CBufferLayouts::light),
+			sizeof(CBufferLayouts::frame),
+			sizeof(CBufferLayouts::tracy),
+		};
+
+		Tools::InitCBuffers(device, cbuffers, sizes, number);
 	}
 }
 

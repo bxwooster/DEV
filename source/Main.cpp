@@ -1,24 +1,4 @@
 #define NOMINMAX
-#include "Data/DeviceState.hpp"
-#include "Data/GraphicsState.hpp"
-#include "Data/InputData.hpp"
-#include "Data/TimingData.hpp"
-#include "Data/LightRenderInfo.hpp"
-#include "Data/PostProcessInfo.hpp"
-#include "Data/RayTracingInfo.hpp"
-#include "Data/VisualRenderInfo.hpp"
-#include "Data/PhysicsState.hpp"
-#include "Data/PlayerState.hpp"
-#include "Data/Camera.hpp"
-#include "Data/Transforms.hpp"
-#include "Data/Visuals.hpp"
-#include "Data/Lights.hpp"
-#include "Data/Geometries.hpp"
-#include "Data/Buffer.hpp"
-#include "Data/ZBuffer.hpp"
-#include "Data/UBuffer.hpp"
-#include "Data/CBuffer.hpp"
-#include "Data/ShaderCache.hpp"
 
 #include "Task/InitOIT.hpp"
 #include "Task/InitGraphics.hpp"
@@ -44,8 +24,6 @@
 #include "Task/GetInput.hpp"
 #include "Task/GetTiming.hpp"
 
-#include <Tools.hpp>
-#include "CBufferLayouts.hpp"
 #include "TaskManager.hpp"
 #include <exception>
 #include <Windows.h>
@@ -84,7 +62,9 @@ void run()
 	// Code
 	Run( InitGraphics,
 		graphics, device, gbuffer, shadowmap, shadowcube,
-		lbuffer, zbuffer, backbuffer, camera );
+		lbuffer, zbuffer, backbuffer, camera,
+		cb_object, cb_object_z, cb_object_cube_z,
+		cb_light, cb_frame, cb_tracy );
 
 	Run( InitOIT,
 		device, camera, oit_start, oit_scattered, oit_consolidated );
@@ -115,26 +95,6 @@ void run()
 
 	Run( InitScene,
 		transforms, visuals, lights, geometries, physics, device );
-
-	{
-		ID3D11Buffer** cbuffers[] = {
-			~cb_object, ~cb_object_z, ~cb_object_cube_z,
-			~cb_light, ~cb_frame, ~cb_tracy };
-
-		int number = sizeof(cbuffers) / sizeof(void*);
-
-		size_t sizes[] =
-		{
-			sizeof(CBufferLayouts::object),
-			sizeof(CBufferLayouts::object_z),
-			sizeof(CBufferLayouts::object_cube_z),
-			sizeof(CBufferLayouts::light),
-			sizeof(CBufferLayouts::frame),
-			sizeof(CBufferLayouts::tracy),
-		};
-
-		Tools::InitCBuffers(device, cbuffers, sizes, number);
-	}
 
 	for (;;)
 	{
