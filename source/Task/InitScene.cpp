@@ -86,9 +86,9 @@ void InitScene::run()
 	lights.dir.push_back(light);
 	visuals.push_back( v );
 
-	int n = transforms.size();
-	state.bodies = (btRigidBody*)btRigidBody::operator new[](n * sizeof(btRigidBody));
-	//! delete
+	size_t size = transforms.size() * sizeof(btRigidBody);
+	state.bodies = ( decltype(state.bodies) ) ( btRigidBody* )
+		btRigidBody::operator new[](size);
 
 	btScalar mass;
 	btVector3 localInertia;
@@ -97,13 +97,13 @@ void InitScene::run()
 	mass = 3;
 	localInertia = btVector3(0, 0, 0); // can't rotate
 	motionState = new MotionState(transforms[0]);
-	state.bodies[0] = btRigidBody(mass, motionState, state.sphere.get(), localInertia);
-	state.dynamicsWorld->addRigidBody(&state.bodies[0]);
+	state.bodies.get()[0] = btRigidBody(mass, motionState, state.sphere.get(), localInertia);
+	state.dynamicsWorld->addRigidBody(&state.bodies.get()[0]);
 	
 	mass = 0;
 	motionState = new MotionState(transforms[1]);
-	state.bodies[1] = btRigidBody(mass, motionState, state.plane.get(), localInertia);
-	state.dynamicsWorld->addRigidBody(&state.bodies[1]);
+	state.bodies.get()[1] = btRigidBody(mass, motionState, state.plane.get(), localInertia);
+	state.dynamicsWorld->addRigidBody(&state.bodies.get()[1]);
 
 	mass = 1;
 	state.sphere->calculateLocalInertia(mass, localInertia);
@@ -112,8 +112,8 @@ void InitScene::run()
 	{	
 		motionState = new MotionState(transforms[i]);
 		btRigidBody body(mass, motionState, state.sphere.get(), localInertia);
-		state.bodies[i] = body;
-		state.dynamicsWorld->addRigidBody(&state.bodies[i]);
+		state.bodies.get()[i] = body;
+		state.dynamicsWorld->addRigidBody(&state.bodies.get()[i]);
 	}
 }
 
