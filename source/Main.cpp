@@ -24,7 +24,7 @@
 #include "Task/GetInput.hpp"
 #include "Task/GetTiming.hpp"
 
-#include "TaskManager.hpp"
+#include "Task.hpp"
 #include <exception>
 #include <Windows.h>
 
@@ -60,80 +60,80 @@ void run()
 	CBuffer cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame, cb_tracy;
 
 	// Code
-	Run( InitGraphics,
+	RunTask( InitGraphics,
 		graphics, device, gbuffer, shadowmap, shadowcube,
 		lbuffer, zbuffer, backbuffer, camera,
 		cb_object, cb_object_z, cb_object_cube_z,
 		cb_light, cb_frame, cb_tracy );
 
-	Run( InitOIT,
+	RunTask( InitOIT,
 		device, camera, oit_start, oit_scattered, oit_consolidated );
 	
-	Run( InitVisualRender, 
+	RunTask( InitVisualRender, 
 		vinfo, device, shadercache );
 
-	Run( InitLightRender,
+	RunTask( InitLightRender,
 		linfo, device, shadercache, camera );
 
-	Run( InitPostProcess,
+	RunTask( InitPostProcess,
 		pinfo, device, shadercache );
 
-	Run( InitRayTracing,
+	RunTask( InitRayTracing,
 		rinfo, device, shadercache );
 
-	Run( InitPhysics,
+	RunTask( InitPhysics,
 		physics );
 
-	Run( InitTiming,
+	RunTask( InitTiming,
 		timing );
 
-	Run( InitInput,
+	RunTask( InitInput,
 		input );
 
-	Run( InitPlayer,
+	RunTask( InitPlayer,
 		player );
 
-	Run( InitScene,
+	RunTask( InitScene,
 		transforms, visuals, lights, geometries, physics, device );
 
 	for (;;)
 	{
-		Run( GetTiming,
+		RunTask( GetTiming,
 			timing );
 
-		Run( GetInput,
+		RunTask( GetInput,
 			input );
 
-		Run( DerivePlayerState,
+		RunTask( DerivePlayerState,
 			player, input, timing );
 
-		Run( CrunchPhysics,
+		RunTask( CrunchPhysics,
 			physics, transforms, player, timing );
 
-		Run( DeriveCamera,
+		RunTask( DeriveCamera,
 			transforms, player, camera );
 
-		Run( Prepare,
+		RunTask( Prepare,
 			graphics, cb_frame, zbuffer, oit_start, camera );
 
-		Run( RenderVisuals,
+		RunTask( RenderVisuals,
 			graphics, vinfo, transforms, visuals, geometries,
 			camera, oit_start, oit_scattered, oit_consolidated,
 			gbuffer, zbuffer, cb_object, cb_frame );
 
-		if (0) Run( RayTrace,
+		if (0) RunTask( RayTrace,
 		graphics, rinfo, camera, zbuffer, gbuffer, cb_frame, cb_tracy );
 
-		Run( RenderLights,
+		RunTask( RenderLights,
 			graphics, linfo, transforms, lights, visuals, geometries,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer, lbuffer,
 			oit_start, oit_scattered, oit_consolidated,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light );
 
-		Run( PostProcess,
+		RunTask( PostProcess,
 			graphics, pinfo, zbuffer, gbuffer, lbuffer, backbuffer, cb_frame );
 
-		Run( Present,
+		RunTask( Present,
 			device );
 	}
 }

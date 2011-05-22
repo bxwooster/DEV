@@ -102,9 +102,6 @@
     <ClInclude Include="..\source\Task\InitPostProcess.hpp">
       <Filter>Task\header</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\TaskManager.hpp">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\IPtr.hpp">
       <Filter>header</Filter>
     </ClInclude>
@@ -179,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="..\source\Data\Camera.hpp">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task.hpp">
+      <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

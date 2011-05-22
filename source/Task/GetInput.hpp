@@ -1,4 +1,5 @@
 #pragma once
+#include "Task.hpp"
 #include "Data/InputData.hpp"
 
 namespace DEV {

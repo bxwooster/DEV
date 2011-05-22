@@ -1,5 +1,5 @@
 #pragma once
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 namespace DEV {
@@ -14,9 +14,9 @@ struct InputData
 	};
 
 	Mouse mouse;
-	std::set<Key> keys_down;
-	std::set<Key> keys_up;
-	std::set<Key> keys_held;
+	std::unordered_set<Key> keys_down;
+	std::unordered_set<Key> keys_up;
+	std::unordered_set<Key> keys_held;
 };
 
 } // namespace DEV

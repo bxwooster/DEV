@@ -1,4 +1,5 @@
 #pragma once
+#include "Task.hpp"
 #include "Data/PhysicsState.hpp"
 #include "Data/PlayerState.hpp"
 #include "Data/TimingData.hpp"
@@ -8,10 +9,10 @@ namespace DEV {
 
 struct CrunchPhysics
 {
-	PhysicsState& state;
-	Transforms& transforms;
-	PlayerState& player;
-	TimingData& timing;
+	In (PhysicsState) state;
+	In (Transforms) transforms;
+	In (PlayerState) player;
+	In (TimingData) timing;
 
 	void run();
 };

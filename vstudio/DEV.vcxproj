@@ -36,7 +36,7 @@
     <ClInclude Include="..\source\LoadShader.hpp" />
     <ClInclude Include="..\source\Matrix.hpp" />
     <ClInclude Include="..\source\OK.hpp" />
-    <ClInclude Include="..\source\TaskManager.hpp" />
+    <ClInclude Include="..\source\Task.hpp" />
     <ClInclude Include="..\source\Task\CrunchPhysics.hpp" />
     <ClInclude Include="..\source\Task\DeriveCamera.hpp" />
     <ClInclude Include="..\source\Task\DerivePlayerState.hpp" />

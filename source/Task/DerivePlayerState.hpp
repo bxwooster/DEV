@@ -1,4 +1,5 @@
 #pragma once
+#include "Task.hpp"
 #include "Data/PlayerState.hpp"
 #include "Data/TimingData.hpp"
 #include "Data/InputData.hpp"

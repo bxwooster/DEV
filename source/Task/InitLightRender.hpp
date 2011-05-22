@@ -1,4 +1,5 @@
 #pragma once
+#include "Task.hpp"
 #include "Data/Camera.hpp"
 #include "Data/LightRenderInfo.hpp"
 #include "Data/DeviceState.hpp"

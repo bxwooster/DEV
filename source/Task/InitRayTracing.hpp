@@ -1,4 +1,5 @@
 #pragma once
+#include "Task.hpp"
 #include "Data/DeviceState.hpp"
 #include "Data/RayTracingInfo.hpp"
 #include "Data/ShaderCache.hpp"

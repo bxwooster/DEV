@@ -1,4 +1,5 @@
 #pragma once
+#include "Task.hpp"
 #include "Data/Transforms.hpp"
 #include "Data/GraphicsState.hpp"
 #include "Data/VisualRenderInfo.hpp"
