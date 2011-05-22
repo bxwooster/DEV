@@ -55,4 +55,20 @@ public:
 		}
         return &pointer;
     }
+
+	// const-doubles
+	operator Interface const*() const
+    {
+        return pointer;
+    }
+
+	Interface const* operator->() const
+    {
+        return pointer;
+    }
+    
+    Interface const* const* operator &() const
+    {
+        return &pointer;
+    }
 };

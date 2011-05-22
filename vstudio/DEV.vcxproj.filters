@@ -180,6 +180,9 @@
     <ClInclude Include="..\source\Task.hpp">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\owned_ptr.hpp">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Main.cpp" />

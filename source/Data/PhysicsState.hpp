@@ -2,7 +2,7 @@
 #include <LinearMath/btAlignedObjectArray.h>
 #include <btBulletDynamicsCommon.h>
 #include <vector>
-#include <memory>
+#include "owned_ptr.hpp"
 
 namespace DEV {
 
@@ -16,14 +16,14 @@ struct PhysicsState
 		}
 	};
 
-	std::unique_ptr<btDefaultCollisionConfiguration> collisionConfiguration;
-	std::unique_ptr<btCollisionDispatcher> dispatcher;
-	std::unique_ptr<btDbvtBroadphase> broadphase;
-	std::unique_ptr<btSequentialImpulseConstraintSolver> solver;
-	std::unique_ptr<btCollisionShape> plane;
-	std::unique_ptr<btCollisionShape> sphere;
-	std::unique_ptr<btRigidBody, bodies_deleter> bodies;
-	std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
+	owned_ptr<btDefaultCollisionConfiguration> collisionConfiguration;
+	owned_ptr<btCollisionDispatcher> dispatcher;
+	owned_ptr<btDbvtBroadphase> broadphase;
+	owned_ptr<btSequentialImpulseConstraintSolver> solver;
+	owned_ptr<btCollisionShape> plane;
+	owned_ptr<btCollisionShape> sphere;
+	owned_ptr<btRigidBody, bodies_deleter> bodies;
+	owned_ptr<btDiscreteDynamicsWorld> dynamicsWorld;
 };
 
 } // namespace DEV
