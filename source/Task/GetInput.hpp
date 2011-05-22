@@ -6,7 +6,7 @@ namespace DEV {
 
 struct GetInput
 {
-	InputData& input;
+	InOut (InputData) input;
 
 	void run();
 };

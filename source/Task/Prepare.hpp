@@ -10,11 +10,11 @@ namespace DEV {
 
 struct Prepare
 {
-	GraphicsState& state;
-	CBuffer& cb_frame;
-	ZBuffer& zbuffer;
-	UBuffer& oit_start;
-	Camera& camera;
+	InOut (GraphicsState) state;
+	InOut (CBuffer) cb_frame;
+	InOut (ZBuffer) zbuffer;
+	InOut (UBuffer) oit_start;
+	In (Camera) camera;
 
 	void run();
 };

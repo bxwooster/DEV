@@ -8,9 +8,9 @@ namespace DEV {
 
 struct InitVisualRender
 {
-	VisualRenderInfo& info;
-	DeviceState& device;
-	ShaderCache& cache;
+	InOut (VisualRenderInfo) info;
+	InOut (DeviceState) device;
+	InOut (ShaderCache) cache;
 
 	void run();
 };

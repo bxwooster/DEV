@@ -10,9 +10,9 @@ namespace DEV {
 
 struct DerivePlayerState
 {
-	PlayerState& state;
-	InputData& input;
-	TimingData& timing;
+	InOut (PlayerState) state;
+	In (InputData) input;
+	In (TimingData) timing;
 
 	void run();
 };

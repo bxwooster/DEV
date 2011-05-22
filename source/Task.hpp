@@ -6,5 +6,6 @@
 	task.run(); \
 }
 
-#define In(Type) Type &
+#define In(Type) Type const &
 #define InOut(Type) Type &
+#define Out(Type) Type *

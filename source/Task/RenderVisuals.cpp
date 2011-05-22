@@ -35,7 +35,7 @@ void RenderVisuals::run()
 	CBufferLayouts::object data;
 	for (uint i = 0; i < visuals.size(); i++)
 	{
-		Geometry& geom = geometries[visuals[i].geometry];
+		Geometry & geom = geometries[visuals[i].geometry];
 
 		data.world_view = camera.view * transforms[visuals[i].transform];
 		data.world_view_proj = camera.proj * data.world_view;

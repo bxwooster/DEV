@@ -6,7 +6,7 @@ namespace DEV {
 
 struct InitPlayer
 {
-	PlayerState& state;
+	InOut (PlayerState) state;
 
 	void run();
 };

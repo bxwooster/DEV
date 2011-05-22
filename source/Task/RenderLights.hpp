@@ -16,25 +16,25 @@ namespace DEV {
 
 struct RenderLights
 {
-	GraphicsState& state;
-	LightRenderInfo& info;
-	Transforms& transforms;
-	Lights& lights;
-	Visuals& casters;
-	Geometries& geometries;
-	Camera& camera;
-	ZBuffer& zbuffer;
-	ZBuffer& shadowmap;
-	ZBuffer& shadowcube;
-	Buffer& gbuffer;
-	Buffer& lbuffer;
-	UBuffer& oit_start;
-	UBuffer& oit_scattered;
-	UBuffer& oit_consolidated;
-	CBuffer& cb_frame;
-	CBuffer& cb_object_z;
-	CBuffer& cb_object_cube_z;
-	CBuffer& cb_light;
+	InOut (GraphicsState) state;
+	InOut (LightRenderInfo) info;
+	In (Transforms) transforms;
+	In (Lights) lights;
+	In (Visuals) casters;
+	InOut (Geometries) geometries;
+	In (Camera) camera;
+	InOut (ZBuffer) zbuffer;
+	InOut (ZBuffer) shadowmap;
+	InOut (ZBuffer) shadowcube;
+	InOut (Buffer) gbuffer;
+	InOut (Buffer) lbuffer;
+	InOut (UBuffer) oit_start;
+	InOut (UBuffer) oit_scattered;
+	InOut (UBuffer) oit_consolidated;
+	InOut (CBuffer) cb_frame;
+	InOut (CBuffer) cb_object_z;
+	InOut (CBuffer) cb_object_cube_z;
+	InOut (CBuffer) cb_light;
 
 	void run();
 };

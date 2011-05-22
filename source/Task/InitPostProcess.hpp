@@ -8,9 +8,9 @@ namespace DEV {
 
 struct InitPostProcess
 {
-	PostProcessInfo& info;
-	DeviceState& device;
-	ShaderCache& cache;
+	InOut (PostProcessInfo) info;
+	InOut (DeviceState) device;
+	InOut (ShaderCache) cache;
 
 	void run();
 };

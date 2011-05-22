@@ -6,7 +6,7 @@ namespace DEV {
 
 struct InitPhysics
 {
-	PhysicsState& state;
+	InOut (PhysicsState) state;
 
 	void run();
 };

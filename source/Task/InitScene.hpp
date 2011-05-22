@@ -11,12 +11,12 @@ namespace DEV {
 
 struct InitScene
 {
-	Transforms& transforms;
-	Visuals& visuals;
-	Lights& lights;
-	Geometries& geometries;
-	PhysicsState& state;
-	DeviceState& device;
+	InOut (Transforms) transforms;
+	InOut (Visuals) visuals;
+	InOut (Lights) lights;
+	InOut (Geometries) geometries;
+	InOut (PhysicsState) state;
+	InOut (DeviceState) device;
 
 	void run();
 };

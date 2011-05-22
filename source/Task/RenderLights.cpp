@@ -52,7 +52,7 @@ void RenderLights::run()
 
 	for (int k = 0; k < lights.dir.size(); k++)
 	{
-		Light& light = lights.dir[k];
+		Light const& light = lights.dir[k];
 
 		Matrix4f lightview = transforms[light.transform].inverse();
 		Matrix4f lightview_lightproj = info.proj * lightview;
@@ -125,7 +125,7 @@ void RenderLights::run()
 
 	for (int k = 0; k < lights.point.size(); k++)
 	{
-		Light& light = lights.point[k];
+		Light const& light = lights.point[k];
 
 		Matrix4f lightview = transforms[light.transform].inverse();
 		Matrix4f lightview_lightproj = info.proj * lightview;

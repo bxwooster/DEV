@@ -12,22 +12,22 @@ namespace DEV {
 
 struct InitGraphics
 {
-	GraphicsState& state;
-	DeviceState& device;
-	Buffer& gbuffer;
-	ZBuffer& shadowmap;
-	ZBuffer& shadowcube;
-	Buffer& lbuffer;
-	ZBuffer& zbuffer;
-	Buffer& backbuffer;
-	Camera& camera;
+	InOut (GraphicsState) state;
+	InOut (DeviceState) device;
+	InOut (Buffer) gbuffer;
+	InOut (ZBuffer) shadowmap;
+	InOut (ZBuffer) shadowcube;
+	InOut (Buffer) lbuffer;
+	InOut (ZBuffer) zbuffer;
+	InOut (Buffer) backbuffer;
+	InOut (Camera) camera;
 
-	CBuffer& cb_object;
-	CBuffer& cb_object_z;
-	CBuffer& cb_object_cube_z;
-	CBuffer& cb_light;
-	CBuffer& cb_frame;
-	CBuffer& cb_tracy;
+	InOut (CBuffer) cb_object;
+	InOut (CBuffer) cb_object_z;
+	InOut (CBuffer) cb_object_cube_z;
+	InOut (CBuffer) cb_light;
+	InOut (CBuffer) cb_frame;
+	InOut (CBuffer) cb_tracy;
 
 	void run();
 };

@@ -6,7 +6,7 @@ namespace DEV {
 
 struct Present
 {
-	DeviceState& device;
+	InOut (DeviceState) device;
 
 	void run();
 };

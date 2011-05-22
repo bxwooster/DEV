@@ -8,11 +8,11 @@ namespace DEV {
 
 struct InitOIT
 {
-	DeviceState& device;
-	Camera& camera;
-	UBuffer& oit_start;
-	UBuffer& oit_scattered;
-	UBuffer& oit_consolidated;
+	InOut (DeviceState) device;
+	In (Camera) camera;
+	InOut (UBuffer) oit_start;
+	InOut (UBuffer) oit_scattered;
+	InOut (UBuffer) oit_consolidated;
 
 	void run();
 };

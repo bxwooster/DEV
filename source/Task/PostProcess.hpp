@@ -11,13 +11,13 @@ namespace DEV {
 
 struct PostProcess
 {
-	GraphicsState& state;
-	PostProcessInfo& info;
-	ZBuffer& zbuffer;
-	Buffer& gbuffer;
-	Buffer& lbuffer;
-	Buffer& backbuffer;
-	CBuffer& cb_frame;
+	InOut (GraphicsState) state;
+	InOut (PostProcessInfo) info;
+	InOut (ZBuffer) zbuffer;
+	InOut (Buffer) gbuffer;
+	InOut (Buffer) lbuffer;
+	InOut (Buffer) backbuffer;
+	InOut (CBuffer) cb_frame;
 
 	void run();
 };

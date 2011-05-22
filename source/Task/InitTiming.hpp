@@ -6,7 +6,7 @@ namespace DEV {
 
 struct InitTiming
 {
-	TimingData& timing;
+	InOut (TimingData) timing;
 
 	void run();
 };

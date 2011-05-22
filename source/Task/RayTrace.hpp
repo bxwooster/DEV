@@ -11,13 +11,13 @@ namespace DEV {
 
 struct RayTrace
 {
-	GraphicsState& state;
-	RayTracingInfo& info;
-	Camera& camera;
-	ZBuffer& zbuffer;
-	Buffer& gbuffer;
-	CBuffer& cb_frame;
-	CBuffer& cb_tracy;
+	InOut (GraphicsState) state;
+	InOut (RayTracingInfo) info;
+	In (Camera) camera;
+	InOut (ZBuffer) zbuffer;
+	InOut (Buffer) gbuffer;
+	InOut (CBuffer) cb_frame;
+	InOut (CBuffer) cb_tracy;
 
 	void run();
 };

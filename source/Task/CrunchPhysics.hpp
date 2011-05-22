@@ -9,7 +9,7 @@ namespace DEV {
 
 struct CrunchPhysics
 {
-	In (PhysicsState) state;
+	InOut (PhysicsState) state;
 	In (Transforms) transforms;
 	In (PlayerState) player;
 	In (TimingData) timing;

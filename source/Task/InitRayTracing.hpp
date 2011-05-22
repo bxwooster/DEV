@@ -8,9 +8,9 @@ namespace DEV {
 
 struct InitRayTracing
 {
-	RayTracingInfo& info;
-	DeviceState& device;
-	ShaderCache& cache;
+	InOut (RayTracingInfo) info;
+	InOut (DeviceState) device;
+	InOut (ShaderCache) cache;
 
 	void run();
 };

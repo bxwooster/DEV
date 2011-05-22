@@ -8,9 +8,9 @@ namespace DEV {
 
 struct DeriveCamera
 {
-	Transforms& transforms;
-	PlayerState& player;
-	Camera& camera;
+	In (Transforms) transforms;
+	In (PlayerState) player;
+	InOut (Camera) camera;
 
 	void run();
 };

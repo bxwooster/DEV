@@ -9,10 +9,10 @@ namespace DEV {
 
 struct InitLightRender
 {
-	LightRenderInfo& info;
-	DeviceState& device;
-	ShaderCache& cache;
-	Camera& camera;
+	InOut (LightRenderInfo) info;
+	InOut (DeviceState) device;
+	InOut (ShaderCache) cache;
+	In (Camera) camera;
 
 	void run();
 };

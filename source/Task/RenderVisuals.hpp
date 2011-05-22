@@ -15,19 +15,19 @@ namespace DEV {
 
 struct RenderVisuals
 {
-	GraphicsState& state;
-	VisualRenderInfo& info;
-	Transforms& transforms;
-	Visuals& visuals;
-	Geometries& geometries;
-	Camera& camera;
-	UBuffer& oit_start;
-	UBuffer& oit_scattered;
-	UBuffer& oit_consolidated;
-	Buffer& gbuffer;
-	ZBuffer& zbuffer;
-	CBuffer& cb_object;
-	CBuffer& cb_frame;
+	InOut (GraphicsState) state;
+	InOut (VisualRenderInfo) info;
+	In (Transforms) transforms;
+	In (Visuals) visuals;
+	InOut (Geometries) geometries;
+	In (Camera) camera;
+	InOut (UBuffer) oit_start;
+	InOut (UBuffer) oit_scattered;
+	InOut (UBuffer) oit_consolidated;
+	InOut (Buffer) gbuffer;
+	InOut (ZBuffer) zbuffer;
+	InOut (CBuffer) cb_object;
+	InOut (CBuffer) cb_frame;
 
 	void run();
 };
