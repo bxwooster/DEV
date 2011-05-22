@@ -1,7 +1,7 @@
 #pragma once
+#include "Data/Geometries.hpp"
 
-#include "Matrix.h"
-#include "Geometries.hpp"
+#include "Matrix.hpp"
 #include <d3d11.h>
 
 namespace DEV {

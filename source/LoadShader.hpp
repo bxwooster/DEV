@@ -1,5 +1,6 @@
-#include "DeviceState.hpp"
-#include "ShaderCache.hpp"
+#pragma once
+#include "Data/DeviceState.hpp"
+#include "Data/ShaderCache.hpp"
 
 namespace DEV {
 namespace LoadShader {

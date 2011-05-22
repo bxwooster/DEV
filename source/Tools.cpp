@@ -1,8 +1,8 @@
-#include "Matrix.h"
-#include "ok.h"
+#include "Matrix.hpp"
+#include "OK.hpp"
 
-#include "Geometries.hpp"
-#include "DeviceState.hpp"
+#include "Data/Geometries.hpp"
+#include "Data/DeviceState.hpp"
 
 #include <D3DX11.h>
 #include <fstream>

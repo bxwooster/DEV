@@ -11,59 +11,83 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\Camera.hpp" />
-    <ClInclude Include="..\source\Buffer.hpp" />
-    <ClInclude Include="..\source\CBuffer.hpp" />
     <ClInclude Include="..\source\CBufferLayouts.hpp" />
-    <ClInclude Include="..\source\DeviceState.hpp" />
-    <ClInclude Include="..\source\Geometries.hpp" />
-    <ClInclude Include="..\source\GraphicsState.hpp" />
-    <ClInclude Include="..\source\InputData.hpp" />
-    <ClInclude Include="..\source\IPtr.h" />
-    <ClInclude Include="..\source\LightRenderInfo.hpp" />
-    <ClInclude Include="..\source\Lights.hpp" />
+    <ClInclude Include="..\source\Data\Buffer.hpp" />
+    <ClInclude Include="..\source\Data\Camera.hpp" />
+    <ClInclude Include="..\source\Data\CBuffer.hpp" />
+    <ClInclude Include="..\source\Data\DeviceState.hpp" />
+    <ClInclude Include="..\source\Data\Geometries.hpp" />
+    <ClInclude Include="..\source\Data\GraphicsState.hpp" />
+    <ClInclude Include="..\source\Data\InputData.hpp" />
+    <ClInclude Include="..\source\Data\LightRenderInfo.hpp" />
+    <ClInclude Include="..\source\Data\Lights.hpp" />
+    <ClInclude Include="..\source\Data\PhysicsState.hpp" />
+    <ClInclude Include="..\source\Data\PlayerState.hpp" />
+    <ClInclude Include="..\source\Data\PostProcessInfo.hpp" />
+    <ClInclude Include="..\source\Data\RayTracingInfo.hpp" />
+    <ClInclude Include="..\source\Data\ShaderCache.hpp" />
+    <ClInclude Include="..\source\Data\TimingData.hpp" />
+    <ClInclude Include="..\source\Data\Transforms.hpp" />
+    <ClInclude Include="..\source\Data\UBuffer.hpp" />
+    <ClInclude Include="..\source\Data\VisualRenderInfo.hpp" />
+    <ClInclude Include="..\source\Data\Visuals.hpp" />
+    <ClInclude Include="..\source\Data\ZBuffer.hpp" />
+    <ClInclude Include="..\source\IPtr.hpp" />
     <ClInclude Include="..\source\LoadShader.hpp" />
-    <ClInclude Include="..\source\Matrix.h" />
-    <ClInclude Include="..\source\OK.h" />
-    <ClInclude Include="..\source\PhysicsState.hpp" />
-    <ClInclude Include="..\source\PlayerState.hpp" />
-    <ClInclude Include="..\source\PostProcessInfo.hpp" />
-    <ClInclude Include="..\source\RayTracingInfo.hpp" />
-    <ClInclude Include="..\source\ShaderCache.hpp" />
-    <ClInclude Include="..\source\TimingData.hpp" />
+    <ClInclude Include="..\source\Matrix.hpp" />
+    <ClInclude Include="..\source\OK.hpp" />
+    <ClInclude Include="..\source\TaskManager.hpp" />
+    <ClInclude Include="..\source\Task\CrunchPhysics.hpp" />
+    <ClInclude Include="..\source\Task\DeriveCamera.hpp" />
+    <ClInclude Include="..\source\Task\DerivePlayerState.hpp" />
+    <ClInclude Include="..\source\Task\GetInput.hpp" />
+    <ClInclude Include="..\source\Task\GetTiming.hpp" />
+    <ClInclude Include="..\source\Task\InitCBuffer.hpp" />
+    <ClInclude Include="..\source\Task\InitGraphics.hpp" />
+    <ClInclude Include="..\source\Task\InitInput.hpp" />
+    <ClInclude Include="..\source\Task\InitLightRender.hpp" />
+    <ClInclude Include="..\source\Task\InitOIT.hpp" />
+    <ClInclude Include="..\source\Task\InitPhysics.hpp" />
+    <ClInclude Include="..\source\Task\InitPlayer.hpp" />
+    <ClInclude Include="..\source\Task\InitPostProcess.hpp" />
+    <ClInclude Include="..\source\Task\InitRayTracing.hpp" />
+    <ClInclude Include="..\source\Task\InitScene.hpp" />
+    <ClInclude Include="..\source\Task\InitTiming.hpp" />
+    <ClInclude Include="..\source\Task\InitVisualRender.hpp" />
+    <ClInclude Include="..\source\Task\PostProcess.hpp" />
+    <ClInclude Include="..\source\Task\Prepare.hpp" />
+    <ClInclude Include="..\source\Task\Present.hpp" />
+    <ClInclude Include="..\source\Task\RayTrace.hpp" />
+    <ClInclude Include="..\source\Task\RenderLights.hpp" />
+    <ClInclude Include="..\source\Task\RenderVisuals.hpp" />
     <ClInclude Include="..\source\Tools.hpp" />
-    <ClInclude Include="..\source\Transforms.hpp" />
-    <ClInclude Include="..\source\UBuffer.hpp" />
-    <ClInclude Include="..\source\VisualRenderInfo.hpp" />
-    <ClInclude Include="..\source\Visuals.hpp" />
-    <ClInclude Include="..\source\ZBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\CrunchPhysics.cpp" />
-    <ClCompile Include="..\source\DeriveCamera.cpp" />
-    <ClCompile Include="..\source\DerivePlayerState.cpp" />
-    <ClCompile Include="..\source\GetInput.cpp" />
-    <ClCompile Include="..\source\GetTiming.cpp" />
-    <ClCompile Include="..\source\InitCBuffer.cpp" />
-    <ClCompile Include="..\source\InitGraphics.cpp" />
-    <ClCompile Include="..\source\InitInput.cpp" />
-    <ClCompile Include="..\source\InitLightRender.cpp" />
-    <ClCompile Include="..\source\InitOIT.cpp" />
-    <ClCompile Include="..\source\InitPhysics.cpp" />
-    <ClCompile Include="..\source\InitPlayer.cpp" />
-    <ClCompile Include="..\source\InitPostProcess.cpp" />
-    <ClCompile Include="..\source\InitRayTracing.cpp" />
-    <ClCompile Include="..\source\InitScene.cpp" />
-    <ClCompile Include="..\source\InitTiming.cpp" />
-    <ClCompile Include="..\source\InitVisualRender.cpp" />
     <ClCompile Include="..\source\LoadShader.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
-    <ClCompile Include="..\source\PostProcess.cpp" />
-    <ClCompile Include="..\source\Prepare.cpp" />
-    <ClCompile Include="..\source\Present.cpp" />
-    <ClCompile Include="..\source\RayTrace.cpp" />
-    <ClCompile Include="..\source\RenderLights.cpp" />
-    <ClCompile Include="..\source\RenderVisuals.cpp" />
+    <ClCompile Include="..\source\Task\CrunchPhysics.cpp" />
+    <ClCompile Include="..\source\Task\DeriveCamera.cpp" />
+    <ClCompile Include="..\source\Task\DerivePlayerState.cpp" />
+    <ClCompile Include="..\source\Task\GetInput.cpp" />
+    <ClCompile Include="..\source\Task\GetTiming.cpp" />
+    <ClCompile Include="..\source\Task\InitCBuffer.cpp" />
+    <ClCompile Include="..\source\Task\InitGraphics.cpp" />
+    <ClCompile Include="..\source\Task\InitInput.cpp" />
+    <ClCompile Include="..\source\Task\InitLightRender.cpp" />
+    <ClCompile Include="..\source\Task\InitOIT.cpp" />
+    <ClCompile Include="..\source\Task\InitPhysics.cpp" />
+    <ClCompile Include="..\source\Task\InitPlayer.cpp" />
+    <ClCompile Include="..\source\Task\InitPostProcess.cpp" />
+    <ClCompile Include="..\source\Task\InitRayTracing.cpp" />
+    <ClCompile Include="..\source\Task\InitScene.cpp" />
+    <ClCompile Include="..\source\Task\InitTiming.cpp" />
+    <ClCompile Include="..\source\Task\InitVisualRender.cpp" />
+    <ClCompile Include="..\source\Task\PostProcess.cpp" />
+    <ClCompile Include="..\source\Task\Prepare.cpp" />
+    <ClCompile Include="..\source\Task\Present.cpp" />
+    <ClCompile Include="..\source\Task\RayTrace.cpp" />
+    <ClCompile Include="..\source\Task\RenderLights.cpp" />
+    <ClCompile Include="..\source\Task\RenderVisuals.cpp" />
     <ClCompile Include="..\source\Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -119,7 +143,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -134,14 +158,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\msvc\2008\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\source;$(SolutionDir)..\;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
     <SourcePath>$(SolutionDir)..\..\__external__\bullet\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\msvc\2008\lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\source;$(SolutionDir)..;$(IncludePath)</IncludePath>
     <OutDir>build\output\$(Configuration)\</OutDir>
     <IntDir>build\intermediate\$(Configuration)\</IntDir>
     <SourcePath>$(SolutionDir)..\..\__external__\bullet\src;$(SourcePath)</SourcePath>

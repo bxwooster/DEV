@@ -1,14 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Code">
-      <UniqueIdentifier>{0c025bc3-9b6e-4af9-a7f7-5b396ad54d15}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{887f879e-ac4d-45e4-89b9-f9a8960b6288}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header">
-      <UniqueIdentifier>{a42bfd3a-d5ff-4083-9e21-539215fc41fb}</UniqueIdentifier>
     </Filter>
     <Filter Include="shaders">
       <UniqueIdentifier>{96d36d1e-6eed-43b1-a71a-5aed2e6aaade}</UniqueIdentifier>
@@ -25,161 +19,243 @@
     <Filter Include="shaders\shaders">
       <UniqueIdentifier>{469c332f-e0de-4c82-bbda-68aadbabcb67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Task">
+      <UniqueIdentifier>{0c025bc3-9b6e-4af9-a7f7-5b396ad54d15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{a42bfd3a-d5ff-4083-9e21-539215fc41fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Task\source">
+      <UniqueIdentifier>{8a3a7a98-64ff-4d5a-982d-f33d0a3a29d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Task\header">
+      <UniqueIdentifier>{13ed7f0e-5442-4d75-823b-430028236fbd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\GraphicsState.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\LightRenderInfo.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Lights.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PhysicsState.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PlayerState.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\TimingData.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Transforms.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\VisualRenderInfo.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Visuals.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\ZBuffer.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\InputData.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Camera.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Buffer.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\IPtr.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Matrix.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\OK.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\DeviceState.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\CBuffer.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\CBufferLayouts.hpp" />
-    <ClInclude Include="..\source\PostProcessInfo.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\Geometries.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\RayTracingInfo.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\ShaderCache.hpp">
-      <Filter>Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Tools.hpp">
-      <Filter>Header</Filter>
+      <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\UBuffer.hpp">
-      <Filter>Data</Filter>
+    <ClInclude Include="..\source\Task\InitRayTracing.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitScene.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitTiming.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitVisualRender.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\PostProcess.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\Prepare.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\Present.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\RayTrace.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\RenderLights.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\RenderVisuals.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\CrunchPhysics.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\DeriveCamera.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\DerivePlayerState.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\GetInput.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\GetTiming.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitCBuffer.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitGraphics.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitInput.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitLightRender.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitOIT.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitPhysics.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitPlayer.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Task\InitPostProcess.hpp">
+      <Filter>Task\header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\TaskManager.hpp">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\IPtr.hpp">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Matrix.hpp">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\OK.hpp">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CBufferLayouts.hpp">
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="..\source\LoadShader.hpp">
-      <Filter>Code</Filter>
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\CBuffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\DeviceState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\Geometries.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\GraphicsState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\InputData.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\LightRenderInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\Lights.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\PhysicsState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\PlayerState.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\PostProcessInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\RayTracingInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\ShaderCache.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\TimingData.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\Transforms.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\UBuffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\VisualRenderInfo.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\Visuals.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\ZBuffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\Buffer.hpp">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Data\Camera.hpp">
+      <Filter>Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\CrunchPhysics.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\DerivePlayerState.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\GetInput.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\GetTiming.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\InitGraphics.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\InitPhysics.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\InitScene.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\InitTiming.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PostProcess.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Present.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\RenderLights.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\RenderVisuals.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\InitInput.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\Main.cpp" />
-    <ClCompile Include="..\source\DeriveCamera.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Tools.cpp" />
+    <ClCompile Include="..\source\LoadShader.cpp" />
+    <ClCompile Include="..\source\Task\GetInput.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Prepare.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\GetTiming.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\RayTrace.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitCBuffer.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\InitPlayer.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitGraphics.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\InitCBuffer.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitInput.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\InitRayTracing.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitLightRender.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\InitVisualRender.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitOIT.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\InitLightRender.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitPhysics.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\InitPostProcess.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitPlayer.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\LoadShader.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitPostProcess.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Tools.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitRayTracing.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\InitOIT.cpp">
-      <Filter>Code</Filter>
+    <ClCompile Include="..\source\Task\InitScene.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\InitTiming.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\InitVisualRender.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\PostProcess.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\Prepare.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\Present.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\RayTrace.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\RenderLights.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\RenderVisuals.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\CrunchPhysics.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\DeriveCamera.cpp">
+      <Filter>Task\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Task\DerivePlayerState.cpp">
+      <Filter>Task\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
