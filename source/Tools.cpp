@@ -1,18 +1,28 @@
-#include "Matrix.hpp"
+#define NOMINMAX
+#include "Tools.hpp"
 #include "OK.hpp"
 
-#include "Data/Geometries.hpp"
-#include "Data/DeviceState.hpp"
-
-#include <D3DX11.h>
 #include <fstream>
 #include <vector>
+#include <D3DX11.h>
 
 namespace DEV {
 
 typedef unsigned int uint;
 
 namespace Tools {
+
+void InitCBuffers(DeviceState& device,	ID3D11Buffer** buffers[], size_t* sizes, int number)
+{
+	for (int i = 0; i < number; i++)
+	{
+		D3D11_BUFFER_DESC desc = {};
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		desc.ByteWidth = sizes[i];
+		HOK( device.device->CreateBuffer( &desc, NULL, buffers[i] ));
+	}
+}
 
 D3D11_BLEND_DESC DefaultBlendDesc()
 {

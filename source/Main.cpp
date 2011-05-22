@@ -22,7 +22,6 @@
 
 #include "Task/InitOIT.hpp"
 #include "Task/InitGraphics.hpp"
-#include "Task/InitCBuffer.hpp"
 #include "Task/InitVisualRender.hpp"
 #include "Task/InitLightRender.hpp"
 #include "Task/InitPostProcess.hpp"
@@ -45,6 +44,7 @@
 #include "Task/GetInput.hpp"
 #include "Task/GetTiming.hpp"
 
+#include <Tools.hpp>
 #include "CBufferLayouts.hpp"
 #include "TaskManager.hpp"
 #include <exception>
@@ -116,23 +116,25 @@ void run()
 	Run( InitScene,
 		transforms, visuals, lights, geometries, physics, device );
 
-	Run( InitCBuffer,
-		device, cb_object, sizeof( CBufferLayouts::object ) );
+	{
+		ID3D11Buffer** cbuffers[] = {
+			~cb_object, ~cb_object_z, ~cb_object_cube_z,
+			~cb_light, ~cb_frame, ~cb_tracy };
 
-	Run( InitCBuffer,
-		device, cb_object_z, sizeof( CBufferLayouts::object_z ) );
+		int number = sizeof(cbuffers) / sizeof(void*);
 
-	Run( InitCBuffer,
-		device, cb_object_cube_z, sizeof( CBufferLayouts::object_cube_z ) );
+		size_t sizes[] =
+		{
+			sizeof(CBufferLayouts::object),
+			sizeof(CBufferLayouts::object_z),
+			sizeof(CBufferLayouts::object_cube_z),
+			sizeof(CBufferLayouts::light),
+			sizeof(CBufferLayouts::frame),
+			sizeof(CBufferLayouts::tracy),
+		};
 
-	Run( InitCBuffer,
-		device, cb_light, sizeof( CBufferLayouts::light ) );
-
-	Run( InitCBuffer,
-		device, cb_frame, sizeof( CBufferLayouts::frame ) );
-
-	Run( InitCBuffer,
-		device, cb_tracy, sizeof( CBufferLayouts::tracy ) );
+		Tools::InitCBuffers(device, cbuffers, sizes, number);
+	}
 
 	for (;;)
 	{
@@ -159,7 +161,7 @@ void run()
 			camera, oit_start, oit_scattered, oit_consolidated,
 			gbuffer, zbuffer, cb_object, cb_frame );
 
-		Run( RayTrace,
+		if (0) Run( RayTrace,
 		graphics, rinfo, camera, zbuffer, gbuffer, cb_frame, cb_tracy );
 
 		Run( RenderLights,

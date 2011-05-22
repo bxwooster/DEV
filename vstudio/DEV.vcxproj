@@ -42,7 +42,6 @@
     <ClInclude Include="..\source\Task\DerivePlayerState.hpp" />
     <ClInclude Include="..\source\Task\GetInput.hpp" />
     <ClInclude Include="..\source\Task\GetTiming.hpp" />
-    <ClInclude Include="..\source\Task\InitCBuffer.hpp" />
     <ClInclude Include="..\source\Task\InitGraphics.hpp" />
     <ClInclude Include="..\source\Task\InitInput.hpp" />
     <ClInclude Include="..\source\Task\InitLightRender.hpp" />
@@ -70,7 +69,6 @@
     <ClCompile Include="..\source\Task\DerivePlayerState.cpp" />
     <ClCompile Include="..\source\Task\GetInput.cpp" />
     <ClCompile Include="..\source\Task\GetTiming.cpp" />
-    <ClCompile Include="..\source\Task\InitCBuffer.cpp" />
     <ClCompile Include="..\source\Task\InitGraphics.cpp" />
     <ClCompile Include="..\source\Task\InitInput.cpp" />
     <ClCompile Include="..\source\Task\InitLightRender.cpp" />

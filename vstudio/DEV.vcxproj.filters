@@ -81,9 +81,6 @@
     <ClInclude Include="..\source\Task\GetTiming.hpp">
       <Filter>Task\header</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Task\InitCBuffer.hpp">
-      <Filter>Task\header</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Task\InitGraphics.hpp">
       <Filter>Task\header</Filter>
     </ClInclude>
@@ -192,9 +189,6 @@
       <Filter>Task\source</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Task\GetTiming.cpp">
-      <Filter>Task\source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Task\InitCBuffer.cpp">
       <Filter>Task\source</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Task\InitGraphics.cpp">

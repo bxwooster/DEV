@@ -1,12 +1,13 @@
 #pragma once
 #include "Data/Geometries.hpp"
-
+#include "Data/DeviceState.hpp"
 #include "Matrix.hpp"
-#include <d3d11.h>
 
 namespace DEV {
 
 namespace Tools {
+
+void InitCBuffers(DeviceState& device,	ID3D11Buffer** buffers[], size_t* sizes, int number);
 
 Geometry ReadGeometry(ID3D11Device* device, const std::string& filename);
 void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
