@@ -37,6 +37,20 @@ struct RenderLights
 	InOut (CBuffer) cb_light;
 
 	void run();
+
+private:
+	struct Parameters
+	{
+		btAlignedObjectArray<Light> const& lights;
+		ZBuffer& shadowsurface;
+		ID3D11VertexShader* vs_render;
+		ID3D11GeometryShader* gs_render;
+		CBuffer& cbuffer;
+		ID3D11GeometryShader* gs_light;
+		ID3D11PixelShader* ps_light;
+	};
+
+	inline void shared_code(Parameters& par);
 };
 
 } // namespace DEV
