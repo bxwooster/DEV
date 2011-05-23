@@ -1,0 +1,7 @@
+struct OITFragment
+{
+	uint normal;
+	uint colour;
+	uint alpha8_depth24;
+	uint next;
+};

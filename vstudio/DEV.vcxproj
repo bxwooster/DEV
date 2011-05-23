@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\CBufferLayouts.hpp" />
+    <ClInclude Include="..\source\Data\Buffer.hpp" />
+    <ClInclude Include="..\source\Data\Camera.hpp" />
+    <ClInclude Include="..\source\Data\CBuffer.hpp" />
+    <ClInclude Include="..\source\Data\DeviceState.hpp" />
+    <ClInclude Include="..\source\Data\Geometries.hpp" />
+    <ClInclude Include="..\source\Data\GraphicsState.hpp" />
+    <ClInclude Include="..\source\Data\InputData.hpp" />
+    <ClInclude Include="..\source\Data\LightRenderInfo.hpp" />
+    <ClInclude Include="..\source\Data\Lights.hpp" />
+    <ClInclude Include="..\source\Data\PhysicsState.hpp" />
+    <ClInclude Include="..\source\Data\PlayerState.hpp" />
+    <ClInclude Include="..\source\Data\PostProcessInfo.hpp" />
+    <ClInclude Include="..\source\Data\RayTracingInfo.hpp" />
+    <ClInclude Include="..\source\Data\ShaderCache.hpp" />
+    <ClInclude Include="..\source\Data\TimingData.hpp" />
+    <ClInclude Include="..\source\Data\Transforms.hpp" />
+    <ClInclude Include="..\source\Data\UBuffer.hpp" />
+    <ClInclude Include="..\source\Data\VisualRenderInfo.hpp" />
+    <ClInclude Include="..\source\Data\Visuals.hpp" />
+    <ClInclude Include="..\source\Data\ZBuffer.hpp" />
+    <ClInclude Include="..\source\IPtr.hpp" />
+    <ClInclude Include="..\source\LoadShader.hpp" />
+    <ClInclude Include="..\source\Matrix.hpp" />
+    <ClInclude Include="..\source\OK.hpp" />
+    <ClInclude Include="..\source\owned_ptr.hpp" />
+    <ClInclude Include="..\source\Task.hpp" />
+    <ClInclude Include="..\source\Task\CrunchPhysics.hpp" />
+    <ClInclude Include="..\source\Task\DeriveCamera.hpp" />
+    <ClInclude Include="..\source\Task\DerivePlayerState.hpp" />
+    <ClInclude Include="..\source\Task\GetInput.hpp" />
+    <ClInclude Include="..\source\Task\GetTiming.hpp" />
+    <ClInclude Include="..\source\Task\InitGraphics.hpp" />
+    <ClInclude Include="..\source\Task\InitInput.hpp" />
+    <ClInclude Include="..\source\Task\InitLightRender.hpp" />
+    <ClInclude Include="..\source\Task\InitOIT.hpp" />
+    <ClInclude Include="..\source\Task\InitPhysics.hpp" />
+    <ClInclude Include="..\source\Task\InitPlayer.hpp" />
+    <ClInclude Include="..\source\Task\InitPostProcess.hpp" />
+    <ClInclude Include="..\source\Task\InitRayTracing.hpp" />
+    <ClInclude Include="..\source\Task\InitScene.hpp" />
+    <ClInclude Include="..\source\Task\InitTiming.hpp" />
+    <ClInclude Include="..\source\Task\InitVisualRender.hpp" />
+    <ClInclude Include="..\source\Task\PostProcess.hpp" />
+    <ClInclude Include="..\source\Task\Prepare.hpp" />
+    <ClInclude Include="..\source\Task\Present.hpp" />
+    <ClInclude Include="..\source\Task\RayTrace.hpp" />
+    <ClInclude Include="..\source\Task\RenderLights.hpp" />
+    <ClInclude Include="..\source\Task\RenderVisuals.hpp" />
+    <ClInclude Include="..\source\Tools.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\LoadShader.cpp" />
+    <ClCompile Include="..\source\Main.cpp" />
+    <ClCompile Include="..\source\Task\CrunchPhysics.cpp" />
+    <ClCompile Include="..\source\Task\DeriveCamera.cpp" />
+    <ClCompile Include="..\source\Task\DerivePlayerState.cpp" />
+    <ClCompile Include="..\source\Task\GetInput.cpp" />
+    <ClCompile Include="..\source\Task\GetTiming.cpp" />
+    <ClCompile Include="..\source\Task\InitGraphics.cpp" />
+    <ClCompile Include="..\source\Task\InitInput.cpp" />
+    <ClCompile Include="..\source\Task\InitLightRender.cpp" />
+    <ClCompile Include="..\source\Task\InitOIT.cpp" />
+    <ClCompile Include="..\source\Task\InitPhysics.cpp" />
+    <ClCompile Include="..\source\Task\InitPlayer.cpp" />
+    <ClCompile Include="..\source\Task\InitPostProcess.cpp" />
+    <ClCompile Include="..\source\Task\InitRayTracing.cpp" />
+    <ClCompile Include="..\source\Task\InitScene.cpp" />
+    <ClCompile Include="..\source\Task\InitTiming.cpp" />
+    <ClCompile Include="..\source\Task\InitVisualRender.cpp" />
+    <ClCompile Include="..\source\Task\PostProcess.cpp" />
+    <ClCompile Include="..\source\Task\Prepare.cpp" />
+    <ClCompile Include="..\source\Task\Present.cpp" />
+    <ClCompile Include="..\source\Task\RayTrace.cpp" />
+    <ClCompile Include="..\source\Task\RenderLights.cpp" />
+    <ClCompile Include="..\source\Task\RenderVisuals.cpp" />
+    <ClCompile Include="..\source\Tools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\shaders\cbuffer\frame" />
+    <None Include="..\shaders\cbuffer\light" />
+    <None Include="..\shaders\cbuffer\object" />
+    <None Include="..\shaders\cbuffer\object_cube_z" />
+    <None Include="..\shaders\cbuffer\object_z" />
+    <None Include="..\shaders\cbuffer\tracy" />
+    <None Include="..\shaders\code\common_light" />
+    <None Include="..\shaders\code\f16x2" />
+    <None Include="..\shaders\code\normal" />
+    <None Include="..\shaders\code\sort4" />
+    <None Include="..\shaders\code\u16x2" />
+    <None Include="..\shaders\code\u8x2_u16" />
+    <None Include="..\shaders\code\u8x4" />
+    <None Include="..\shaders\code\u8_u24" />
+    <None Include="..\shaders\code\uv_to_ray" />
+    <None Include="..\shaders\ps_oit_consolidate.hlsl" />
+    <None Include="..\shaders\gs_infinite_plane.hlsl" />
+    <None Include="..\shaders\gs_point_light.hlsl" />
+    <None Include="..\shaders\gs_dir_light.hlsl" />
+    <None Include="..\shaders\gs_fullscreen.hlsl" />
+    <None Include="..\shaders\gs_render_cube_z.hlsl" />
+    <None Include="..\shaders\ps_dir_light.hlsl" />
+    <None Include="..\shaders\ps_final.hlsl" />
+    <None Include="..\shaders\ps_point_light.hlsl" />
+    <None Include="..\shaders\ps_render.hlsl" />
+    <None Include="..\shaders\ps_skylight.hlsl" />
+    <None Include="..\shaders\ps_tracy.hlsl" />
+    <None Include="..\shaders\struct\Empty" />
+    <None Include="..\shaders\struct\OITFragment" />
+    <None Include="..\shaders\struct\PPositionNormal" />
+    <None Include="..\shaders\struct\PPosition" />
+    <None Include="..\shaders\struct\VPosition" />
+    <None Include="..\shaders\struct\VPositionNormal" />
+    <None Include="..\shaders\vs_noop.hlsl" />
+    <None Include="..\shaders\vs_render.hlsl" />
+    <None Include="..\shaders\vs_render_cube_z.hlsl" />
+    <None Include="..\shaders\vs_render_z.hlsl" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{17005A34-EEA1-4F6A-994F-9756AC8F37A5}</ProjectGuid>
+    <RootNamespace>Freddy</RootNamespace>
+    <ProjectName>DEV</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\msvc\2008\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\source;$(SolutionDir)..\;$(IncludePath)</IncludePath>
+    <OutDir>build\output\$(Configuration)\</OutDir>
+    <IntDir>build\intermediate\$(Configuration)\</IntDir>
+    <SourcePath>$(SolutionDir)..\..\__external__\bullet\src;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(SolutionDir)..\..\__external__\bullet\msvc\2008\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)..\..\__external__\Eigen;$(SolutionDir)..\..\__external__\bullet\src;$(SolutionDir)..\source;$(SolutionDir)..;$(IncludePath)</IncludePath>
+    <OutDir>build\output\$(Configuration)\</OutDir>
+    <IntDir>build\intermediate\$(Configuration)\</IntDir>
+    <SourcePath>$(SolutionDir)..\..\__external__\bullet\src;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3dx11.lib;d3d11.lib;d3dx10.lib;dxgi.lib;d3dcompiler.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3dx11.lib;d3d11.lib;d3dx10.lib;dxgi.lib;d3dcompiler.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

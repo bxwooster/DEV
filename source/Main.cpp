@@ -1,78 +1,34 @@
 #define NOMINMAX
 
-#include "DeviceState.hpp"
-#include "GraphicsState.hpp"
-#include "InputData.hpp"
-#include "TimingData.hpp"
-#include "LightRenderInfo.hpp"
-#include "PostProcessInfo.hpp"
-#include "RayTracingInfo.hpp"
-#include "VisualRenderInfo.hpp"
-#include "PhysicsState.hpp"
-#include "PlayerState.hpp"
-#include "Camera.hpp"
-#include "Transforms.hpp"
-#include "Visuals.hpp"
-#include "Lights.hpp"
-#include "Geometries.hpp"
-#include "Buffer.hpp"
-#include "ZBuffer.hpp"
-#include "CBuffer.hpp"
-#include "CBufferLayouts.hpp"
-#include "ShaderCache.hpp"
+#include "Task/InitOIT.hpp"
+#include "Task/InitGraphics.hpp"
+#include "Task/InitVisualRender.hpp"
+#include "Task/InitLightRender.hpp"
+#include "Task/InitPostProcess.hpp"
+#include "Task/InitRayTracing.hpp"
+#include "Task/InitPlayer.hpp"
+#include "Task/InitInput.hpp"
+#include "Task/GetInput.hpp"
+#include "Task/InitTiming.hpp"
+#include "Task/InitScene.hpp"
+#include "Task/InitPhysics.hpp"
+#include "Task/DerivePlayerState.hpp"
+#include "Task/DeriveCamera.hpp"
+#include "Task/Present.hpp"
+#include "Task/Prepare.hpp"
+#include "Task/RenderVisuals.hpp"
+#include "Task/RenderLights.hpp"
+#include "Task/PostProcess.hpp"
+#include "Task/RayTrace.hpp"
+#include "Task/CrunchPhysics.hpp"
+#include "Task/GetInput.hpp"
+#include "Task/GetTiming.hpp"
 
+#include "Task.hpp"
 #include <exception>
 #include <Windows.h>
 
-namespace Devora {
-
-void InitGraphics(GraphicsState& state, DeviceState& device, 
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& lbuffer, ZBuffer& zbuffer, Buffer& backbuffer, Camera& camera);
-
-void InitCBuffer(DeviceState& device, CBuffer& cb, size_t size);
-
-void InitVisualRender(VisualRenderInfo& info, DeviceState& device, ShaderCache& cache);
-void InitLightRender(LightRenderInfo& info, DeviceState& device, ShaderCache& cache, Camera& camera);
-void InitPostProcess(PostProcessInfo& info, DeviceState& device, ShaderCache& cache);
-void InitRayTracing(RayTracingInfo& info, DeviceState& device, ShaderCache& cache);
-
-void InitPlayer(PlayerState& state);
-void InitInput(InputData& input);
-void GetInput(InputData& input);
-
-void InitTiming(TimingData& timing);
-void GetTiming(TimingData& timing);
-
-void InitScene(Transforms& transforms, Visuals& visuals, Lights& lights,
-	Geometries& geometries, PhysicsState& state, DeviceState& device);
-
-void InitPhysics(PhysicsState& state);
-void CrunchPhysics(PhysicsState& state, Transforms& transforms,
-	PlayerState& player, TimingData& timing);
-
-void DerivePlayerState(PlayerState& state, InputData& input, TimingData& timing);
-void DeriveCamera(Transforms& transforms, PlayerState& player, Camera& camera);
-void Present(DeviceState& state);
-void Prepare(GraphicsState& state, CBuffer& cb_frame, ZBuffer& zbuffer, Camera& camera);
-
-void RenderVisuals(GraphicsState& state, VisualRenderInfo& info, 
-	Transforms& transforms, Visuals& visuals, Geometries& geometries, Camera& camera,
-	Buffer& gbuffer0, Buffer& gbuffer1, ZBuffer& zbuffer, CBuffer& cb_object);
-
-void RenderLights(GraphicsState& state, LightRenderInfo& info,
-	Transforms& transforms, Lights& lights, Visuals& casters, Geometries& geometries, 
-	Camera& camera,	ZBuffer& zbuffer, ZBuffer& shadowmap, ZBuffer& shadowcube,
-	Buffer& gbuffer0, Buffer& gbuffer1, Buffer& lbuffer,
-	CBuffer& cb_frame, CBuffer& cb_object_z, CBuffer& cb_object_cube_z, CBuffer& cb_light);
-
-void PostProcess(GraphicsState& state, PostProcessInfo& info, ZBuffer& zbuffer,
-	Buffer& gbuffer0, Buffer& gbuffer1,	Buffer& lbuffer, Buffer& backbuffer, CBuffer& cb_frame);
-
-void RayTrace(GraphicsState& state, RayTracingInfo& info,
-	Camera& camera,	ZBuffer& zbuffer, Buffer& gbuffer0, Buffer& gbuffer1,
-	CBuffer& cb_frame, CBuffer& cb_tracy);
-
+namespace DEV {
 
 void run()
 {
@@ -92,8 +48,9 @@ void run()
 	Camera camera;
 	PlayerState player;
 
-	Buffer backbuffer, gbuffer0, gbuffer1, lbuffer;
+	Buffer backbuffer, gbuffer, lbuffer;
 	ZBuffer zbuffer, shadowmap, shadowcube;
+	UBuffer oit_start, oit_scattered, oit_consolidated;
 
 	Transforms transforms;
 	Visuals visuals;
@@ -103,55 +60,92 @@ void run()
 	CBuffer cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame, cb_tracy;
 
 	// Code
-	InitGraphics(graphics, device, gbuffer0, gbuffer1,
-		shadowmap, shadowcube, lbuffer, zbuffer, backbuffer, camera);
+	RunTask( InitGraphics,
+		graphics, device, gbuffer, shadowmap, shadowcube,
+		lbuffer, zbuffer, backbuffer, camera,
+		cb_object, cb_object_z, cb_object_cube_z,
+		cb_light, cb_frame, cb_tracy );
+
+	RunTask( InitOIT,
+		device, camera, oit_start, oit_scattered, oit_consolidated );
 	
-	InitVisualRender(vinfo, device, shadercache);
-	InitLightRender(linfo, device, shadercache, camera);
-	InitPostProcess(pinfo, device, shadercache);
-	InitRayTracing(rinfo, device, shadercache);
+	RunTask( InitVisualRender, 
+		vinfo, device, shadercache );
 
-	InitPhysics(physics);
-	InitTiming(timing);
-	InitInput(input);
-	InitPlayer(player);
-	InitScene(transforms, visuals, lights, geometries, physics, device);
+	RunTask( InitLightRender,
+		linfo, device, shadercache, camera );
 
-	InitCBuffer(device, cb_object, sizeof( CBufferLayouts::object ));
-	InitCBuffer(device, cb_object_z, sizeof( CBufferLayouts::object_z ));
-	InitCBuffer(device, cb_object_cube_z, sizeof( CBufferLayouts::object_cube_z ));
-	InitCBuffer(device, cb_light, sizeof( CBufferLayouts::light ));
-	InitCBuffer(device, cb_frame, sizeof( CBufferLayouts::frame ));
-	InitCBuffer(device, cb_tracy, sizeof( CBufferLayouts::tracy ));
+	RunTask( InitPostProcess,
+		pinfo, device, shadercache );
+
+	RunTask( InitRayTracing,
+		rinfo, device, shadercache );
+
+	RunTask( InitPhysics,
+		physics );
+
+	RunTask( InitTiming,
+		timing );
+
+	RunTask( InitInput,
+		input );
+
+	RunTask( InitPlayer,
+		player );
+
+	RunTask( InitScene,
+		transforms, visuals, lights, geometries, physics, device );
 
 	for (;;)
 	{
-		GetTiming(timing);
-		GetInput(input);
-		DerivePlayerState(player, input, timing);
-		CrunchPhysics(physics, transforms, player, timing);
-		DeriveCamera(transforms, player, camera);
+		RunTask( GetTiming,
+			timing );
 
-		Prepare(graphics, cb_frame, zbuffer, camera);
-		RenderVisuals(graphics, vinfo, transforms, visuals, geometries,
-			camera, gbuffer0, gbuffer1, zbuffer, cb_object);
-		RayTrace(graphics, rinfo, camera, zbuffer, gbuffer0, gbuffer1, cb_frame, cb_tracy);
-		RenderLights(graphics, linfo, transforms, lights, visuals, geometries,
-			camera, zbuffer, shadowmap, shadowcube, gbuffer0, gbuffer1, lbuffer,
-			cb_frame, cb_object_z, cb_object_cube_z, cb_light);
-		PostProcess(graphics, pinfo, zbuffer, gbuffer0, gbuffer1, lbuffer, backbuffer, cb_frame);
-		Present(device);
+		RunTask( GetInput,
+			input );
+
+		RunTask( DerivePlayerState,
+			player, input, timing );
+
+		RunTask( CrunchPhysics,
+			physics, transforms, player, timing );
+
+		RunTask( DeriveCamera,
+			transforms, player, camera );
+
+		RunTask( Prepare,
+			graphics, cb_frame, zbuffer, oit_start, camera );
+
+		RunTask( RenderVisuals,
+			graphics, vinfo, transforms, visuals, geometries,
+			camera, oit_start, oit_scattered, oit_consolidated,
+			gbuffer, zbuffer, cb_object, cb_frame );
+
+		if (0) RunTask( RayTrace,
+		graphics, rinfo, camera, zbuffer, gbuffer, cb_frame, cb_tracy );
+
+		RunTask( RenderLights,
+			graphics, linfo, transforms, lights, visuals, geometries,
+			camera, zbuffer, shadowmap, shadowcube, gbuffer, lbuffer,
+			oit_start, oit_scattered, oit_consolidated,
+			cb_frame, cb_object_z, cb_object_cube_z, cb_light );
+
+		RunTask( PostProcess,
+			graphics, pinfo, zbuffer, gbuffer, lbuffer, backbuffer, cb_frame );
+
+		RunTask( Present,
+			device );
 	}
 }
 
 
-} // namespace Devora
+} // namespace DEV
 
 int main()
 {
 	try
 	{
-		Devora::run();
+		DEV::run();
 	}
 	catch(std::exception exception)
 	{

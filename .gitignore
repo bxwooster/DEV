@@ -10,3 +10,4 @@
 *.dll
 *.pyd
 __pycache__
+/misc

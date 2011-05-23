@@ -1,17 +1,17 @@
-#ifndef __Devora_Tools__
-#define __Devora_Tools__
+#pragma once
+#include "Data/Geometries.hpp"
+#include "Data/DeviceState.hpp"
+#include "Matrix.hpp"
 
-#include "Matrix.h"
-#include "Geometries.hpp"
-#include <d3d11.h>
-
-namespace Devora {
+namespace DEV {
 
 namespace Tools {
 
+void InitCBuffers(DeviceState& device,	ID3D11Buffer** buffers[], size_t* sizes, int number);
+
 Geometry ReadGeometry(ID3D11Device* device, const std::string& filename);
 void SetProjectionMatrix(Matrix4f& proj, float y_fov, float aspect_ratio, float z_near);
-void CompileShader( char* file, char* profile, ID3D10Blob** code );
+void CompileShader( char* file, char* profile, char* entry, ID3D10Blob** code );
 
 D3D11_BLEND_DESC DefaultBlendDesc();
 D3D11_SAMPLER_DESC DefaultSamplerDesc();
@@ -20,6 +20,4 @@ D3D11_RASTERIZER_DESC DefaultRasterizerDesc();
 
 }
 
-} // namespace Devora
-
-#endif
+} // namespace DEV

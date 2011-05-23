@@ -1,0 +1,16 @@
+float3 u8x2_u16_unpack(uint input)
+{
+    float3 output;
+    output.x =  input        & 0x000000ff;
+    output.y = (input >>  8) & 0x000000ff;
+    output.z =  input >> 16;
+    return output * float3(1.0/255, 1.0/255, 1.0/65535);
+}
+
+uint u8x2_u16_pack(float3 input)
+{
+	uint3 value = uint3(saturate(input) * float3(255, 255, 65535) + 0.5);
+    return (value.x      ) |
+           (value.y <<  8) |
+		   (value.z << 16) ;
+}

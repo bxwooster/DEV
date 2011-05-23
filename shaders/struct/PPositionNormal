@@ -1,0 +1,5 @@
+struct PPositionNormal
+{
+	float4 svposition : SV_Position;
+	float3 normal : Normal;
+};

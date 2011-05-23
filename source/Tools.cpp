@@ -1,18 +1,28 @@
-#include "Matrix.h"
-#include "ok.h"
+#define NOMINMAX
+#include "Tools.hpp"
+#include "OK.hpp"
 
-#include "Geometries.hpp"
-#include "DeviceState.hpp"
-
-#include <D3DX11.h>
 #include <fstream>
 #include <vector>
+#include <D3DX11.h>
 
-namespace Devora {
+namespace DEV {
 
 typedef unsigned int uint;
 
 namespace Tools {
+
+void InitCBuffers(DeviceState& device,	ID3D11Buffer** buffers[], size_t* sizes, int number)
+{
+	for (int i = 0; i < number; i++)
+	{
+		D3D11_BUFFER_DESC desc = {};
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		desc.ByteWidth = sizes[i];
+		HOK( device.device->CreateBuffer( &desc, NULL, buffers[i] ));
+	}
+}
 
 D3D11_BLEND_DESC DefaultBlendDesc()
 {
@@ -110,7 +120,7 @@ D3D11_DEPTH_STENCIL_DESC DefaultDepthStencilDesc()
 	return desc;
 }
 
-void CompileShader( char* file, char* profile, ID3D10Blob** code )
+void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
 {
 	IPtr<ID3D10Blob> info;
 
@@ -119,7 +129,7 @@ void CompileShader( char* file, char* profile, ID3D10Blob** code )
 	D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
 
 	HOK_EX( D3DX11CompileFromFile( file,
-	NULL, NULL, "main", profile, shader_flags,
+	NULL, NULL, entry, profile, shader_flags,
 	0, NULL, code, ~info, NULL ),
 	*&info ? (char*)info->GetBufferPointer() : "" );
 }
@@ -180,4 +190,4 @@ Geometry ReadGeometry(ID3D11Device* device, const std::string& path)
 
 }
 
-} // namespace Devora
+} // namespace DEV
