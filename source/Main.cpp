@@ -114,99 +114,85 @@ struct Loop
 	}
 };
 
-struct Init
+void run()
 {
-	__End__;
+	// Data
+	GraphicsState graphics;
+	DeviceState device;
+	PhysicsState physics;
+	ShaderCache shadercache;
 
-	void run()
-	{
-		// Data
-		auto& graphics = *new GraphicsState;
-		auto& device = *new DeviceState;
-		auto& physics = *new PhysicsState;
-		auto& shadercache = *new ShaderCache;
+	VisualRenderInfo vinfo;
+	LightRenderInfo linfo;
+	PostProcessInfo pinfo;
+	RayTracingInfo rinfo;
 
-		auto& vinfo = *new VisualRenderInfo;
-		auto& linfo = *new LightRenderInfo;
-		auto& pinfo = *new PostProcessInfo;
-		auto& rinfo = *new RayTracingInfo;
+	TimingData timing;
+	InputData input;
+	Camera camera;
+	PlayerState player;
 
-		auto& timing = *new TimingData;
-		auto& input = *new InputData;
-		auto& camera = *new Camera;
-		auto& player = *new PlayerState;
+	Buffer backbuffer, gbuffer, lbuffer;
+	ZBuffer zbuffer, shadowmap, shadowcube;
+	UBuffer oit_start, oit_scattered, oit_consolidated;
 
-		auto& backbuffer = *new Buffer;
-		auto& gbuffer = *new Buffer;
-		auto& lbuffer = *new Buffer;
-		auto& zbuffer = *new ZBuffer;
-		auto& shadowmap = *new ZBuffer;
-		auto& shadowcube = *new ZBuffer;
-		auto& oit_start = *new UBuffer;
-		auto& oit_scattered = *new UBuffer;
-		auto& oit_consolidated = *new UBuffer;
+	Transforms transforms;
+	Visuals visuals;
+	Lights lights;
+	Geometries geometries;
 
-		auto& transforms = *new Transforms;
-		auto& visuals = *new Visuals;
-		auto& lights = *new Lights;
-		auto& geometries = *new Geometries;
+	CBuffer cb_object, cb_object_z, cb_object_cube_z, cb_light, cb_frame, cb_tracy;
 
-		auto& cb_object = *new CBuffer;
-		auto& cb_object_z = *new CBuffer;
-		auto& cb_object_cube_z = *new CBuffer;
-		auto& cb_light = *new CBuffer;
-		auto& cb_frame = *new CBuffer;
-		auto& cb_tracy = *new CBuffer;
+	// Code
+	RunTask( InitGraphics,
+		graphics, device, gbuffer, shadowmap, shadowcube,
+		lbuffer, zbuffer, backbuffer, camera,
+		cb_object, cb_object_z, cb_object_cube_z,
+		cb_light, cb_frame, cb_tracy );
 
-		// Code
-		RunTask( InitGraphics,
-			graphics, device, gbuffer, shadowmap, shadowcube,
-			lbuffer, zbuffer, backbuffer, camera,
-			cb_object, cb_object_z, cb_object_cube_z,
-			cb_light, cb_frame, cb_tracy );
-
-		RunTask( InitOIT,
-			device, camera, oit_start, oit_scattered, oit_consolidated );
+	RunTask( InitOIT,
+		device, camera, oit_start, oit_scattered, oit_consolidated );
 	
-		RunTask( InitVisualRender, 
-			vinfo, device, shadercache );
+	RunTask( InitVisualRender, 
+		vinfo, device, shadercache );
 
-		RunTask( InitLightRender,
-			linfo, device, shadercache, camera );
+	RunTask( InitLightRender,
+		linfo, device, shadercache, camera );
 
-		RunTask( InitPostProcess,
-			pinfo, device, shadercache );
+	RunTask( InitPostProcess,
+		pinfo, device, shadercache );
 
-		RunTask( InitRayTracing,
-			rinfo, device, shadercache );
+	RunTask( InitRayTracing,
+		rinfo, device, shadercache );
 
-		RunTask( InitPhysics,
-			physics );
+	RunTask( InitPhysics,
+		physics );
 
-		RunTask( InitTiming,
-			timing );
+	RunTask( InitTiming,
+		timing );
 
-		RunTask( InitInput,
-			input );
+	RunTask( InitInput,
+		input );
 
-		RunTask( InitPlayer,
-			player );
+	RunTask( InitPlayer,
+		player );
 
-		RunTask( InitScene,
-			transforms, visuals, lights, geometries, physics, device );
+	RunTask( InitScene,
+		transforms, visuals, lights, geometries, physics, device );
 
-		ScheduleTask( Loop,
-			graphics, device, physics, shadercache,
-			vinfo, linfo, pinfo, rinfo,
-			timing, input, camera, player,
-			backbuffer, gbuffer, lbuffer,
-			zbuffer, shadowmap, shadowcube,
-			oit_start, oit_scattered, oit_consolidated,
-			transforms, visuals, lights, geometries,
-			cb_object, cb_object_z, cb_object_cube_z,
-			cb_light, cb_frame, cb_tracy );
-	}
-};
+	Loop loop = {
+		graphics, device, physics, shadercache,
+		vinfo, linfo, pinfo, rinfo,
+		timing, input, camera, player,
+		backbuffer, gbuffer, lbuffer,
+		zbuffer, shadowmap, shadowcube,
+		oit_start, oit_scattered, oit_consolidated,
+		transforms, visuals, lights, geometries,
+		cb_object, cb_object_z, cb_object_cube_z,
+		cb_light, cb_frame, cb_tracy };
+
+	Tasking::run_taskmanager(loop);
+}
 
 } // namespace DEV
 
@@ -214,8 +200,7 @@ int main()
 {
 	try
 	{
-		DEV::Init init = {};
-		Tasking::run_taskmanager(init);
+		DEV::run();
 	}
 	catch(std::exception exception)
 	{
