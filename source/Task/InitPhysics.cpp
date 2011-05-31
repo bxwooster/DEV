@@ -16,7 +16,7 @@ void InitPhysics::run()
 	state.dynamicsWorld->getSolverInfo().m_splitImpulse = true;
 	state.dynamicsWorld->getSolverInfo().m_numIterations = 20;
 	state.dynamicsWorld->getDispatchInfo().m_useContinuous = true;
-	state.dynamicsWorld->setGravity(btVector3(0, 0, -9.81));
+	state.dynamicsWorld->setGravity(btVector3(0, 0, -9.81f));
 
 	state.plane = new btStaticPlaneShape(btVector3(0, 0, 1), 0);
 	state.sphere = new btSphereShape(1);

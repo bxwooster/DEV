@@ -110,8 +110,12 @@ void InitScene::run()
 	for (int i = 2; i < transforms.size(); i++)
 	{	
 		motionState = new MotionState(transforms[i]);
-		btRigidBody body(mass, motionState, state.sphere, localInertia);
-		state.bodies[i] = body;
+
+		state.bodies[i] = btRigidBody(mass, motionState, state.sphere, localInertia);
+
+		state.bodies[i].setCcdMotionThreshold(1e-7);
+		state.bodies[i].setCcdSweptSphereRadius(0.45); //!?
+
 		state.dynamicsWorld->addRigidBody(&state.bodies[i]);
 	}
 }
