@@ -73,42 +73,42 @@ struct Loop
 
 	void run()
 	{
-		RunTask( GetTiming,
+		ScheduleTask( GetTiming,
 			timing );
 
-		RunTask( GetInput,
+		ScheduleTask( GetInput,
 			input );
 
-		RunTask( DerivePlayerState,
+		ScheduleTask( DerivePlayerState,
 			player, input, timing );
 
-		RunTask( CrunchPhysics,
+		ScheduleTask( CrunchPhysics,
 			physics, transforms, player, timing );
 
-		RunTask( DeriveCamera,
+		ScheduleTask( DeriveCamera,
 			transforms, player, camera );
 
-		RunTask( Prepare,
+		ScheduleTask( Prepare,
 			graphics, cb_frame, zbuffer, oit_start, camera );
-		RunTask( RenderVisuals,
+		ScheduleTask( RenderVisuals,
 			graphics, vinfo, transforms, visuals, geometries,
 			camera, oit_start, oit_scattered, oit_consolidated,
 			gbuffer, zbuffer, cb_object, cb_frame );
 
-		if (0) RunTask( RayTrace,
+		if (0) ScheduleTask( RayTrace,
 		graphics, rinfo, camera, zbuffer, gbuffer, cb_frame, cb_tracy );
 
-		RunTask( RenderLights,
+		ScheduleTask( RenderLights,
 			graphics, linfo, transforms, lights, visuals, geometries,
 			camera, zbuffer, shadowmap, shadowcube, gbuffer, lbuffer,
 			oit_start, oit_scattered, oit_consolidated,
 			cb_frame, cb_object_z, cb_object_cube_z, cb_light );
 
-		RunTask( PostProcess,
+		ScheduleTask( PostProcess,
 			graphics, pinfo, zbuffer, gbuffer, lbuffer, backbuffer, cb_frame );
 
-		RunTask( Present,
-			device );
+		ScheduleTask( Present,
+			device, graphics );
 
 		ScheduleTaskObject( Loop, *this );
 	}

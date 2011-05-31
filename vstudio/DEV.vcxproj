@@ -37,7 +37,6 @@
     <ClInclude Include="..\source\Matrix.hpp" />
     <ClInclude Include="..\source\OK.hpp" />
     <ClInclude Include="..\source\owned_ptr.hpp" />
-    <ClInclude Include="..\source\Task.hpp" />
     <ClInclude Include="..\source\Tasking.hpp" />
     <ClInclude Include="..\source\Task\CrunchPhysics.hpp" />
     <ClInclude Include="..\source\Task\DeriveCamera.hpp" />

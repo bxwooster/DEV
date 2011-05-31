@@ -177,9 +177,6 @@
     <ClInclude Include="..\source\Data\Camera.hpp">
       <Filter>Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Task.hpp">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\owned_ptr.hpp">
       <Filter>header</Filter>
     </ClInclude>
