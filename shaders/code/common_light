@@ -7,8 +7,10 @@
 
 inline float3 inner_light(float2 uv, float depth, float3 normal, float4 colour_spec)
 {
+	float hardness = 100;
+
 	float3 colour = colour_spec.rgb;
-	float specular = colour_spec.a;
+	float spec = colour_spec.a;
 
 	float z_neg = -z_near / (1 - depth);
 	float4 surface_pos = float4( uv_to_ray(uv) * z_neg, z_neg, 1.0 );
@@ -21,10 +23,18 @@ inline float3 inner_light(float2 uv, float depth, float3 normal, float4 colour_s
 
 	float lighted = SHADOW_TEST(reprojected, lightvec);
 
-    float radiance = lighted * fade *
-		max(0.0, dot( lightvec, normal )) / (l * l * l) * light_scale;
+	lightvec = normalize(lightvec);
+	float3 viewvec = normalize(-surface_pos.xyz);
+	float3 halfvec = normalize(lightvec + viewvec);
+	float base = pow(1 - dot(viewvec, halfvec), 5);
+	float fresnel = base + 0.5 * (1.0 - base);
 
-	return radiance * colour * light_colour;
+	float diffuse = saturate(dot(lightvec, normal));
+	float specular = fresnel * spec * pow(saturate(dot(halfvec, normal)), hardness);
+
+    float radiance = lighted * fade * (diffuse + specular) / (l * l) * light_scale;
+
+	return float4(radiance * light_colour * colour, 1.0);
 }
 
 float4 common_light(PPosition input)

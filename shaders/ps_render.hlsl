@@ -20,7 +20,7 @@ void main
 out uint2 output : SV_Target0
 ){
 	float4 colour = __colour; //{ 1, 1, 1, 1 };
-	//colour.a = 1;
+	colour.a = 1;
 	float specular = 1;
 	float2 encoded_normal = normal_encode(normalize(input.normal));
 	// Interpolation means we have to renormalize for encoding.
