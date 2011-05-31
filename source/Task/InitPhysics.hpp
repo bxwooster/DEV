@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/PhysicsState.hpp"
 
 namespace DEV {
@@ -7,6 +7,8 @@ namespace DEV {
 struct InitPhysics
 {
 	InOut (PhysicsState) state;
+
+	__End__;
 
 	void run();
 };

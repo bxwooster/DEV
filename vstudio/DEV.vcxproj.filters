@@ -183,6 +183,9 @@
     <ClInclude Include="..\source\owned_ptr.hpp">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\Tasking.hpp">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Main.cpp" />
@@ -254,6 +257,7 @@
     <ClCompile Include="..\source\Task\DerivePlayerState.cpp">
       <Filter>Task\source</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\Tasking.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\cbuffer\object">

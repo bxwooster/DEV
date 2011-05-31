@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Camera.hpp"
 #include "Data/DeviceState.hpp"
 #include "Data/GraphicsState.hpp"
@@ -28,6 +28,8 @@ struct InitGraphics
 	InOut (CBuffer) cb_light;
 	InOut (CBuffer) cb_frame;
 	InOut (CBuffer) cb_tracy;
+
+	__End__;
 
 	void run();
 };

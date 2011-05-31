@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/PlayerState.hpp"
 #include "Data/TimingData.hpp"
 #include "Data/InputData.hpp"
@@ -13,6 +13,7 @@ struct DerivePlayerState
 	InOut (PlayerState) state;
 	In (InputData) input;
 	In (TimingData) timing;
+	__End__;
 
 	void run();
 };

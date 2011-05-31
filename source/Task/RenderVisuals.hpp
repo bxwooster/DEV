@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Transforms.hpp"
 #include "Data/GraphicsState.hpp"
 #include "Data/VisualRenderInfo.hpp"
@@ -28,6 +28,8 @@ struct RenderVisuals
 	InOut (ZBuffer) zbuffer;
 	InOut (CBuffer) cb_object;
 	InOut (CBuffer) cb_frame;
+
+	__End__;
 
 	void run();
 };

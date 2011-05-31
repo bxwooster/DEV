@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/PlayerState.hpp"
 
 namespace DEV {
@@ -7,6 +7,8 @@ namespace DEV {
 struct InitPlayer
 {
 	InOut (PlayerState) state;
+
+	__End__;
 
 	void run();
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Camera.hpp"
 #include "Data/GraphicsState.hpp"
 #include "Data/PostProcessInfo.hpp"
@@ -18,6 +18,8 @@ struct PostProcess
 	InOut (Buffer) lbuffer;
 	InOut (Buffer) backbuffer;
 	InOut (CBuffer) cb_frame;
+
+	__End__;
 
 	void run();
 };

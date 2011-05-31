@@ -38,6 +38,7 @@
     <ClInclude Include="..\source\OK.hpp" />
     <ClInclude Include="..\source\owned_ptr.hpp" />
     <ClInclude Include="..\source\Task.hpp" />
+    <ClInclude Include="..\source\Tasking.hpp" />
     <ClInclude Include="..\source\Task\CrunchPhysics.hpp" />
     <ClInclude Include="..\source\Task\DeriveCamera.hpp" />
     <ClInclude Include="..\source\Task\DerivePlayerState.hpp" />
@@ -65,6 +66,7 @@
   <ItemGroup>
     <ClCompile Include="..\source\LoadShader.cpp" />
     <ClCompile Include="..\source\Main.cpp" />
+    <ClCompile Include="..\source\Tasking.cpp" />
     <ClCompile Include="..\source\Task\CrunchPhysics.cpp" />
     <ClCompile Include="..\source\Task\DeriveCamera.cpp" />
     <ClCompile Include="..\source\Task\DerivePlayerState.cpp" />
@@ -179,6 +181,7 @@
       <AdditionalDependencies>d3dx11.lib;d3d11.lib;d3dx10.lib;dxgi.lib;d3dcompiler.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -190,7 +193,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3dx11.lib;d3d11.lib;d3dx10.lib;dxgi.lib;d3dcompiler.lib;LinearMath.lib;BulletCollision.lib;BulletDynamics.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
