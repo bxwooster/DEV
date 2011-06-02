@@ -24,11 +24,95 @@
 #include "Task/GetInput.hpp"
 #include "Task/GetTiming.hpp"
 
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include <exception>
 #include <Windows.h>
 
 namespace DEV {
+
+struct Loop
+{
+	InOut(GraphicsState) graphics;
+	InOut(DeviceState) device;
+	InOut(PhysicsState) physics;
+	InOut(ShaderCache) shadercache;
+
+	InOut(VisualRenderInfo) vinfo;
+	InOut(LightRenderInfo) linfo;
+	InOut(PostProcessInfo) pinfo;
+	InOut(RayTracingInfo) rinfo;
+
+	InOut(TimingData) timing;
+	InOut(InputData) input;
+	InOut(Camera) camera;
+	InOut(PlayerState) player;
+
+	InOut(Buffer) backbuffer;
+	InOut(Buffer) gbuffer;
+	InOut(Buffer) lbuffer;
+	InOut(ZBuffer) zbuffer;
+	InOut(ZBuffer) shadowmap;
+	InOut(ZBuffer) shadowcube;
+	InOut(UBuffer) oit_start;
+	InOut(UBuffer) oit_scattered;
+	InOut(UBuffer) oit_consolidated;
+
+	InOut(Transforms) transforms;
+	InOut(Visuals) visuals;
+	InOut(Lights) lights;
+	InOut(Geometries) geometries;
+
+	InOut(CBuffer) cb_object;
+	InOut(CBuffer) cb_object_z;
+	InOut(CBuffer) cb_object_cube_z;
+	InOut(CBuffer) cb_light;
+	InOut(CBuffer) cb_frame;
+	InOut(CBuffer) cb_tracy;
+
+	__End__;
+
+	void run()
+	{
+		ScheduleTask( GetTiming,
+			timing );
+
+		ScheduleTask( GetInput,
+			input );
+
+		ScheduleTask( DerivePlayerState,
+			player, input, timing );
+
+		ScheduleTask( CrunchPhysics,
+			physics, transforms, player, timing );
+
+		ScheduleTask( DeriveCamera,
+			transforms, player, camera );
+
+		ScheduleTask( Prepare,
+			graphics, cb_frame, zbuffer, oit_start, camera );
+		ScheduleTask( RenderVisuals,
+			graphics, vinfo, transforms, visuals, geometries,
+			camera, oit_start, oit_scattered, oit_consolidated,
+			gbuffer, zbuffer, cb_object, cb_frame );
+
+		if (0) ScheduleTask( RayTrace,
+		graphics, rinfo, camera, zbuffer, gbuffer, cb_frame, cb_tracy );
+
+		ScheduleTask( RenderLights,
+			graphics, linfo, transforms, lights, visuals, geometries,
+			camera, zbuffer, shadowmap, shadowcube, gbuffer, lbuffer,
+			oit_start, oit_scattered, oit_consolidated,
+			cb_frame, cb_object_z, cb_object_cube_z, cb_light );
+
+		ScheduleTask( PostProcess,
+			graphics, pinfo, zbuffer, gbuffer, lbuffer, backbuffer, cb_frame );
+
+		ScheduleTask( Present,
+			device, graphics );
+
+		ScheduleTaskObject( Loop, *this );
+	}
+};
 
 void run()
 {
@@ -96,48 +180,19 @@ void run()
 	RunTask( InitScene,
 		transforms, visuals, lights, geometries, physics, device );
 
-	for (;;)
-	{
-		RunTask( GetTiming,
-			timing );
+	Loop loop = {
+		graphics, device, physics, shadercache,
+		vinfo, linfo, pinfo, rinfo,
+		timing, input, camera, player,
+		backbuffer, gbuffer, lbuffer,
+		zbuffer, shadowmap, shadowcube,
+		oit_start, oit_scattered, oit_consolidated,
+		transforms, visuals, lights, geometries,
+		cb_object, cb_object_z, cb_object_cube_z,
+		cb_light, cb_frame, cb_tracy };
 
-		RunTask( GetInput,
-			input );
-
-		RunTask( DerivePlayerState,
-			player, input, timing );
-
-		RunTask( CrunchPhysics,
-			physics, transforms, player, timing );
-
-		RunTask( DeriveCamera,
-			transforms, player, camera );
-
-		RunTask( Prepare,
-			graphics, cb_frame, zbuffer, oit_start, camera );
-
-		RunTask( RenderVisuals,
-			graphics, vinfo, transforms, visuals, geometries,
-			camera, oit_start, oit_scattered, oit_consolidated,
-			gbuffer, zbuffer, cb_object, cb_frame );
-
-		if (0) RunTask( RayTrace,
-		graphics, rinfo, camera, zbuffer, gbuffer, cb_frame, cb_tracy );
-
-		RunTask( RenderLights,
-			graphics, linfo, transforms, lights, visuals, geometries,
-			camera, zbuffer, shadowmap, shadowcube, gbuffer, lbuffer,
-			oit_start, oit_scattered, oit_consolidated,
-			cb_frame, cb_object_z, cb_object_cube_z, cb_light );
-
-		RunTask( PostProcess,
-			graphics, pinfo, zbuffer, gbuffer, lbuffer, backbuffer, cb_frame );
-
-		RunTask( Present,
-			device );
-	}
+	Tasking::run_taskmanager(loop);
 }
-
 
 } // namespace DEV
 

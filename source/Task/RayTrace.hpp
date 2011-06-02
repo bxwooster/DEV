@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Camera.hpp"
 #include "Data/GraphicsState.hpp"
 #include "Data/RayTracingInfo.hpp"
@@ -18,6 +18,8 @@ struct RayTrace
 	InOut (Buffer) gbuffer;
 	InOut (CBuffer) cb_frame;
 	InOut (CBuffer) cb_tracy;
+
+	__End__;
 
 	void run();
 };

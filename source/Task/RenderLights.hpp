@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Transforms.hpp"
 #include "Data/GraphicsState.hpp"
 #include "Data/LightRenderInfo.hpp"
@@ -35,6 +35,8 @@ struct RenderLights
 	InOut (CBuffer) cb_object_z;
 	InOut (CBuffer) cb_object_cube_z;
 	InOut (CBuffer) cb_light;
+
+	__End__;
 
 	void run();
 

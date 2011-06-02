@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Camera.hpp"
 #include "Data/LightRenderInfo.hpp"
 #include "Data/DeviceState.hpp"
@@ -13,6 +13,8 @@ struct InitLightRender
 	InOut (DeviceState) device;
 	InOut (ShaderCache) cache;
 	In (Camera) camera;
+
+	__End__;
 
 	void run();
 };

@@ -89,6 +89,9 @@ void RenderLights::shared_code(Parameters& P)
 		state->GSSetShader( P.gs_render, NULL, 0 );
 		state->PSSetShader( NULL, NULL, 0 );
 
+		state->VSSetConstantBuffers(0, 1, &P.cbuffer);
+		state->GSSetConstantBuffers(0, 1, &P.cbuffer);
+
 		for (uint i = 0; i < casters.size(); i++)
 		{
 			Geometry& geom = geometries[casters[i].geometry];

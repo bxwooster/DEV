@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Transforms.hpp"
 #include "Data/Visuals.hpp"
 #include "Data/Lights.hpp"
@@ -17,6 +17,8 @@ struct InitScene
 	InOut (Geometries) geometries;
 	InOut (PhysicsState) state;
 	InOut (DeviceState) device;
+
+	__End__;
 
 	void run();
 };

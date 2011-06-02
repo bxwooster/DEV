@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Transforms.hpp"
 #include "Data/PlayerState.hpp"
 #include "Data/Camera.hpp"
@@ -11,6 +11,7 @@ struct DeriveCamera
 	In (Transforms) transforms;
 	In (PlayerState) player;
 	InOut (Camera) camera;
+	__End__;
 
 	void run();
 };

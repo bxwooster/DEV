@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Camera.hpp"
 #include "Data/GraphicsState.hpp"
 #include "Data/ZBuffer.hpp"
@@ -15,6 +15,8 @@ struct Prepare
 	InOut (ZBuffer) zbuffer;
 	InOut (UBuffer) oit_start;
 	In (Camera) camera;
+
+	__End__;
 
 	void run();
 };

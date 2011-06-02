@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/Camera.hpp"
 #include "Data/DeviceState.hpp"
 #include "Data/UBuffer.hpp"
@@ -13,6 +13,8 @@ struct InitOIT
 	InOut (UBuffer) oit_start;
 	InOut (UBuffer) oit_scattered;
 	InOut (UBuffer) oit_consolidated;
+
+	__End__;
 
 	void run();
 };

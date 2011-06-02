@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/TimingData.hpp"
 
 namespace DEV {
@@ -7,6 +7,7 @@ namespace DEV {
 struct GetTiming
 {
 	InOut (TimingData) timing;
+	__End__;
 
 	void run();
 };

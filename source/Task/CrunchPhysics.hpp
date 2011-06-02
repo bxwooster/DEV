@@ -1,5 +1,5 @@
 #pragma once
-#include "Task.hpp"
+#include "Tasking.hpp"
 #include "Data/PhysicsState.hpp"
 #include "Data/PlayerState.hpp"
 #include "Data/TimingData.hpp"
@@ -13,6 +13,7 @@ struct CrunchPhysics
 	In (Transforms) transforms;
 	In (PlayerState) player;
 	In (TimingData) timing;
+	__End__;
 
 	void run();
 };
