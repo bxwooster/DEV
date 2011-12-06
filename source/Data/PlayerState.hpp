@@ -14,6 +14,7 @@ struct PlayerState
 	bool jump;
 	bool sprint;
 
+
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 

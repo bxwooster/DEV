@@ -84,6 +84,7 @@ void InitGraphics::run()
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		desc.Windowed = 1;
+		desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 		HOK( dxgi_factory->CreateSwapChain

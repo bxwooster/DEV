@@ -27,5 +27,11 @@ float4 main
 	float mult = max(0.0, dot( view_i[2].xyz, normal));
 	float4 ambient = 0*float4(mult * float3(0.02, 0.02, 0.02) * colour, 1.0);
 
-	return (ambient + lbuffer.Sample(sm_point, uv)) / aperture;
+	float4 final = (ambient + lbuffer.Sample(sm_point, uv)) / aperture;
+	float4 reinhard = final / (1 + final);
+
+	float4 x = max(0, final - 0.004);
+	float4 jim_richard = (x*(6.2*x+.5))/(x*(6.2*x+1.7)+0.06);
+
+	return jim_richard;
 }
