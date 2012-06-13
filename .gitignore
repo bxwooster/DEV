@@ -11,3 +11,4 @@
 *.pyd
 __pycache__
 /misc
+/build
