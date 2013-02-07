@@ -32,7 +32,7 @@ void InitGraphics::run()
 	int height = camera.screen.h = 960;
 	camera.aspect_ratio = float(camera.screen.w) / camera.screen.h;
 
-	int const shadowmap_size = 512;
+	int const shadowmap_size = 1024;
 
 	WNDCLASSEX window_class;
 	ZeroMemory( &window_class, sizeof( WNDCLASSEX ) );

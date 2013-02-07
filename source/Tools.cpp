@@ -125,8 +125,8 @@ void CompileShader( char* file, char* entry, char* profile, ID3D10Blob** code )
 	IPtr<ID3D10Blob> info;
 
 	unsigned int shader_flags = D3D10_SHADER_ENABLE_STRICTNESS |
-	D3D10_SHADER_OPTIMIZATION_LEVEL0 |
-	D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
+		D3D10_SHADER_SKIP_OPTIMIZATION |
+		D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
 
 	HOK_EX( D3DX11CompileFromFile( file,
 	NULL, NULL, entry, profile, shader_flags,
