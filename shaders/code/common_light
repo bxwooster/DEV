@@ -27,7 +27,7 @@ inline float3 inner_light(float2 uv, float depth, float3 normal, float4 colour_s
 	float3 viewvec = normalize(-surface_pos.xyz);
 	float3 halfvec = normalize(lightvec + viewvec);
 	float base = pow(1 - dot(viewvec, halfvec), 5);
-	float fresnel = base + 0.5 * (1.0 - base);
+	float fresnel = base + 0.1 * (1.0 - base);
 
 	float diffuse = saturate(dot(lightvec, normal));
 	float specular = fresnel * spec * pow(saturate(dot(halfvec, normal)), hardness);
