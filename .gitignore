@@ -1,4 +1,3 @@
-/geometry
 /blender/meshes
 /vstudio/ipch
 /vstudio/build
@@ -6,9 +5,5 @@
 *.sdf
 *.suo
 *.vcxproj.user
-*.exe
-*.dll
-*.pyd
-__pycache__
 /misc
 /build
